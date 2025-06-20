@@ -765,12 +765,15 @@ class TimeSeries():
         tot_seconds = time.time()
 
         if auto_lr_find:
-            trainer.tune(self.model,train_dataloaders=train_dl,val_dataloaders = valid_dl)
+            lr_tuner = trainer.tune(self.model,train_dataloaders=train_dl,val_dataloaders = valid_dl)
             files = os.listdir(dirpath)
             for f in files:
                 if '.lr_find' in f:
                     os.remove(os.path.join(dirpath,f))
- 
+
+            self.model.optim_config['lr'] = lr_tuner['lr_find'].suggestion()
+
+        
         trainer.fit(self.model, train_dl,valid_dl)
         self.checkpoint_file_best = checkpoint_callback.best_model_path
         self.checkpoint_file_last = checkpoint_callback.last_model_path 
@@ -886,9 +889,7 @@ class TimeSeries():
         if self.modifier is not None:
             res,real = self.modifier.inverse_transform(res,real)
 
-        ## BxLxCx3
-        if rescaling:
-            beauty_string('Scaling back','info',self.verbose)
+        ## BxLxCx3tot
             if self.normalize_per_group is False:
                 for i, c in enumerate(self.target_variables):
                     real[:,:,i] = self.scaler_num[c].inverse_transform(real[:,:,i].reshape(-1,1)).reshape(-1,real.shape[1])

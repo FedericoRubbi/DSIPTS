@@ -102,6 +102,7 @@ class Base(pl.LightningModule):
         
         :meta private:
         """
+
         self.has_sam_optim = False
         if self.optim_config is None:
             self.optim_config = {'lr': 5e-05}
@@ -128,6 +129,7 @@ class Base(pl.LightningModule):
                 optimizer = SAM(self.parameters(), base_optimizer=torch.optim.Adam, **self.optim_config)
             else:
                 optimizer = self.optim(self.parameters(),  **self.optim_config)
+            beauty_string(optimizer,'',self.verbose)
             self.initialize = True
         self.lr = self.optim_config['lr']
         if self.scheduler_config is not None:

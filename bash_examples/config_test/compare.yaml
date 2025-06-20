@@ -1,6 +1,7 @@
 models: config_test
 #models: ['config_used/linear.yaml']
-dirpath: null
+dirpath: /home/agobbi/Projects/TS/bash_examples/test
+
 set: 'test'
 name: 'prova'
 rescaling: false

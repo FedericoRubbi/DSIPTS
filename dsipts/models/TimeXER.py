@@ -152,6 +152,7 @@ class TimeXER(Base):
 
     def forward(self, batch:dict)-> float:
 
+
         x_enc = batch['x_num_past'].to(self.device)
         
         if 'x_cat_past' in batch.keys():

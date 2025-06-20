@@ -169,6 +169,8 @@ def load_model(ts,conf):
         ts.load(TIDE,os.path.join(conf.train_config.dirpath,'model'),load_last=conf.inference.load_last)
     elif conf.model.type == 'itransformer':
         ts.load(ITransformer,os.path.join(conf.train_config.dirpath,'model'),load_last=conf.inference.load_last)
+    elif conf.model.type == 'itransformer':
+        ts.load(ITransformer,os.path.join(conf.train_config.dirpath,'model'),load_last=conf.inference.load_last)
     else:
         beauty_string('NO VALID MODEL FOUND','block',ts.verbose)
         loaded=False
