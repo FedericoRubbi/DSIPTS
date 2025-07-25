@@ -770,10 +770,7 @@ class TimeSeries():
             for f in files:
                 if '.lr_find' in f:
                     os.remove(os.path.join(dirpath,f))
-
-            self.model.optim_config['lr'] = lr_tuner['lr_find'].suggestion()
-
-        
+            self.model.optim_config['lr'] = lr_tuner['lr_find'].suggestion() 
         trainer.fit(self.model, train_dl,valid_dl)
         self.checkpoint_file_best = checkpoint_callback.best_model_path
         self.checkpoint_file_last = checkpoint_callback.last_model_path 
@@ -884,12 +881,13 @@ class TimeSeries():
         real = np.vstack(real)
         time = dl.dataset.t
         groups = dl.dataset.groups
-        #import pdb
-        #pdb.set_trace()
+
         if self.modifier is not None:
             res,real = self.modifier.inverse_transform(res,real)
 
-        ## BxLxCx3tot
+        ## BxLxCx3
+        if rescaling:
+            beauty_string('Scaling back','info',self.verbose)
             if self.normalize_per_group is False:
                 for i, c in enumerate(self.target_variables):
                     real[:,:,i] = self.scaler_num[c].inverse_transform(real[:,:,i].reshape(-1,1)).reshape(-1,real.shape[1])
