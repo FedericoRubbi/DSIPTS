@@ -66,8 +66,8 @@ def train(conf: DictConfig) -> None:
     if 'ttm' in conf.model.type:
         exog_feat = [c for c in ts.num_var if c not in ts.target_variables]
         model_conf['num_input_channels'] = len(ts.num_var) + len(ts.cat_var)
-        model_conf['prediction_channel_indices'] = [ts.dataset.columns.get_loc(c)-1 for c in ts.target_variables]
-        model_conf['exogenous_channel_indices'] = [ts.dataset.columns.get_loc(c)-1 for c in ts.cat_var + exog_feat]
+        model_conf['prediction_channel_indices'] = list(range(len(ts.target_variables))) #[ts.dataset.columns.get_loc(c)-1 for c in ts.target_variables]
+        model_conf['exogenous_channel_indices'] =  list(range(len(ts.target_variables),len(ts.target_variables)+len(ts.cat_var))) #[ts.dataset.columns.get_loc(c)-1 for c in ts.cat_var + exog_feat]
 
 
     model = select_model(conf,model_conf,ts)

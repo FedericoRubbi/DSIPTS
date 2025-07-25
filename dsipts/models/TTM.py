@@ -159,8 +159,6 @@ class TTM(Base):
         original_indexes_future = batch['idx_target_future'][0].tolist()
 
 
- 
-
         if self.extend_variables:
             x_enc, original_indexes = self.__extend_with_quantile_variables(x_enc, original_indexes)
 
@@ -188,7 +186,10 @@ class TTM(Base):
             x_start = x_enc[:,-1,idx_target].unsqueeze(1)
             x_enc[:,:,idx_target]-=x_start 
 
+
         past_values = self.__permute_indexes(past_values, self.model.prediction_channel_indices, original_indexes)
+
+        
         future_values = self.__permute_indexes(future_values, self.model.prediction_channel_indices, original_indexes_future)
 
         freq_token = get_frequency_token(self.freq).repeat(x_enc.shape[0])
