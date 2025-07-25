@@ -24,6 +24,7 @@ einops
 matplotlib
 sphinx_pdj_theme
 sphinx_mdinclude
+transformers
 #starlette==0.37.2
 #pydantic==2.7.4
 

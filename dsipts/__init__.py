@@ -21,3 +21,4 @@ from .models.DilatedConvED import DilatedConvED
 from .models.TIDE import TIDE
 from .models.ITransformer import ITransformer
 from .models.TimeXER import TimeXER
+from .models.TTM import TTM
