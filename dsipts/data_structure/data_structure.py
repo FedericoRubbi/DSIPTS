@@ -22,6 +22,7 @@ from aim.pytorch_lightning import AimLogger
 import time
 
 
+
 pd.options.mode.chained_assignment = None 
 log = logging.getLogger(__name__)
 log.addHandler(logging.NullHandler())      
@@ -765,12 +766,12 @@ class TimeSeries():
         tot_seconds = time.time()
 
         if auto_lr_find:
-            lr_tuner = trainer.tune(self.model,train_dataloaders=train_dl,val_dataloaders = valid_dl)
+            trainer.tune(self.model,train_dataloaders=train_dl,val_dataloaders = valid_dl)
             files = os.listdir(dirpath)
             for f in files:
                 if '.lr_find' in f:
                     os.remove(os.path.join(dirpath,f))
-            self.model.optim_config['lr'] = lr_tuner['lr_find'].suggestion() 
+ 
         trainer.fit(self.model, train_dl,valid_dl)
         self.checkpoint_file_best = checkpoint_callback.best_model_path
         self.checkpoint_file_last = checkpoint_callback.last_model_path 
@@ -881,7 +882,8 @@ class TimeSeries():
         real = np.vstack(real)
         time = dl.dataset.t
         groups = dl.dataset.groups
-
+        #import pdb
+        #pdb.set_trace()
         if self.modifier is not None:
             res,real = self.modifier.inverse_transform(res,real)
 
@@ -1076,6 +1078,7 @@ class TimeSeries():
                     beauty_string('checkpoint_file_best not defined try to load best','section',self.verbose)
                     tmp_path = os.path.join(directory,self.checkpoint_file_last.split('/')[-1])
         try:
-            self.model = self.model.load_from_checkpoint(tmp_path,verbose=self.verbose)
+            #with torch.serialization.add_safe_globals([ListConfig]):
+            self.model = self.model.load_from_checkpoint(tmp_path,verbose=self.verbose,)
         except Exception as e:
             beauty_string(f'There is a problem loading the weights on file {tmp_path} {e}','section',self.verbose)
