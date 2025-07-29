@@ -8,7 +8,15 @@ import numpy as np
 from .samformer.utils import scaled_dot_product_attention, RevIN
 
 
-from .base import  Base
+
+try:
+    import lightning.pytorch as pl
+    from .base_v2 import Base
+    OLD_PL = False
+except:
+    import pytorch_lightning as pl
+    OLD_PL = True
+    from .base import Base
 from .utils import QuantileLossMO,Permute, get_activation
 
 from typing import List, Union

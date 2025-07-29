@@ -1,7 +1,7 @@
 
 from torch import optim
 import torch
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 from torch.optim.lr_scheduler import StepLR
 from abc import  abstractmethod
 from .utils import SinkhornDistance, SoftDTWBatch,PathDTWBatch,pairwise_distances
@@ -42,6 +42,7 @@ def dilate_loss(outputs, targets, alpha, gamma, device):
 class Base(pl.LightningModule):
     
     ############### SET THE PROPERTIES OF THE ARCHITECTURE##############
+    
     handle_multivariate = False
     handle_future_covariates = False
     handle_categorical_variables = False
@@ -54,8 +55,7 @@ class Base(pl.LightningModule):
         This is the basic model, each model implemented must overwrite the init method and the forward method. The inference step is optional, by default it uses the forward method but for recurrent 
         network you should implement your own method
         """
-        beauty_string('V1','block',True)
-
+        beauty_string('V2','block',True)
         super(Base, self).__init__()
         self.save_hyperparameters(logger=False)
         self.count_epoch = 0
@@ -63,7 +63,8 @@ class Base(pl.LightningModule):
         self.train_loss_epoch = -100.0
         self.verbose = verbose
         self.name = self.__class__.__name__
-        
+        self.train_epoch_metrics = []
+        self.validation_epoch_metrics = []
         beauty_string(self.description,'info',True)
     @abstractmethod
     def forward(self, batch:dict)-> torch.tensor:
@@ -132,7 +133,7 @@ class Base(pl.LightningModule):
                 optimizer = self.optim(self.parameters(),  **self.optim_config)
             beauty_string(optimizer,'',self.verbose)
             self.initialize = True
-        self.lr = self.optim_config['lr']
+        self.lr = self.optim_config['lr']  ##CHECK THISs
         if self.scheduler_config is not None:
             scheduler = StepLR(optimizer,**self.scheduler_config)
             return [optimizer], [scheduler]
@@ -180,6 +181,8 @@ class Base(pl.LightningModule):
         else:
             y_hat = self(batch)
             loss = self.compute_loss(batch,y_hat)
+            
+        self.train_epoch_metrics.append(loss.item())
         return loss
 
     
@@ -209,33 +212,33 @@ class Base(pl.LightningModule):
                     ax.set_title(f'Channel {i} first element first batch validation {int(100*self.count_epoch/self.trainer.max_epochs)}%')
                     self.logger.experiment.track(Image(fig), name='cm_training_end')
                     #self.log(f"example_{i}", np.stack([real, pred]).T,sync_dist=True)
+        self.validation_epoch_metrics.append(self.compute_loss(batch,y_hat))
+        return 
 
-        return self.compute_loss(batch,y_hat)
 
-
-    def validation_epoch_end(self, outs):
+    def on_validation_epoch_end(self):
         """
         pythotrch lightening stuff
         
         :meta private:
         """
-    
-        loss = torch.stack(outs).mean()
-        self.log("val_loss", loss.item(),sync_dist=True)
-        beauty_string(f'Epoch: {self.count_epoch} train error: {self.train_loss_epoch:.4f} validation loss: {loss.item():.4f}','info',self.verbose)
+        avg = torch.stack(self.validation_epoch_metrics).mean()
+        self.validation_epoch_metrics = []
+        self.log("val_loss", avg,sync_dist=True)
+        beauty_string(f'Epoch: {self.count_epoch} train error: {self.train_loss_epoch:.4f} validation loss: {avg:.4f}','info',self.verbose)
 
-    def training_epoch_end(self, outs):
+    def on_train_epoch_end(self):
+
         """
         pythotrch lightening stuff
         
         :meta private:
         """
-
-        loss = sum(outs['loss'] for outs in outs) / len(outs)
-        self.log("train_loss", loss.item(),sync_dist=True)
+        avg = np.stack(self.train_epoch_metrics).mean()
+        self.log("train_loss", avg,sync_dist=True)
         self.count_epoch+=1    
-
-        self.train_loss_epoch = loss.item()
+        self.train_epoch_metrics = []
+        self.train_loss_epoch = avg
 
     def compute_loss(self,batch,y_hat):
         """

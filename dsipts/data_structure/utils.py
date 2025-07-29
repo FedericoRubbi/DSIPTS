@@ -3,7 +3,11 @@ from typing import Union
 import pandas as pd
 from torch.utils.data import Dataset
 import numpy as np
-from pytorch_lightning import Callback
+
+try:
+    from lightning.pytorch.callbacks import Callback
+except:
+    from pytorch_lightning import Callback
 import torch
 import os
 import logging

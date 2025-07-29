@@ -1,7 +1,18 @@
 import torch
 import numpy as np
 from torch import  nn
-from .base import Base
+
+try:
+    import lightning.pytorch as pl
+    from .base_v2 import Base
+    OLD_PL = False
+except:
+    import pytorch_lightning as pl
+    OLD_PL = True
+    from .base import Base
+
+
+
 from typing import List,Union
 
 from .utils import  QuantileLossMO
@@ -130,12 +141,12 @@ class TTM(Base):
     
     def __build_tupla_indexes(self, size, target_idx, current_idx):
         permute = list(range(size))
+        history = dict()
         for j, i in enumerate(target_idx):
-            permute[i], permute[current_idx[j]] = current_idx[j], permute[i]
+            c = history.get(current_idx[j], current_idx[j])
+            permute[i], permute[c] = current_idx[j], i
+            history[i] = current_idx[j]
 
-        assert len(set(permute)) == len(permute)
-        
-        return tuple(permute)
 
     def __permute_indexes(self, values, target_idx, current_idx):
         if current_idx is None or target_idx is None:

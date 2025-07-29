@@ -6,7 +6,15 @@
 from torch import  nn
 import torch
 from torch.nn import functional as F
-from .base import Base
+
+try:
+    import lightning.pytorch as pl
+    from .base_v2 import Base
+    OLD_PL = False
+except:
+    import pytorch_lightning as pl
+    OLD_PL = True
+    from .base import Base
 from typing import List, Union
 from .vva.minigpt import Block
 from .vva.vqvae import VQVAE

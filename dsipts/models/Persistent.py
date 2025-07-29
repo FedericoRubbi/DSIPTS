@@ -1,6 +1,14 @@
 
 from torch import nn
-from .base import  Base
+
+try:
+    import lightning.pytorch as pl
+    from .base_v2 import Base
+    OLD_PL = False
+except:
+    import pytorch_lightning as pl
+    OLD_PL = True
+    from .base import Base
 from .utils import L1Loss
 from ..data_structure.utils import beauty_string
 from .utils import  get_scope

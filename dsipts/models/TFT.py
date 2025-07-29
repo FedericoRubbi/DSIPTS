@@ -1,7 +1,15 @@
 import torch
 import torch.nn as nn
 from .tft import sub_nn
-from .base import  Base
+
+try:
+    import lightning.pytorch as pl
+    from .base_v2 import Base
+    OLD_PL = False
+except:
+    import pytorch_lightning as pl
+    OLD_PL = True
+    from .base import Base
 from .utils import QuantileLossMO
 from typing import List, Union
 from ..data_structure.utils import beauty_string

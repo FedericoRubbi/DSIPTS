@@ -7,7 +7,15 @@ import torch.nn as nn
 import numpy as np
 
 
-from .base import  Base
+
+try:
+    import lightning.pytorch as pl
+    from .base_v2 import Base
+    OLD_PL = False
+except:
+    import pytorch_lightning as pl
+    OLD_PL = True
+    from .base import Base
 from .utils import QuantileLossMO,Permute, get_activation
 from .itransformer.SelfAttention_Family import FullAttention, AttentionLayer
 from .itransformer.Embed import DataEmbedding_inverted

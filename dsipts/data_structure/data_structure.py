@@ -5,16 +5,30 @@ from typing import List
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import * 
 from torch.utils.data import DataLoader
-from pytorch_lightning.callbacks import ModelCheckpoint
-import pytorch_lightning as pl
-from pytorch_lightning.loggers import CSVLogger
+from .utils import extend_time_df,MetricsCallback, MyDataset, ActionEnum,beauty_string
+
+try:
+
+    #new version of lightning
+    from lightning.pytorch.callbacks import ModelCheckpoint
+    import lightning.pytorch as pl
+    from ..models.base_v2 import Base
+    beauty_string('V2','block',True)
+    OLD_PL = False
+except:
+    ## older version of lightning
+    from pytorch_lightning.callbacks import ModelCheckpoint
+    import pytorch_lightning as pl
+    from ..models.base import Base
+    beauty_string('V1','block',True)
+
+    OLD_PL = True
+
 from typing import Union
 import os
 import torch
 import pickle
-from .utils import extend_time_df,MetricsCallback, MyDataset, ActionEnum,beauty_string
 from datetime import datetime
-from ..models.base import Base
 from ..models.utils import weight_init_zeros,weight_init
 import logging 
 from .modifiers import *
@@ -751,28 +765,50 @@ class TimeSeries():
         ## TODO se ci sono 2 o piu gpu MetricsCallback non funziona (secondo me fa una istanza per ogni dataparallel che lancia e poi non riesce a recuperare info)
         pl.seed_everything(seed, workers=True)
         self.model.max_epochs = max_epochs
-        trainer = pl.Trainer(default_root_dir=dirpath,
-                             logger = aim_logger,
-                             max_epochs=max_epochs,
-                             callbacks=[checkpoint_callback,mc],
-                             auto_lr_find=auto_lr_find, 
-                             accelerator=accelerator,
-                             devices=devices,
-                             strategy=strategy,
-                             enable_progress_bar=False,
-                             precision=precision,
-                             gradient_clip_val=gradient_clip_val,
-                             gradient_clip_algorithm=gradient_clip_algorithm)#,devices=1)
+        if OLD_PL:
+            trainer = pl.Trainer(default_root_dir=dirpath,
+                                logger = aim_logger,
+                                max_epochs=max_epochs,
+                                callbacks=[checkpoint_callback,mc],
+                                auto_lr_find=auto_lr_find, 
+                                accelerator=accelerator,
+                                devices=devices,
+                                strategy=strategy,
+                                enable_progress_bar=False,
+                                precision=precision,
+                                gradient_clip_val=gradient_clip_val,
+                                gradient_clip_algorithm=gradient_clip_algorithm)#,devices=1)
+        else:
+            trainer = pl.Trainer(default_root_dir=dirpath,
+                                logger = aim_logger,
+                                max_epochs=max_epochs,
+                                callbacks=[checkpoint_callback,mc],
+                                strategy='auto',
+                                devices=devices,
+                                enable_progress_bar=False,
+                                precision=precision,
+                                gradient_clip_val=gradient_clip_val,
+                                gradient_clip_algorithm=gradient_clip_algorithm)#,devices=1)
         tot_seconds = time.time()
 
         if auto_lr_find:
-            lr_tuner = trainer.tune(self.model,train_dataloaders=train_dl,val_dataloaders = valid_dl)
-            files = os.listdir(dirpath)
-            for f in files:
-                if '.lr_find' in f:
-                    os.remove(os.path.join(dirpath,f))
-            self.model.optim_config['lr'] = lr_tuner['lr_find'].suggestion()
-        trainer.fit(self.model, train_dl,valid_dl)
+            if OLD_PL:
+                lr_tuner = trainer.tune(self.model,train_dataloaders=train_dl,val_dataloaders = valid_dl)
+                files = os.listdir(dirpath)
+                for f in files:
+                    if '.lr_find' in f:
+                        os.remove(os.path.join(dirpath,f))
+                self.model.optim_config['lr'] = lr_tuner['lr_find'].suggestion()
+            else:
+                from lightning.pytorch.tuner import Tuner
+                tuner = Tuner(trainer)
+                lr_finder = tuner.lr_find(self.model,train_dataloaders=train_dl,val_dataloaders = valid_dl)
+                self.model.optim_config['lr'] = lr_finder.suggestion() ## we are using it as optim key
+        if OLD_PL:
+            trainer.fit(self.model, train_dl,valid_dl)
+        else:
+            trainer.fit(self.model, train_dataloaders = train_dl,val_dataloaders = valid_dl)
+
         self.checkpoint_file_best = checkpoint_callback.best_model_path
         self.checkpoint_file_last = checkpoint_callback.last_model_path 
         if self.checkpoint_file_last=='':
