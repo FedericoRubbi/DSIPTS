@@ -1,6 +1,8 @@
 
 
 # DSIPTS: unified library for timeseries modelling
+> [!CAUTION]
+THE DOCUMENTATION, README and notebook are somehow outdated, please be patient!
 
 This library allows to:
 
