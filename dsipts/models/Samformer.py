@@ -44,11 +44,6 @@ class Samformer(Base):
                  # specific params
                  hidden_size:int,
                  use_revin: bool,
-                 rho: float=0.5,
-
-                 
-                 
-                 dropout_rate: float=0.1,
                  activation: str='',
                  
                  persistence_weight:float=0.0,
@@ -96,6 +91,7 @@ class Samformer(Base):
         # self.dropout = dropout_rate
         self.persistence_weight = persistence_weight 
         self.optim_config = optim_config
+        self.optim = optim
         self.scheduler_config = scheduler_config
         self.loss_type = loss_type
         self.future_steps = future_steps
@@ -135,10 +131,11 @@ class Samformer(Base):
         BS = x.shape[0]
 
         if self.use_revin:
-            x_norm = self.revin(x.transpose(1, 2), mode='norm').transpose(1, 2) # (n, D, L)
+            x_norm = self.revin(x, mode='norm').transpose(1, 2) # (n, D, L)
         else:
-            x_norm = x
+            x_norm = x.transpose(1, 2)
         # Channel-Wise Attention
+
         queries = self.compute_queries(x_norm) # (n, D, hid_dim)
         keys = self.compute_keys(x_norm) # (n, D, hid_dim)
         values = self.compute_values(x_norm) # (n, D, L)
@@ -151,7 +148,7 @@ class Samformer(Base):
         out = self.linear_forecaster(out) # (n, D, H)
         # RevIN Denormalization
         if self.use_revin:
-            out = self.revin(out.transpose(1, 2), mode='denorm').transpose(1, 2) # (n, D, H)
+            out = self.revin(out, mode='denorm') # (n, D, H)
             
         
         return out.reshape(BS,self.future_steps,self.out_channels,self.mul)

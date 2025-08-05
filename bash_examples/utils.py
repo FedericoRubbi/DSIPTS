@@ -1,4 +1,4 @@
-from dsipts import RNN, LinearTS, Persistent, D3VAE, DilatedConv, TFT, Informer,VVA,VQVAEA,CrossFormer,Autoformer,PatchTST,Diffusion,DilatedConvED,TIDE,ITransformer,TimeXER,beauty_string, TTM
+from dsipts import RNN, LinearTS, Persistent, D3VAE, DilatedConv, TFT, Informer,VVA,VQVAEA,CrossFormer,Autoformer,PatchTST,Diffusion,DilatedConvED,TIDE,ITransformer,TimeXER,beauty_string, TTM,Samformer
 import numpy as np
 from sklearn.metrics import mean_squared_error
 import os
@@ -126,6 +126,10 @@ def select_model(conf, model_conf,ts):
     elif conf.model.type == 'ttm':
         model =  TTM(**model_conf,   optim_config = conf.optim_config,
                           scheduler_config =conf.scheduler_config,verbose=ts.verbose )
+    elif conf.model.type == 'samformer':
+        model =  Samformer(**model_conf,   optim_config = conf.optim_config,
+                          scheduler_config =conf.scheduler_config,verbose=ts.verbose )
+
     else:
         model = None
         beauty_string(f"Not a valid model { conf.model.type}-{conf.ts.name}-{conf.ts.version}",'block',ts.verbose)
@@ -176,7 +180,10 @@ def load_model(ts,conf):
         ts.load(TimeXER,os.path.join(conf.train_config.dirpath,'model'),load_last=conf.inference.load_last)
     elif conf.model.type == 'ttm':
         ts.load(TTM,os.path.join(conf.train_config.dirpath,'model'),load_last=conf.inference.load_last)
+    elif conf.model.type == 'samformer':
+        ts.load(Samformer,os.path.join(conf.train_config.dirpath,'model'),load_last=conf.inference.load_last)
     
+
     else:
         beauty_string('NO VALID MODEL FOUND','block',ts.verbose)
         loaded=False

@@ -1,0 +1,25 @@
+# @package _global_
+
+model:
+  type: 'samformer'
+  retrain: true
+ts:
+  name: 'test'
+  version: 1
+  enrich: ['hour']
+  use_covariates: false
+  silly: False
+
+
+model_configs:
+
+  hidden_size: 16
+  use_revin: false
+  loss_type: 'mse'
+  optim: torch.optim.AdamW
+  activation: nn.ReLU
+
+
+train_config:
+  batch_size: 64
+  max_epochs: 2
