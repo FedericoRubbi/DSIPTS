@@ -3,17 +3,17 @@ dataset:
   path: '/storage3/DSIP/agobbi/Projects/ExpTS/data'
 
 scheduler_config:
-  gamma: 0.75
-  step_size: 250
+  gamma: 0.1
+  step_size: 100
 
 optim_config:
-  lr: 0.00005
-  weight_decay: 0.0001 #001
+  lr:  0.0005
+  weight_decay: 0.01 #001
 
 model_configs:
   past_steps: 84
   future_steps: 84
-  quantiles: [0.1,0.5,0.9]
+  quantiles: []
   past_channels : null #dataset dependent
   future_channels : null #dataset dependent
   embs: null #dataset dependent

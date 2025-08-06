@@ -37,7 +37,7 @@ def build_venice(path:str,url='https://www.comune.venezia.it/it/content/archivio
         
     def remove_str(table,column):
         table[column] = table[column].apply(lambda x:cast_month(x))
-        
+            
     def normalize(table):
         columns = table.columns
         table = table[~table.isna().all(axis=1)]
