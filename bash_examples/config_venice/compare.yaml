@@ -1,7 +1,7 @@
-models: config_test
+models: config_venice
 #models: ['config_used/linear.yaml']
-dirpath: /home/agobbi/Projects/PTF/DSIPTS_PTF/bash_examples/test
+dirpath: "/storage3/DSIP/agobbi/Projects/ExpTS/venice"
 set: 'test'
-name: 'prova'
-rescaling: false
-batch_size: 16
+name: 'test_venice'
+rescaling: true
+batch_size: 64
