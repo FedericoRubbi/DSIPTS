@@ -832,7 +832,11 @@ class TimeSeries():
             self.losses = pd.DataFrame()
 
         try:
-            self.model = self.model.load_from_checkpoint(self.checkpoint_file_last)
+            if OLD_PL:
+                self.model = self.model.load_from_checkpoint(self.checkpoint_file_last)
+            else:
+                self.model = self.model.__class__.load_from_checkpoint(self.checkpoint_file_last)
+
         except Exception as _:
             beauty_string(f'There is a problem loading the weights on file MAYBE CHANGED HOW WEIGHTS ARE LOADED {self.checkpoint_file_last}','section',self.verbose)
 
@@ -1115,6 +1119,10 @@ class TimeSeries():
                     tmp_path = os.path.join(directory,self.checkpoint_file_last.split('/')[-1])
         try:
             #with torch.serialization.add_safe_globals([ListConfig]):
-            self.model = self.model.load_from_checkpoint(tmp_path,verbose=self.verbose,)
+            if OLD_PL:
+                self.model = self.model.load_from_checkpoint(tmp_path,verbose=self.verbose,)
+            else:
+                self.model = self.model.__class__.load_from_checkpoint(tmp_path,verbose=self.verbose,)
+
         except Exception as e:
             beauty_string(f'There is a problem loading the weights on file {tmp_path} {e}','section',self.verbose)
