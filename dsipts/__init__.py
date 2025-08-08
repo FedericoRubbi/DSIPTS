@@ -23,3 +23,4 @@ from .models.ITransformer import ITransformer
 from .models.TimeXER import TimeXER
 from .models.TTM import TTM
 from .models.Samformer import Samformer
+from .models.Duet import Duet
