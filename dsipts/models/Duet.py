@@ -1,4 +1,7 @@
 
+## Copyright 2025    DUET (https://github.com/decisionintelligence/DUET)
+## Code modified for align the notation and the batch generation
+## extended to all present in duet and autoformer folder
 
 import torch
 import torch.nn as nn
@@ -151,7 +154,7 @@ class Duet(Base):
     def forward(self, batch:dict)-> float:
         # x: [Batch, Input length, Channel]
         x_enc = batch['x_num_past'].to(self.device)
-        idx_target = int(batch['idx_target'][0])
+        idx_target = batch['idx_target'][0]
         BS = x_enc.shape[0]
         if 'x_cat_past' in batch.keys():
             x_mark_enc =  batch['x_cat_past'].to(self.device)

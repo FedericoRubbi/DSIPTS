@@ -8,12 +8,12 @@ source .venv/bin/activate
 
 ##old torch and pytorch-lightning
 ```bash
-uv pip install 'numpy<2.0.0' matplotlib pandas scikit-learn 'torch==2.4.1' 'pytorch-lightning==1.9.4' hydra-core hydra-joblib-launcher hydra-optuna-sweeper 'beautifulsoup4==4.12.0' html5lib 'html-table-parser-python3==0.3.1' sphinx plotly scikit-learn numba einops sphinx_pdj_theme sphinx_mdinclude 'aim==3.20.1' transformers 
+uv pip install 'numpy<2.0.0' matplotlib pandas scikit-learn 'torch==2.4.1' 'pytorch-lightning==1.9.4' hydra-core hydra-joblib-launcher hydra-optuna-sweeper 'beautifulsoup4==4.12.0' html5lib 'html-table-parser-python3==0.3.1' sphinx plotly scikit-learn numba einops sphinx_pdj_theme sphinx_mdinclude 'aim==3.20.1' hydra-submitit-launcher transformers 
 ```
 
 ##new torch and pytorch-lightning
 ```bash
-uv pip install 'numpy<2.0.0' matplotlib pandas scikit-learn lightning hydra-core hydra-joblib-launcher hydra-optuna-sweeper 'beautifulsoup4==4.12.0' html5lib 'html-table-parser-python3==0.3.1' sphinx plotly scikit-learn numba einops sphinx_pdj_theme sphinx_mdinclude 'aim==3.20.1' transformers 
+uv pip install 'numpy<2.0.0' matplotlib pandas scikit-learn lightning hydra-core hydra-joblib-launcher hydra-optuna-sweeper 'beautifulsoup4==4.12.0' html5lib 'html-table-parser-python3==0.3.1' sphinx plotly scikit-learn numba einops sphinx_pdj_theme sphinx_mdinclude 'aim==3.20.1' transformers  hydra-submitit-launcher
 python setup_uv.py install --force
 ```
 
