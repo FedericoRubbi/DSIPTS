@@ -92,9 +92,11 @@ def train(conf: DictConfig) -> None:
         return 1000
     
     ##clean folders
-    if  os.path.exists(dirpath):
+    
+    if  (os.path.exists(dirpath)) and (conf.model.restart is False):
         shutil.rmtree(dirpath)
-    os.makedirs(dirpath)
+    if  os.path.exists(dirpath) is False:
+        os.makedirs(dirpath)
     conf.train_config.dirpath = dirpath
     ts.set_model(model,config=dict(model_configs=model_conf,
                                     optim_config=conf.optim_config,

@@ -3,7 +3,7 @@ dataset:
   path: null
 
 scheduler_config:
-  gamma: 0.1
+  gamma: 1.0
   step_size: 100
 
 optim_config:

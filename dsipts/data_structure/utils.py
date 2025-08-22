@@ -96,7 +96,11 @@ class MetricsCallback(Callback):
             self.metrics[c].append(trainer.callback_metrics[c].item())
         ##Write csv in a convenient way
         tmp  = self.metrics.copy()
-        tmp['val_loss'] = tmp['val_loss'][2:]
+        if len(tmp['train_loss']) >0:
+            tmp['val_loss'] = tmp['val_loss'][-len(tmp['train_loss']):]
+        else:
+            tmp['val_loss'] = tmp['val_loss'][2:]
+ 
         losses = pd.DataFrame(tmp)
         losses.to_csv(os.path.join(self.dirpath,'loss.csv'),index=False)
 
@@ -104,7 +108,12 @@ class MetricsCallback(Callback):
     def on_train_end(self, trainer, pl_module):
         losses = self.metrics
         ##non so perche' le prime due le chiama prima del train
-        losses['val_loss'] = losses['val_loss'][2:]
+        if len(losses['train_loss']) >0:
+            losses['val_loss'] =losses['val_loss'][-len(losses['train_loss']):]
+        else:
+            losses['val_loss'] = losses['val_loss'][2:]
+        
+        #losses['val_loss'] = losses['val_loss'][2:]
         losses = pd.DataFrame(losses)
         ##accrocchio per quando ci sono piu' gpu!
         losses.to_csv(os.path.join(self.dirpath,f'{np.random.randint(10000)}__losses__.csv'),index=False)

@@ -3,6 +3,7 @@
 model:
   type: 'duet'
   retrain: true
+  restart: true
 ts:
   name: 'test'
   version: 1

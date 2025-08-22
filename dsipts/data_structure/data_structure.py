@@ -765,6 +765,18 @@ class TimeSeries():
         ## TODO se ci sono 2 o piu gpu MetricsCallback non funziona (secondo me fa una istanza per ogni dataparallel che lancia e poi non riesce a recuperare info)
         pl.seed_everything(seed, workers=True)
         self.model.max_epochs = max_epochs
+        
+        if os.path.isfile(os.path.join(dirpath,'last.ckpt')):
+            weight_exists = True
+            beauty_string('I loaded a previous checkpoint','section',self.verbose)
+
+        else: 
+            weight_exists = False
+            beauty_string('I can not load a previous model','section',self.verbose)
+
+
+        
+        
         if OLD_PL:
             trainer = pl.Trainer(default_root_dir=dirpath,
                                 logger = aim_logger,
@@ -791,7 +803,10 @@ class TimeSeries():
                                 gradient_clip_algorithm=gradient_clip_algorithm)#,devices=1)
         tot_seconds = time.time()
 
-        if auto_lr_find:
+
+      
+
+        if auto_lr_find and (weight_exists is False):
             if OLD_PL:
                 lr_tuner = trainer.tune(self.model,train_dataloaders=train_dl,val_dataloaders = valid_dl)
                 files = os.listdir(dirpath)
@@ -804,11 +819,19 @@ class TimeSeries():
                 tuner = Tuner(trainer)
                 lr_finder = tuner.lr_find(self.model,train_dataloaders=train_dl,val_dataloaders = valid_dl)
                 self.model.optim_config['lr'] = lr_finder.suggestion() ## we are using it as optim key
-        if OLD_PL:
-            trainer.fit(self.model, train_dl,valid_dl)
-        else:
-            trainer.fit(self.model, train_dataloaders = train_dl,val_dataloaders = valid_dl)
+        
+ 
 
+        if OLD_PL:
+            if weight_exists:
+                trainer.fit(self.model, train_dl,valid_dl,ckpt_path=os.path.join(dirpath,'last.ckpt'))
+            else:
+                trainer.fit(self.model, train_dl,valid_dl)
+        else:
+            if weight_exists:
+                trainer.fit(self.model, train_dataloaders = train_dl,val_dataloaders = valid_dl,ckpt_path=os.path.join(dirpath,'last.ckpt'))
+            else:
+                trainer.fit(self.model, train_dataloaders = train_dl,val_dataloaders = valid_dl)
         self.checkpoint_file_best = checkpoint_callback.best_model_path
         self.checkpoint_file_last = checkpoint_callback.last_model_path 
         if self.checkpoint_file_last=='':
