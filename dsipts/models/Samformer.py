@@ -150,6 +150,7 @@ class Samformer(Base):
         if self.use_revin:
             out = self.revin(out, mode='denorm') # (n, D, H)
             
-        
+        import pdb
+        pdb.set_trace()
         return out.reshape(BS,self.future_steps,self.out_channels,self.mul)
 

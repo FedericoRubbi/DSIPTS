@@ -93,7 +93,7 @@ def train(conf: DictConfig) -> None:
     
     ##clean folders
     
-    if  (os.path.exists(dirpath)) and (conf.model.restart is False):
+    if  (os.path.exists(dirpath)) and (conf.model.get('restart',False) is False):
         shutil.rmtree(dirpath)
     if  os.path.exists(dirpath) is False:
         os.makedirs(dirpath)

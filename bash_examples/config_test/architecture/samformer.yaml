@@ -7,7 +7,7 @@ ts:
   name: 'test'
   version: 1
   enrich: ['hour']
-  use_covariates: false
+  use_covariates: true
   silly: False
 
 
