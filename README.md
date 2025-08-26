@@ -389,9 +389,13 @@ and then open the url (http://127.0.0.1:43800)[http://127.0.0.1:43800]. It will 
 
 [ ] add SOFTS https://github.com/Secilia-Cxy/SOFTS/blob/main/models/SOFTS.py
 
-[ ] add SAM optimizer (WIP i think it will be easier to update pytorchlightnening but it need some rework)
+[x] add SAM optimizer (WIP i think it will be easier to update pytorchlightnening but it need some rework)
 
-[ ] add SAMformer
+[x] add SAMformer
+
+[ ] add https://github.com/Hank0626/PDF/blob/main/models/PDF.py
+
+[ ] add https://github.com/decisionintelligence/pathformer          
 ## UPDATES TRACK
 1.1.1 --> added [SAM optimizer](https://arxiv.org/pdf/2402.10198) need to write also the architecture
 ```

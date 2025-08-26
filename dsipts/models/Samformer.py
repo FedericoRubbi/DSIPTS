@@ -128,6 +128,7 @@ class Samformer(Base):
     def forward(self, batch:dict)-> float:
 
         x = batch['x_num_past'].to(self.device)
+        idx_target = batch['idx_target'][0]
         BS = x.shape[0]
 
         if self.use_revin:
@@ -149,8 +150,7 @@ class Samformer(Base):
         # RevIN Denormalization
         if self.use_revin:
             out = self.revin(out, mode='denorm') # (n, D, H)
-            
-        import pdb
-        pdb.set_trace()
+        out = out[:,idx_target,:]
+
         return out.reshape(BS,self.future_steps,self.out_channels,self.mul)
 
