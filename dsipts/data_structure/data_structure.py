@@ -230,7 +230,8 @@ class TimeSeries():
                     past_variables:List[str]=[],
                     future_variables:List[str]=[],
                     target_variables:List[str]=[],
-                    cat_var:List[str]=[],
+                    cat_past_var:List[str]=[],
+                    cat_fut_var:List[str]=[],
                     check_past:bool=True,
                     group:Union[None,str]=None,
                     check_holes_and_duplicates:bool=True,
@@ -247,7 +248,9 @@ class TimeSeries():
             past_variables (List[str], optional): list of column names of past variables not available for future times . Defaults to [].
             future_variables (List[str], optional): list of future variables available for tuture times. Defaults to [].
             target_variables (List[str], optional): list of the target variables. They will added to past_variables by default unless `check_past` is false. Defaults to [].
-            cat_var (List[str], optional): list of the categortial variables (same for past and future). Defaults to [].
+            cat_past_var (List[str], optional): list of the past categorical variables. Defaults to [].
+            cat_future_var (List[str], optional): list of the future categorical variables. Defaults to [].
+
             check_past (bool, optional): see `target_variables`. Defaults to True.
             group (str or None, optional): if not None the time serie dataset is considered composed by omogeneus timeseries coming from different realization (for example point of sales, cities, locations)
             and the relative series are not splitted during the sample generation. Defaults to None
@@ -297,26 +300,30 @@ class TimeSeries():
             if check_past:
                 beauty_string('I will update past column adding all target columns, if you want to avoid this beahviour please use check_pass as false','info',self.verbose)
                 past_variables = list(set(past_variables).union(set(target_variables)))
-        
-        self.cat_var = cat_var
+
+        self.cat_past_var = cat_past_var
+        self.cat_fut_var = cat_fut_var
+
         self.group = group 
         if group is not None:
-            if group not in cat_var:
-                beauty_string(f'I will add {group} to the categorical variables','info',self.verbose)
+            if group not in cat_past_var:
+                beauty_string(f'I will add {group} to the categorical past/future variables','info',self.verbose)
                 self.cat_var.append(group)
+            if group not in cat_fut_var:
+                beauty_string(f'I will add {group} to the categorical past/future variables','info',self.verbose)
+                self.cat_fut_var.append(group)   
                 
-                
-                
+        self.cat_var = list(set(cat_past_var+cat_fut_var)) ## all categorical data
         self.enrich_cat = enrich_cat
         for c in enrich_cat:
-            self.cat_var = list(set(self.cat_var+[c]))
-                
+            self.cat_past_var = list(set(self.cat_past_var+[c]))
+            self.cat_fut_var = list(set(self.cat_fut_var+[c]))  
             if c in dataset.columns:
                 beauty_string('Categorical {c} already present, it will be added to categorical variable but not call the enriching function','info',self.verbose) 
             else:
                 self.enrich(dataset,c)
         self.dataset = dataset
-        self.past_variables =past_variables
+        self.past_variables = past_variables
         self.future_variables = future_variables
         self.target_variables = target_variables
         self.out_vars = len(target_variables)
@@ -444,8 +451,10 @@ class TimeSeries():
             x_num_past = tmp[self.past_variables].values
             if len(self.future_variables)>0:
                 x_num_future = tmp[self.future_variables].values
-            if len(self.cat_var)>0:
-                x_cat = tmp[self.cat_var].values
+            if len(self.cat_past_var)>0:
+                x_past_cat = tmp[self.cat_past_var].values
+            if len(self.cat_fut_var)>0:
+                x_fut_cat = tmp[self.cat_fut_var].values
             y_target = tmp[self.target_variables].values
 
         
@@ -475,12 +484,14 @@ class TimeSeries():
                                 x_num_future_samples.append(x_num_future[i-shift+skip_stacked:i+future_steps+skip_stacked])
                             else:
                                 x_num_future_samples.append(x_num_future[i-shift+skip_stacked:i+future_steps-shift+skip_stacked])
-                        if len(self.cat_var)>0:
-                            x_cat_past_samples.append(x_cat[i-past_steps:i])
+                        if len(self.cat_past_var)>0:
+                            x_cat_past_samples.append(x_past_cat[i-past_steps:i])
+                        if len(self.cat_fut_var)>0:
                             if keep_entire_seq_while_shifting:
-                                x_cat_future_samples.append(x_cat[i-shift+skip_stacked:i+future_steps+skip_stacked])
+                                x_cat_future_samples.append(x_fut_cat[i-shift+skip_stacked:i+future_steps+skip_stacked])
                             else:
-                                x_cat_future_samples.append(x_cat[i-shift+skip_stacked:i+future_steps-shift+skip_stacked])
+                                x_cat_future_samples.append(x_fut_cat[i-shift+skip_stacked:i+future_steps-shift+skip_stacked])
+                        
                         y_samples.append(y_target[i+skip_stacked:i+future_steps+skip_stacked])
                         t_samples.append(t[i+skip_stacked:i+future_steps+skip_stacked])
                         g_samples.append(groups[i])
@@ -497,8 +508,9 @@ class TimeSeries():
         t_samples = np.stack(t_samples)   
         g_samples = np.stack(g_samples)
 
-        if len(self.cat_var)>0:
+        if len(self.cat_past_var)>0:
             x_cat_past_samples = np.stack(x_cat_past_samples)
+        if len(self.cat_fut_var)>0:
             x_cat_future_samples = np.stack(x_cat_future_samples)
         x_num_past_samples = np.stack(x_num_past_samples)
         if self.stacked:
@@ -508,8 +520,9 @@ class TimeSeries():
         dd = {'y':y_samples.astype(np.float32),
 
               'x_num_past':(x_num_past_samples*mod).astype(np.float32)}
-        if len(self.cat_var)>0:
+        if len(self.cat_past_var)>0:
             dd['x_cat_past'] = x_cat_past_samples
+        if len(self.cat_fut_var)>0:
             dd['x_cat_future'] = x_cat_future_samples
         if len(self.future_variables)>0:
             dd['x_num_future'] = x_num_future_samples.astype(np.float32)

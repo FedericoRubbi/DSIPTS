@@ -516,3 +516,107 @@ class PathDTWBatch(Function):
 
         return  Hessian, None
     
+
+
+import math
+from typing import Union
+class Embedding_cat_variables(nn.Module):
+    def __init__(self, length: int, d_model: int, emb_dims: list,reduction_mode:str='mean',use_classical_positional_encoder:bool=False, device:str='cpu'):
+        """
+        Embeds categorical variables with optional positional encodings.
+
+        Args:
+            length (int): Sequence length (e.g., total time steps).
+            d_model (int): Output embedding dimension.
+            emb_dims (list): Vocabulary sizes for each categorical feature.
+            reduction_mode (str): 'mean', 'sum', or 'none'.
+            use_classical_positional_encoder (bool): Whether to use sinusoidal positional encoding.
+            device (str): Device name (e.g., 'cpu' or 'cuda').
+
+        Notes:
+            - If `reduction_mode` is 'none', all embeddings are concatenated.
+            - If `use_classical_positional_encoder` is True, uses fixed sin/cos encoding.
+            - If False, treats position as a categorical variable and embeds it.
+        """
+
+
+        super().__init__()
+        self.length = length
+        self.device = device
+        self.reduction_mode = reduction_mode
+        self.emb_dims = emb_dims
+
+        self.use_classical_positional_encoder = use_classical_positional_encoder
+
+
+        if use_classical_positional_encoder:
+            pe = torch.zeros(length, d_model).to(device)
+            position = torch.arange(0, length, dtype=torch.float).unsqueeze(1).to(device)
+
+            # Compute the div_term (frequencies for sinusoids)
+            div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model)).to(device)
+
+            # Apply sine to even indices, cosine to odd indices
+            pe[:, 0::2] = torch.sin(position * div_term)
+            pe[:, 1::2] = torch.cos(position * div_term)
+            ## this is static positional encoder
+            self.register_buffer('pe', pe)##static
+
+
+        else:
+            self.register_buffer('pe_emb', torch.arange(0, self.length).reshape(1, -1, 1)) ##static
+            self.emb_dims = [length+1] + emb_dims
+            #otherwise we add a new embedding layer
+
+        if self.reduction_mode =='none':
+            self.output_channels = len(self.emb_dims)*d_model
+            if use_classical_positional_encoder:
+                self.output_channels+=d_model
+        else:
+            self.output_channels = d_model ## if you want to have a fixed d_model size use mean or sum strategy
+
+        ##this is the core
+        self.cat_n_embd = nn.ModuleList([nn.Embedding(emb_dim, d_model) for emb_dim in self.emb_dims])
+
+    ##the batch size is required in case x is None (only positional encoder)
+    def forward(self,BS:int, x: Union[torch.Tensor,None]) -> torch.Tensor:
+
+        #this is the easy part
+        if x is None:
+            if self.use_classical_positional_encoder:
+               return self.pe.repeat(BS,1,1)
+            else:
+                return self.get_cat_n_embd(self.pe_emb.repeat(BS,1,1)).squeeze(2)
+
+
+        else:
+            if self.use_classical_positional_encoder is False:
+                cat_vars = torch.cat(( self.pe_emb.repeat(BS,1,1),x), dim=2)
+            else:
+                cat_vars = x
+        #building the encoders
+        cat_n_embd = self.get_cat_n_embd(cat_vars)
+
+        if self.reduction_mode =='sum':
+            cat_n_embd = torch.sum(cat_n_embd,axis=2)
+        elif  self.reduction_mode =='mean':
+            cat_n_embd = torch.mean(cat_n_embd,axis=2)
+        else:
+            cat_n_embd = cat_n_embd.reshape(BS, self.length,-1)
+
+        if self.use_classical_positional_encoder:
+            if self.reduction_mode =='none':
+                cat_n_embd = torch.cat([cat_n_embd,self.pe.repeat(BS,1,1)], 2) ##stack the positional encoder
+            else:
+                cat_n_embd = cat_n_embd+self.pe.repeat(BS,1,1) ##add the positional encoder
+        return cat_n_embd
+
+
+    ##compute the target
+    def get_cat_n_embd(self, cat_vars):
+        emb = []
+        for index, layer in enumerate(self.cat_n_embd):
+            emb.append(layer(cat_vars[:, :, index]).unsqueeze(2))
+
+        cat_n_embd = torch.cat(emb,dim=2)
+        return cat_n_embd

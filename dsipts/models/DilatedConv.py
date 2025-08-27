@@ -16,6 +16,7 @@ from ..data_structure.utils import beauty_string
 import numpy as np
 torch.autograd.set_detect_anomaly(True)
 from .utils import  get_scope
+from .utils import Embedding_cat_variables
 
 class GLU(nn.Module):
     def __init__(self, d_model: int):
@@ -103,60 +104,31 @@ class DilatedConv(Base):
     description = get_scope(handle_multivariate,handle_future_covariates,handle_categorical_variables,handle_quantile_loss)
     
     def __init__(self, 
-                 past_steps:int,
-                 future_steps:int,
-                 past_channels:int,
-                 future_channels:int,
-                 embs:List[int],
-                 cat_emb_dim:int,
+                 sum_layers: bool,
                  hidden_RNN:int,
                  num_layers_RNN:int,
                  kind:str,
                  kernel_size:int,
-                 sum_emb:bool,
-                 out_channels:int,
-                 activation:str='torch.nn.ReLU',
+                 activation: str,
                  remove_last = False,
-                 persistence_weight:float=0.0,
-                 loss_type: str='l1',
-                 quantiles:List[int]=[],
                  dropout_rate:float=0.1,
                  use_bn:bool=False,
                  use_glu:bool=True,
                  glu_percentage: float=1.0,
-                 n_classes:int=0,
-                 optim:Union[str,None]=None,
-                 optim_config:dict=None,
-                 scheduler_config:dict=None,
+                 
                  **kwargs)->None:
         """ Custom encoder-decoder 
         
         Args:
-            past_steps (int):  number of past datapoints used 
-            future_steps (int): number of future lag to predict
-            past_channels (int): number of numeric past variables, must be >0
-            future_channels (int): number of future numeric variables 
-            embs (List): list of the initial dimension of the categorical variables
-            cat_emb_dim (int): final dimension of each categorical variable
+            
             hidden_RNN (int): hidden size of the RNN block
             num_layers_RNN (int): number of RNN layers
             kind (str): one among GRU or LSTM
             kernel_size (int): kernel size in the encoder convolutional block
-            sum_emb (bool): if true the contribution of each embedding will be summed-up otherwise stacked
-            out_channels (int):  number of output channels
-            activation (str, optional): activation fuction function pytorch. Default torch.nn.ReLU
             remove_last (bool, optional): if True the model learns the difference respect to the last seen point
-            persistence_weight (float):  weight controlling the divergence from persistence model. Default 0
-            loss_type (str, optional): this model uses custom losses or l1 or mse. Custom losses can be linear_penalization or exponential_penalization. Default l1,
-            quantiles (List[int], optional): we can use quantile loss il len(quantiles) = 0 (usually 0.1,0.5, 0.9) or L1loss in case len(quantiles)==0. Defaults to [].
-            dropout_rate (float, optional): dropout rate in Dropout layers
             use_bn (bool, optional): if true BN layers will be added and dropouts will be removed
             use_glu (bool,optional): use GLU for feature selection. Defaults to True.
             glu_percentage (float, optiona): percentage of features to use. Defaults to 1.0.
-            n_classes (int): number of classes (0 in regression)
-            optim (str, optional): if not None it expects a pytorch optim method. Defaults to None that is mapped to Adam.
-            optim_config (dict, optional): configuration for Adam optimizer. Defaults to None.
-            scheduler_config (dict, optional): configuration for stepLR scheduler. Defaults to None.
 
         """
         super().__init__(**kwargs)
@@ -169,90 +141,49 @@ class DilatedConv(Base):
             beauty_string('There is a bug in pytorch lightening, the constructior is called twice ','info',self.verbose)
         
         self.save_hyperparameters(logger=False)
-        self.past_steps = past_steps
-        self.future_steps = future_steps
-        self.persistence_weight = persistence_weight 
-        self.loss_type = loss_type
         self.num_layers_RNN = num_layers_RNN
         self.hidden_RNN = hidden_RNN
-        self.past_channels = past_channels 
-        self.future_channels = future_channels 
-        self.embs = nn.ModuleList()
-        self.sum_emb = sum_emb
         self.kind = kind
         self.use_glu = use_glu
         self.glu_percentage = torch.tensor(glu_percentage).to(self.device)
-        self.out_channels = out_channels
         self.remove_last = remove_last
-        if n_classes==0:
-            self.is_classification = False
-            if len(quantiles)>0:
-                assert len(quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
-                self.use_quantiles = True
-                self.mul = len(quantiles)
-                self.loss = QuantileLossMO(quantiles)
-            else:
-                self.use_quantiles = False
-                self.mul = 1
-                if self.loss_type == 'mse':
-                    self.loss = nn.MSELoss()
-                else:
-                    self.loss = nn.L1Loss()
-        else:
-            self.is_classification = True
-            self.use_quantiles = False
-            self.mul = n_classes
-            self.loss = torch.nn.CrossEntropyLoss()
-            #assert out_channels==1, "Classification require only one channel"
-        
-        emb_channels = 0
-        self.optim = optim
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
-
-        for k in embs:
-            self.embs.append(nn.Embedding(k+1,cat_emb_dim))
-            emb_channels+=cat_emb_dim
-            
-            
-        if sum_emb and (emb_channels>0):
-            emb_channels = cat_emb_dim
-            beauty_string('Using sum','info',self.verbose)
-        else:
-            beauty_string('Using stacked','info',self.verbose)
-    
+                
+        self.emb_past = Embedding_cat_variables(self.past_steps,self.emb_dim,self.embs_past, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        emb_past_out_channel = self.emb_past.output_channels
+        emb_fut_out_channel = self.emb_fut.output_channels
 
         if self.use_glu:
             self.past_glu = nn.ModuleList()
             self.future_glu = nn.ModuleList()
-            for i in range(past_channels):
+            for _ in range(self.past_channels):
                 self.past_glu.append(GLU(1))
             
-            for i in range(future_channels):
+            for _ in range(self.future_channels):
                 self.future_glu.append(GLU(1))
     
         self.initial_linear_encoder =  nn.Sequential(Permute(),
-                                                    nn.Conv1d(past_channels, (past_channels+hidden_RNN//4)//2, kernel_size, stride=1,padding='same'),
+                                                    nn.Conv1d(self.past_channels, (self.past_channels+hidden_RNN//4)//2, kernel_size, stride=1,padding='same'),
                                                     activation(),
-                                                    nn.BatchNorm1d(  (past_channels+hidden_RNN//4)//2) if use_bn else nn.Dropout(dropout_rate) ,
-                                                    nn.Conv1d( (past_channels+hidden_RNN//4)//2, hidden_RNN//4, kernel_size, stride=1,padding='same'),
+                                                    nn.BatchNorm1d(  (self.past_channels+hidden_RNN//4)//2) if use_bn else nn.Dropout(dropout_rate) ,
+                                                    nn.Conv1d( (self.past_channels+hidden_RNN//4)//2, hidden_RNN//4, kernel_size, stride=1,padding='same'),
                                                     Permute())
 
         self.initial_linear_decoder =   nn.Sequential(Permute(),
-                                                    nn.Conv1d(future_channels, (future_channels+hidden_RNN//4)//2, kernel_size, stride=1,padding='same'),
+                                                    nn.Conv1d(self.future_channels, (self.future_channels+hidden_RNN//4)//2, kernel_size, stride=1,padding='same'),
                                                     activation(),
-                                                    nn.BatchNorm1d(  (future_channels+hidden_RNN//4)//2) if use_bn else nn.Dropout(dropout_rate) ,
-                                                    nn.Conv1d( (future_channels+hidden_RNN//4)//2, hidden_RNN//4, kernel_size, stride=1,padding='same'),
+                                                    nn.BatchNorm1d(  (self.future_channels+hidden_RNN//4)//2) if use_bn else nn.Dropout(dropout_rate) ,
+                                                    nn.Conv1d( (self.future_channels+hidden_RNN//4)//2, hidden_RNN//4, kernel_size, stride=1,padding='same'),
                                                     Permute())
-        self.conv_encoder = Block(emb_channels+hidden_RNN//4,kernel_size,hidden_RNN//2,self.past_steps,sum_emb)
+        self.conv_encoder = Block(emb_past_out_channel+hidden_RNN//4,kernel_size,hidden_RNN//2,self.past_steps,sum_layers)
         
         #nn.Sequential(Permute(), nn.Conv1d(emb_channels+hidden_RNN//8, hidden_RNN//8, kernel_size, stride=1,padding='same'),Permute(),nn.Dropout(0.3))
 
-        if future_channels+emb_channels==0:
+        if self.future_channels+emb_fut_out_channel==0:
             ## occhio che vuol dire che non ho passato , per ora ci metto una pezza e uso hidden dell'encoder
-            self.conv_decoder = Block(hidden_RNN,kernel_size,hidden_RNN//2,self.future_steps,sum_emb) 
+            self.conv_decoder = Block(hidden_RNN,kernel_size,hidden_RNN//2,self.future_steps,sum_layers) 
         else:
-            self.conv_decoder = Block(future_channels+emb_channels,kernel_size,hidden_RNN//2,self.future_steps,sum_emb) 
+            self.conv_decoder = Block(self.future_channels+emb_fut_out_channel,kernel_size,hidden_RNN//2,self.future_steps,sum_layers) 
             #nn.Sequential(Permute(),nn.Linear(past_steps,past_steps*2),  nn.PReLU(),nn.Dropout(0.2),nn.Linear(past_steps*2, future_steps),nn.Dropout(0.3),nn.Conv1d(hidden_RNN, hidden_RNN//8, 3, stride=1,padding='same'),   Permute())
         if self.kind=='lstm':
             self.Encoder = nn.LSTM(input_size= self.conv_encoder.out_channels,#, hidden_RNN//4,
@@ -275,8 +206,8 @@ class DilatedConv(Base):
         else:
             beauty_string('Specify kind lstm or gru please','section',True)
         self.final_linear = nn.ModuleList()
-        for _ in range(out_channels*self.mul):
-            self.final_linear.append(nn.Sequential(nn.Linear(hidden_RNN+emb_channels+future_channels,hidden_RNN*2), 
+        for _ in range(self.out_channels*self.mul):
+            self.final_linear.append(nn.Sequential(nn.Linear(hidden_RNN+emb_fut_out_channel+self.future_channels,hidden_RNN*2), 
                                             activation(),
                                             Permute() if use_bn else nn.Identity() ,
                                             nn.BatchNorm1d(hidden_RNN*2) if use_bn else nn.Dropout(dropout_rate) ,
@@ -326,11 +257,19 @@ class DilatedConv(Base):
         Returns:
             torch.tensor: result
         """
+
         x =  batch['x_num_past'].to(self.device)
+        BS = x.shape[0]
         if 'x_cat_future' in batch.keys():
-            cat_future = batch['x_cat_future'].to(self.device)
+            emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
+        else:
+            emb_fut = self.emb_fut(BS,None)
         if 'x_cat_past' in batch.keys():
-            cat_past = batch['x_cat_past'].to(self.device)
+            emb_past = self.emb_past(BS,batch['x_cat_past'].to(self.device))
+        else:
+            emb_past = self.emb_past(BS,None)
+            
+            
         if 'x_num_future' in batch.keys():
             x_future = batch['x_num_future'].to(self.device)
             xf = torch.clone(x_future)
@@ -364,53 +303,20 @@ class DilatedConv(Base):
                     score_future_tot+=score
                 score_future_tot/=len(self.future_glu)
             score = 0.5*(score_past_tot+score_future_tot)
-        tmp = [self.initial_linear_encoder(x)]
+        tmp = [self.initial_linear_encoder(x),emb_past]
         
-        if 'x_cat_past' in batch.keys():
-            tmp_emb = None
-            for i in range(len(self.embs)):
-                if self.sum_emb:
-                    if i>0:
-                        tmp_emb+=self.embs[i](cat_past[:,:,i])
-                    else:
-                        tmp_emb=self.embs[i](cat_past[:,:,i])
-                else:
-                    tmp.append(self.embs[i](cat_past[:,:,i]))
-            if self.sum_emb and (len(self.embs)>0):
-                tmp.append(tmp_emb)
+  
 
         tot = torch.cat(tmp,2)
-
         out, hidden = self.Encoder(self.conv_encoder(tot))      
-        
-        tmp = []
-        for i in range(len(self.embs)):
-            if self.sum_emb:
-                if i>0:
-                    tmp_emb+=self.embs[i](cat_future[:,:,i])
-                else:
-                    tmp_emb=self.embs[i](cat_future[:,:,i])
-            else:
-                tmp.append(self.embs[i](cat_future[:,:,i]))   
-        if self.sum_emb and (len(self.embs)):
-            tmp.append(tmp_emb)
-            
+        tmp = [emb_fut]
         if x_future is not None:
             tmp.append(x_future)
-
-        if len(tmp)>0:
-            tot = torch.cat(tmp,2)
-            out, _ = self.Decoder(self.conv_decoder(tot),hidden)  
-            has_future = True
-        else:
-            out, _ = self.Decoder(self.conv_decoder(out),hidden)  
-            has_future = False
+        tot = torch.cat(tmp,2)
+        out, _ = self.Decoder(self.conv_decoder(tot),hidden)  
         res = []
+        tmp = torch.cat([tot,out],axis=2)
 
-        if has_future:
-            tmp = torch.cat([tot,out],axis=2)
-        else:
-            tmp = out
 
         for j in range(self.out_channels*self.mul):
             res.append(self.final_linear[j](tmp))

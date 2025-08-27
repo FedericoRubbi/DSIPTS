@@ -15,6 +15,7 @@ except:
     from .base import Base
 from typing import Union
 from .d3vae.model import diffusion_generate, denoise_net,pred_net
+from .utils import Embedding_cat_variables
 
 
 from torch.optim.lr_scheduler import StepLR
@@ -44,14 +45,8 @@ def copy_parameters(
 class D3VAE(Base):              
     
     def __init__(self,
-                 past_channels,
-                 past_steps,
-                 future_steps,
-                 future_channels,
-                 embs,
-                 out_channels,
-                 quantiles,
-                 embedding_dimension=32,
+                 
+                 
                  scale=0.1,
                  hidden_size=64,
                  num_layers=2,
@@ -74,17 +69,15 @@ class D3VAE(Base):
                  beta_start=0,
                  
                  freq='h',
-                 optim:Union[str,None]=None,
-                 optim_config=None,
-                 
-                 scheduler_config=None,
+                
                  **kwargs
                  )->None:
         super().__init__(**kwargs)
-        input_dim = past_channels
-        sequence_length = past_steps
-        prediction_length = future_steps
-        target_dim = out_channels
+        input_dim = self.past_channels
+        sequence_length = self.past_steps
+        prediction_length = self.future_steps
+        target_dim = self.out_channels
+        embedding_dimension = self.emb_dim
         ##pytotch lightening stuff
         self.save_hyperparameters(logger=False)
         
@@ -95,22 +88,16 @@ class D3VAE(Base):
                  num_preprocess_blocks,num_preprocess_cells,num_channels_enc,arch_instance,num_latent_per_group,num_channels_dec,groups_per_scale,num_postprocess_blocks,num_postprocess_cells).to(self.device)
         
         self.denoise_net = denoise_net(target_dim,embedding_dimension,prediction_length,sequence_length,scale,hidden_size,num_layers,dropout_rate,diff_steps,loss_type,beta_end,beta_schedule, channel_mult,mult,
-                 num_preprocess_blocks,num_preprocess_cells,num_channels_enc,arch_instance,num_latent_per_group,num_channels_dec,groups_per_scale,num_postprocess_blocks,num_postprocess_cells,beta_start,input_dim,freq,embs).to(self.device)
+                 num_preprocess_blocks,num_preprocess_cells,num_channels_enc,arch_instance,num_latent_per_group,num_channels_dec,groups_per_scale,num_postprocess_blocks,num_postprocess_cells,beta_start,input_dim,freq,self.embs_past).to(self.device)
         self.diff_step = diff_steps
         self.pred_net = pred_net(target_dim,embedding_dimension,prediction_length,sequence_length,scale,hidden_size,num_layers,dropout_rate,diff_steps,loss_type,beta_end,beta_schedule, channel_mult,mult,
-                 num_preprocess_blocks,num_preprocess_cells,num_channels_enc,arch_instance,num_latent_per_group,num_channels_dec,groups_per_scale,num_postprocess_blocks,num_postprocess_cells,beta_start,input_dim,freq,embs).to(self.device)
+                 num_preprocess_blocks,num_preprocess_cells,num_channels_enc,arch_instance,num_latent_per_group,num_channels_dec,groups_per_scale,num_postprocess_blocks,num_postprocess_cells,beta_start,input_dim,freq,self.embs_fut).to(self.device)
         #self.embedding = DataEmbedding(input_dim, embedding_dimension, freq,dropout_rate)
         
         self.psi = 0.5
         self.gamma = 0.01
         self.lambda1 = 1.0
-        self.optim = optim
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
 
-  
-        self.use_quantiles = False
-        self.loss = nn.MSELoss()
         
     def configure_optimizers(self):
         """

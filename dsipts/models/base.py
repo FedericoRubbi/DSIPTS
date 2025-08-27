@@ -11,6 +11,10 @@ from .utils import  get_scope
 import numpy as np
 from aim import Image
 import matplotlib.pyplot as plt
+from typing import List, Union
+from .utils import QuantileLossMO
+import torch.nn as nn
+
 def standardize_momentum(x,order):
     mean = torch.mean(x,1).unsqueeze(1).repeat(1,x.shape[1],1)
     num = torch.pow(x-mean,order).mean(axis=1)
@@ -49,13 +53,33 @@ class Base(pl.LightningModule):
     description = get_scope(handle_multivariate,handle_future_covariates,handle_categorical_variables,handle_quantile_loss)
     #####################################################################
     @abstractmethod
-    def __init__(self,verbose:bool):
+    def __init__(self,verbose:bool,
+                 
+                 past_steps:int,
+                 future_steps:int,
+                 past_channels:int,
+                 future_channels:int,
+                 out_channels:int,
+                 embs_past:List[int],
+                 embs_fut:List[int],
+                 n_classes:int=0,
+
+                 persistence_weight:float=0.0,
+                 loss_type: str='l1',
+                 quantiles:List[int]=[],
+                 reduction_mode:str = 'mean',
+                 use_classical_positional_encoder:bool=False,
+                 emb_dim: int=16,
+
+                 optim:Union[str,None]=None,
+                 optim_config:dict=None,
+                 scheduler_config:dict=None,):
         """
-        This is the basic model, each model implemented must overwrite the init method and the forward method. The inference step is optional, by default it uses the forward method but for recurrent 
+        This is the basic model, each model implemented must overwrite the init method and the forward method.
+        The inference step is optional, by default it uses the forward method but for recurrent 
         network you should implement your own method
         """
-        beauty_string('V1','block',True)
-
+        beauty_string('V2','block',True)
         super(Base, self).__init__()
         self.save_hyperparameters(logger=False)
         self.count_epoch = 0
@@ -63,6 +87,49 @@ class Base(pl.LightningModule):
         self.train_loss_epoch = -100.0
         self.verbose = verbose
         self.name = self.__class__.__name__
+        self.train_epoch_metrics = []
+        self.validation_epoch_metrics = []
+        
+        self.use_quantiles = True if len(quantiles)>0 else False
+        self.quantiles =  quantiles
+        self.optim = optim
+        self.optim_config = optim_config
+        self.scheduler_config = scheduler_config
+        self.loss_type = loss_type
+        self.persistence_weight = persistence_weight 
+        self.use_classical_positional_encoder = use_classical_positional_encoder
+        self.reduction_mode = reduction_mode
+        self.past_steps = past_steps
+        self.future_steps = future_steps
+        self.embs_past = embs_past
+        self.embs_fut = embs_fut
+        self.past_channels = past_channels
+        self.future_channels = future_channels
+        self.emb_dim = emb_dim
+        self.out_channels = out_channels
+        self.n_classes = n_classes
+        if n_classes==0:
+            self.is_classification = False
+            if len(self.quantiles)>0:
+                assert len(self.quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
+                self.use_quantiles = True
+                self.mul = len(self.quantiles)
+                self.loss = QuantileLossMO(quantiles)
+            else:
+                self.use_quantiles = False
+                self.mul = 1
+                if self.loss_type == 'mse':
+                    self.loss = nn.MSELoss()
+                else:
+                    self.loss = nn.L1Loss()
+        else:
+            self.is_classification = True
+            self.use_quantiles = False
+            self.mul = n_classes
+            self.loss = torch.nn.CrossEntropyLoss()
+            assert self.out_channels==1, "Classification require only one channel"
+
+        self.future_steps = future_steps
         
         beauty_string(self.description,'info',True)
     @abstractmethod

@@ -60,12 +60,14 @@ def train(conf: DictConfig) -> None:
     
     model_conf['past_channels'] = len(ts.num_var)
     model_conf['future_channels'] = len(ts.future_variables)
-    model_conf['embs'] = [ts.dataset[c].nunique() for c in ts.cat_var]
+    model_conf['embs_past'] = [ts.dataset[c].nunique() for c in ts.cat_past_var]
+    model_conf['embs_fut'] = [ts.dataset[c].nunique() for c in ts.cat_fut_var]
+
     model_conf['out_channels'] = len(ts.target_variables)
 
     if 'ttm' in conf.model.type:
         exog_feat = [c for c in ts.num_var if c not in ts.target_variables]
-        model_conf['num_input_channels'] = len(ts.num_var) + len(ts.cat_var)
+        model_conf['num_input_channels'] = len(ts.num_var) + len(ts.cat_past_var) ##TODO check this
         model_conf['prediction_channel_indices'] = list(range(len(ts.target_variables))) #[ts.dataset.columns.get_loc(c)-1 for c in ts.target_variables]
         model_conf['exogenous_channel_indices'] =  list(range(len(ts.target_variables),len(ts.target_variables)+len(ts.cat_var))) #[ts.dataset.columns.get_loc(c)-1 for c in ts.cat_var + exog_feat]
 
