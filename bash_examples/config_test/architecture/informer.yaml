@@ -6,11 +6,14 @@ model:
 ts:
   name: 'test'
   version: 1
-  enrich: []
+  enrich: ['minute']
   use_covariates: true
 
 
 model_configs:
+  use_classical_positional_encoder: true #Not used, custom cat embeddings
+  emb_dim: 16  #Not used, custom cat embeddings
+  reduction_mode: mean #Not used, custom cat embeddings
   d_model: 4
   hidden_size: 4
   n_layer_encoder: 2

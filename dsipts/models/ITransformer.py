@@ -22,7 +22,7 @@ from .utils import QuantileLossMO,Permute, get_activation
 from typing import List, Union
 from ..data_structure.utils import beauty_string
 from .utils import  get_scope
-
+from .utils import Embedding_cat_variables
 
 
 
@@ -34,12 +34,7 @@ class ITransformer(Base):
     description = get_scope(handle_multivariate,handle_future_covariates,handle_categorical_variables,handle_quantile_loss)
     
     def __init__(self, 
-                 out_channels: int,
-                 past_steps: int,
-                 future_steps: int, 
-                 past_channels: int,
-                 future_channels: int,
-                 embs: List[int],
+                
 
                  # specific params
                  hidden_size:int,
@@ -53,24 +48,14 @@ class ITransformer(Base):
                  dropout_rate: float=0.1,
                  activation: str='',
                  
-                 persistence_weight:float=0.0,
-                 loss_type: str='l1',
-                 quantiles:List[float]=[],
-                 optim:Union[str,None]=None,
-                 optim_config:Union[dict,None]=None,
-                 scheduler_config:Union[dict,None]=None,
+                
                  **kwargs)->None:
         """ITRANSFORMER: INVERTED TRANSFORMERS ARE EFFECTIVE FOR TIME SERIES FORECASTING
         https://arxiv.org/pdf/2310.06625
 
    
         Args:
-            out_channels (int): number of variables to be predicted
-            past_steps (int): Lookback window length
-            future_steps (int): Horizon window length
-            past_channels (int): number of past variables
-            future_channels (int): number of future auxiliary variables 
-            embs (List[int]): list of embeddings
+          
             hidden_size (int): first embedding size of the model ('r' in the paper)
             d_model (int): second embedding size (r^{tilda} in the model). Should be smaller than hidden_size
             n_head (int): number of heads
@@ -80,12 +65,7 @@ class ITransformer(Base):
             class_strategy (str): strategy (see paper) projection/average/cls_token
             
             activation (str, optional): activation function to be used 'nn.GELU'.
-            persistence_weight (float, optional): Defaults to 0.0.
-            loss_type (str, optional): Defaults to 'l1'.
-            quantiles (List[float], optional): Defaults to []. NOT USED
-            optim (Union[str,None], optional): Defaults to None.
-            optim_config (Union[dict,None], optional): Defaults to None.
-            scheduler_config (Union[dict,None], optional): Defaults to None.
+            
         """
         
         super().__init__(**kwargs)
@@ -96,43 +76,17 @@ class ITransformer(Base):
             activation = get_activation(activation)
         self.save_hyperparameters(logger=False)
 
-        # self.dropout = dropout_rate
-        self.persistence_weight = persistence_weight 
-        self.optim = optim
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
-        self.loss_type = loss_type
-        self.future_steps = future_steps
-                
-        if len(quantiles)==0:
-            self.mul = 1
-            self.use_quantiles = False
-            if self.loss_type == 'mse':
-                self.loss = nn.MSELoss()
-            else:
-                self.loss = nn.L1Loss()
-        else:
-            assert len(quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
-            self.mul = len(quantiles)
-            self.use_quantiles = True
-            self.loss = QuantileLossMO(quantiles)
+        self.emb_past = Embedding_cat_variables(self.past_steps,self.emb_dim,self.embs_past, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        emb_past_out_channel = self.emb_past.output_channels
+        emb_fut_out_channel = self.emb_fut.output_channels
 
 
-        ##my update
-        self.embs = nn.ModuleList()
-
-        for k in embs:
-            self.embs.append(nn.Embedding(k+1,d_model))
-         
-
-
-        self.out_channels = out_channels
-        self.seq_len = past_steps
-        self.pred_len = future_steps
+  
         self.output_attention = False## not need output attention
         self.use_norm = use_norm
         # Embedding
-        self.enc_embedding = DataEmbedding_inverted(self.seq_len, d_model, embed_type='what?', freq='what?', dropout=dropout_rate)  ##embed, freq not used inside
+        self.enc_embedding = DataEmbedding_inverted(self.past_steps, d_model, embed_type='what?', freq='what?', dropout=dropout_rate)  ##embed, freq not used inside
         self.class_strategy = class_strategy
         # Encoder-only architecture
         self.encoder = Encoder(
@@ -149,7 +103,7 @@ class ITransformer(Base):
             ],
             norm_layer=torch.nn.LayerNorm(d_model)
         )
-        self.projector = nn.Linear(d_model, future_steps*self.mul, bias=True)
+        self.projector = nn.Linear(d_model, self.future_steps*self.mul, bias=True)
 
     def forecast(self, x_enc, x_mark_enc, x_dec, x_mark_dec):
         if self.use_norm:
@@ -178,8 +132,8 @@ class ITransformer(Base):
         if self.use_norm:
 
             # De-Normalization from Non-stationary Transformer
-            dec_out = dec_out * (stdev[:, 0, :].unsqueeze(1).repeat(1, self.pred_len*self.mul, 1))
-            dec_out = dec_out + (means[:, 0, :].unsqueeze(1).repeat(1, self.pred_len*self.mul, 1))
+            dec_out = dec_out * (stdev[:, 0, :].unsqueeze(1).repeat(1, self.future_steps*self.mul, 1))
+            dec_out = dec_out + (means[:, 0, :].unsqueeze(1).repeat(1, self.future_steps*self.mul, 1))
 
 
         return dec_out
@@ -188,30 +142,23 @@ class ITransformer(Base):
 
         x_enc = batch['x_num_past'].to(self.device)
         BS = x_enc.shape[0]
-        if 'x_cat_past' in batch.keys():
-            x_mark_enc =  batch['x_cat_past'].to(self.device)
-            tmp = []
-            for i in range(len(self.embs)):
-                tmp.append(self.embs[i](x_mark_enc[:,:,i]))
-            x_mark_enc = torch.cat(tmp,2)
-            
-        else:
-            x_mark_enc = None
-        #if 'x_num_future' in batch.keys():
-        #    x_dec =  batch['x_num_future'].to(self.device)
-        ##not used known variables
         if 'x_cat_future' in batch.keys():
-            x_mark_dec =  batch['x_cat_future'].to(self.device)
+            emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
         else:
-            x_mark_dec = None
+            emb_fut = self.emb_fut(BS,None)
+        if 'x_cat_past' in batch.keys():
+            emb_past = self.emb_past(BS,batch['x_cat_past'].to(self.device))
+        else:
+            emb_past = self.emb_past(BS,None)
+ 
 
 
 
         ##row 124 Transformer/experiments/exp_long_term_forecasting.py ma in realta' NON USATO!
-        x_dec = torch.zeros(x_enc.shape[0],self.pred_len,self.out_channels).float().to(self.device)
+        x_dec = torch.zeros(x_enc.shape[0],self.past_steps,self.out_channels).float().to(self.device)
         x_dec = torch.cat([batch['y'].to(self.device), x_dec], dim=1).float()
 
-        dec_out = self.forecast(x_enc, x_mark_enc, x_dec, x_mark_dec)
+        dec_out = self.forecast(x_enc, emb_past, x_dec, emb_fut)
         idx_target = batch['idx_target'][0]
         return dec_out[:, :,idx_target].reshape(BS,self.future_steps,self.out_channels,self.mul)
         

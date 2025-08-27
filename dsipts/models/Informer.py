@@ -20,8 +20,9 @@ from .informer.decoder import Decoder, DecoderLayer
 from .informer.attn import FullAttention, ProbAttention, AttentionLayer
 from .informer.embed import DataEmbedding
 from ..data_structure.utils import beauty_string
-from .utils import  get_scope,QuantileLossMO
-  
+#from .utils import Embedding_cat_variables not used here, custom cat embedding
+from .utils import  get_scope
+
     
   
 class Informer(Base):
@@ -33,16 +34,10 @@ class Informer(Base):
     
     
     def __init__(self, 
-                 past_steps:int,
-                 future_steps:int,
-                 past_channels:int,
-                 future_channels:int,
                  d_model:int,
-                 embs:List[int],
                  hidden_size:int,
                  n_layer_encoder:int,
                  n_layer_decoder:int,
-                 out_channels:int,
                  mix:bool=True,
                  activation:str='torch.nn.ReLU',
                  remove_last = False,
@@ -50,27 +45,17 @@ class Informer(Base):
                  distil:bool=True,
                  factor:int=5,
                  n_head:int=1,
-                 persistence_weight:float=0.0,
-                 loss_type: str='l1',
-                 quantiles:List[int]=[],
                  dropout_rate:float=0.1,
-                 optim:Union[str,None]=None,
-                 optim_config:dict=None,
-                 scheduler_config:dict=None,
+                
                  **kwargs)->None:
         """Informer
 
         Args:
-            past_steps (int): number of past datapoints used , not used here
-            future_steps (int): number of future lag to predict
-            past_channels (int): number of numeric past variables, must be >0
-            future_channels (int): number of future numeric variables 
-            d_model (int):  dimension of the attention model
-            embs (List): list of the initial dimension of the categorical variables
+            
             hidden_size (int): hidden size of the linear block
             n_layer_encoder (int):  layers to use in the encoder
             n_layer_decoder (int):  layers to use in the decoder
-            out_channels (int):  number of output channels
+            
             mix (bool, optional): se mix attention in generative decoder. Defaults to True.
             activation (str, optional): relu or gelu. Defaults to 'relu'.
             remove_last (boolean,optional): if true the model try to predic the difference respect the last observation.
@@ -78,42 +63,17 @@ class Informer(Base):
             distil (bool, optional): whether to use distilling in encoder, using this argument means not using distilling. Defaults to True.
             factor (int, optional): probsparse attn factor. Defaults to 5.
             n_head (int, optional):  heads equal in the encoder and encoder. Defaults to 1.
-            persistence_weight (float):  weight controlling the divergence from persistence model. Default 0
-            loss_type (str, optional): this model uses custom losses or l1 or mse. Custom losses can be linear_penalization or exponential_penalization. Default l1,
-            quantiles (List[int], optional): NOT USED YET
-            dropout_rate (float, optional):  dropout rate in Dropout layers. Defaults to 0.1.
-            optim (str, optional): if not None it expects a pytorch optim method. Defaults to None that is mapped to Adam.
-            optim_config (dict, optional): configuration for Adam optimizer. Defaults to None.
-            scheduler_config (dict, optional): configuration for stepLR scheduler. Defaults to None.
-        """
+            """
    
         super().__init__(**kwargs)
         self.save_hyperparameters(logger=False)
         beauty_string("BE SURE TO SETUP split_params:  shift:  ${model_configs.future_steps} BECAUSE IT IS REQUIRED",'info',True)
-        self.future_steps = future_steps
-        self.use_quantiles = False
-        self.optim = optim
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
-        self.persistence_weight = persistence_weight 
-        self.loss_type = loss_type
+       
         self.remove_last = remove_last
         
-        if len(quantiles)>0:
-            assert len(quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
-            self.use_quantiles = True
-            self.mul = len(quantiles)
-            self.loss = QuantileLossMO(quantiles)
-        else:
-            self.use_quantiles = False
-            self.mul = 1
-            if self.loss_type == 'mse':
-                self.loss = nn.MSELoss()
-            else:
-                self.loss = nn.L1Loss()
         
-        self.enc_embedding = DataEmbedding(past_channels, d_model, embs, dropout_rate)
-        self.dec_embedding = DataEmbedding(future_channels, d_model, embs, dropout_rate)
+        self.enc_embedding = DataEmbedding(self.past_channels, d_model, self.embs_past, dropout_rate)
+        self.dec_embedding = DataEmbedding(self.future_channels, d_model, self.embs_fut, dropout_rate)
         # Attention
         Attn = ProbAttention if attn=='prob' else FullAttention
         # Encoder
@@ -153,7 +113,7 @@ class Informer(Base):
             norm_layer=torch.nn.LayerNorm(d_model)
         )
 
-        self.projection = nn.Linear(d_model, out_channels*self.mul, bias=True)
+        self.projection = nn.Linear(d_model, self.out_channels*self.mul, bias=True)
         
                 
         
@@ -169,6 +129,7 @@ class Informer(Base):
             x_mark_enc = batch['x_cat_past'].to(self.device)
         else:
             x_mark_enc = None
+
         enc_self_mask = None
         
         x_dec = batch['x_num_future'].to(self.device)

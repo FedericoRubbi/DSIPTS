@@ -109,7 +109,7 @@ class DilatedConv(Base):
                  num_layers_RNN:int,
                  kind:str,
                  kernel_size:int,
-                 activation: str,
+                 activation: str='torch.nn.ReLU',
                  remove_last = False,
                  dropout_rate:float=0.1,
                  use_bn:bool=False,

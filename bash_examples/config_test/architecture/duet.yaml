@@ -3,7 +3,6 @@
 model:
   type: 'duet'
   retrain: true
-  restart: true
 ts:
   name: 'test'
   version: 1
@@ -12,6 +11,9 @@ ts:
 
 
 model_configs:
+  use_classical_positional_encoder: true
+  emb_dim: 16 
+  reduction_mode: mean
   factor: 1
   d_model: 16
   n_head: 1

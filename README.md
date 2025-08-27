@@ -369,19 +369,12 @@ and then open the url (http://127.0.0.1:43800)[http://127.0.0.1:43800]. It will 
 
 [ ] add more sintetic data
 
-[x] add TIDE and iTransformer 
-
-[ ] clean some old function
-
 [ ] check all the code in the README 
 
 [ ] check architecture description (which model can be used under certain assumption) 
 
 [ ] complete the classification part (loss function + inference step)
 
-[x] add mirror to git if possible  
-
-[x] fix dependencies 
 
 [ ] check D3VAE, it seems broken in some configurations
 
@@ -389,13 +382,15 @@ and then open the url (http://127.0.0.1:43800)[http://127.0.0.1:43800]. It will 
 
 [ ] add SOFTS https://github.com/Secilia-Cxy/SOFTS/blob/main/models/SOFTS.py
 
-[x] add SAM optimizer (WIP i think it will be easier to update pytorchlightnening but it need some rework)
-
-[x] add SAMformer
-
 [ ] add https://github.com/Hank0626/PDF/blob/main/models/PDF.py
 
-[ ] add https://github.com/decisionintelligence/pathformer          
+[ ] add https://github.com/decisionintelligence/pathformer
+
+[ ] add categorical support to Crossformer
+
+[ ] update D3vae and Diffusion for being compatible with v.1.1.5
+
+[ ] in 1.1.5 we split the future and past categorical variables. D3VAE, Diffusion 
 ## UPDATES TRACK
 1.1.1 --> added [SAM optimizer](https://arxiv.org/pdf/2402.10198) need to write also the architecture
 ```

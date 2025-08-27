@@ -24,6 +24,7 @@ from .utils import QuantileLossMO,Permute, get_activation
 from typing import List, Union
 from ..data_structure.utils import beauty_string
 from .utils import  get_scope
+from .utils import Embedding_cat_variables
 
 
 
@@ -36,12 +37,7 @@ class Duet(Base):
     description = get_scope(handle_multivariate,handle_future_covariates,handle_categorical_variables,handle_quantile_loss)
     
     def __init__(self, 
-                 out_channels: int,
-                 past_steps: int,
-                 future_steps: int, 
-                 past_channels: int,
-                 future_channels: int,
-                 embs: List[int],
+                 
 
                  # specific params
                  factor:int,
@@ -55,16 +51,8 @@ class Duet(Base):
                  kernel_size:int,
                  hidden_size:int,
                  k: int,
-                 
                  dropout_rate: float=0.1,
                  activation: str='',
-                 
-                 persistence_weight:float=0.0,
-                 loss_type: str='l1',
-                 quantiles:List[float]=[],
-                 optim:Union[str,None]=None,
-                 optim_config:Union[dict,None]=None,
-                 scheduler_config:Union[dict,None]=None,
                  **kwargs)->None:
         """
 
@@ -81,48 +69,27 @@ class Duet(Base):
             activation = get_activation(activation)
         self.save_hyperparameters(logger=False)
 
-        # self.dropout = dropout_rate
-        self.persistence_weight = persistence_weight 
-        self.optim = optim
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
-        self.loss_type = loss_type
-        self.future_steps = future_steps
-                
-        if len(quantiles)==0:
-            self.mul = 1
-            self.use_quantiles = False
-            if self.loss_type == 'mse':
-                self.loss = nn.MSELoss()
-            else:
-                self.loss = nn.L1Loss()
-        else:
-            assert len(quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
-            self.mul = len(quantiles)
-            self.use_quantiles = True
-            self.loss = QuantileLossMO(quantiles)
+
+        self.emb_past = Embedding_cat_variables(self.past_steps,self.emb_dim,self.embs_past, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        #self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        emb_past_out_channel = self.emb_past.output_channels
+        #emb_fut_out_channel = self.emb_fut.output_channels
 
 
-        ##my update
-        CAT = 0
-        self.embs = nn.ModuleList()
-
-        for j in embs:
-            self.embs.append(nn.Embedding(j+1,d_model))
-            CAT = 1 #TODO fix this
+       
 
 
         self.cluster = Linear_extractor_cluster(noisy_gating,
                                                 num_experts,
-                                                past_steps,
+                                                self.past_steps,
                                                 k,
                                                 d_model,
-                                                past_channels+CAT,
+                                                self.past_channels+emb_past_out_channel,
                                                 CI,kernel_size,
                                                 hidden_size)
         self.CI = CI
-        self.n_vars = out_channels
-        self.mask_generator = Mahalanobis_mask(future_steps)
+        self.n_vars = self.out_channels
+        self.mask_generator = Mahalanobis_mask(self.future_steps)
         self.Channel_transformer = Encoder(
             [
                 EncoderLayer(
@@ -146,7 +113,7 @@ class Duet(Base):
             norm_layer=torch.nn.LayerNorm(d_model)
         )
 
-        self.linear_head = nn.Sequential(nn.Linear(d_model, future_steps), nn.Dropout(dropout_rate))
+        self.linear_head = nn.Sequential(nn.Linear(d_model, self.future_steps), nn.Dropout(dropout_rate))
 
 
 
@@ -156,14 +123,17 @@ class Duet(Base):
         x_enc = batch['x_num_past'].to(self.device)
         idx_target = batch['idx_target'][0]
         BS = x_enc.shape[0]
+        #if 'x_cat_future' in batch.keys():
+        #    emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
+        #else:
+        #    emb_fut = self.emb_fut(BS,None)
         if 'x_cat_past' in batch.keys():
-            x_mark_enc =  batch['x_cat_past'].to(self.device)
-            tmp = []
-            for i in range(len(self.embs)):
-                tmp.append(self.embs[i](x_mark_enc[:,:,i]))
-            x_mark_enc = torch.cat(tmp,2)
+            emb_past = self.emb_past(BS,batch['x_cat_past'].to(self.device))
+        else:
+            emb_past = self.emb_past(BS,None)
+   
       
-        x_enc = torch.concat([x_enc,x_mark_enc.sum(axis=2).unsqueeze(-1)],axis=-1)
+        x_enc = torch.concat([x_enc,emb_past],axis=-1)
         
         if self.CI:
             channel_independent_input = rearrange(x_enc, 'b l n -> (b n) l 1')

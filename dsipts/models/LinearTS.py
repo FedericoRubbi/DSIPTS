@@ -18,7 +18,7 @@ from .utils import QuantileLossMO, get_activation
 from typing import List, Union
 from ..data_structure.utils import beauty_string
 from .utils import  get_scope
-  
+from .utils import Embedding_cat_variables
     
 
 
@@ -64,54 +64,27 @@ class LinearTS(Base):
     description+='\n THE SIMPLE IMPLEMENTATION DOES NOT USE CATEGORICAL NOR FUTURE VARIABLES'
     
     def __init__(self, 
-                 past_steps:int,
-                 future_steps:int,
-                 past_channels:int,
-                 future_channels:int,
-                 embs:List[int],
-                 cat_emb_dim:int,
+               
                  kernel_size:int,
-                 sum_emb:bool,
-                 out_channels:int,
                  hidden_size:int,
                  dropout_rate:float=0.1,
                  activation:str='torch.nn.ReLU',
                  kind:str='linear',
                  use_bn:bool=False,
-                 persistence_weight:float=0.0,
-                 loss_type: str='l1',
-                 quantiles:List[int]=[],
-                 n_classes:int=0,
-                 optim:Union[str,None]=None,
-                 optim_config:dict=None,
-                 scheduler_config:dict=None,
+                
                  simple:bool=False,
                  **kwargs)->None:
         """Linear model from https://github.com/cure-lab/LTSF-Linear/blob/main/run_longExp.py
 
         Args:
-            past_steps (int): number of past datapoints used 
-            future_steps (int): number of future lag to predict
-            past_channels (int):  number of numeric past variables, must be >0
-            future_channels (int): number of future numeric variables 
-            embs (List[int]): list of the initial dimension of the categorical variables
-            cat_emb_dim (int): final dimension of each categorical variable
+            
             kernel_size (int): kernel dimension for initial moving average
-            sum_emb (bool): if true the contribution of each embedding will be summed-up otherwise stacked
-            out_channels (int): number of output channels
             hidden_size (int): hidden size of the lienar block
             dropout_rate (float, optional): dropout rate in Dropout layers. Default 0.1
             activation (str, optional): activation fuction function pytorch. Default torch.nn.ReLU
             kind (str, optional): one among linear, dlinear (de-trending), nlinear (differential). Defaults to 'linear'.
             use_bn (bool, optional): if true BN layers will be added and dropouts will be removed. Default False
-            quantiles (List[int], optional):  we can use quantile loss il len(quantiles) = 0 (usually 0.1,0.5, 0.9) or L1loss in case len(quantiles)==0. Defaults to [].
-            persistence_weight (float):  weight controlling the divergence from persistence model. Default 0
-            loss_type (str, optional): this model uses custom losses or l1 or mse. Custom losses can be linear_penalization or exponential_penalization. Default l1,
-            n_classes (int): number of classes (0 in regression)
-            optim (str, optional): if not None it expects a pytorch optim method. Defaults to None that is mapped to Adam.
-            optim_config (dict, optional): configuration for Adam optimizer. Defaults to None.
-            scheduler_config (dict, optional): configuration for stepLR scheduler. Defaults to None.
-            simple (bool, optional): if simple, the model used is the same that the one illustrated in the paper, otherwise it is a more complicated one with the same idea
+                        simple (bool, optional): if simple, the model used is the same that the one illustrated in the paper, otherwise it is a more complicated one with the same idea
         """
         super().__init__(**kwargs)
 
@@ -125,53 +98,19 @@ class LinearTS(Base):
             beauty_string('There is a bug in pytorch lightening, the constructior is called twice','info',self.verbose)
         
         self.save_hyperparameters(logger=False)
-        self.past_steps = past_steps
-        self.future_steps = future_steps
+      
         self.kind = kind
-        self.past_channels = past_channels 
-        self.future_channels = future_channels 
-        self.embs = nn.ModuleList()
-        self.sum_emb = sum_emb
-        self.persistence_weight = persistence_weight 
-        self.loss_type = loss_type
+       
+
         self.simple = simple
-        if n_classes==0:
-            self.is_classification = False
-            if len(quantiles)>0:
-                self.use_quantiles = True
-                self.mul = len(quantiles)
-                self.loss = QuantileLossMO(quantiles)
-            else:
-                self.use_quantiles = False
-                self.mul = 1
-                if self.loss_type == 'mse':
-                    self.loss = nn.MSELoss()
-                else:
-                    self.loss = nn.L1Loss()
-        else:
-            self.is_classification = True
-            self.use_quantiles = False
-            self.mul = n_classes
-            self.loss = torch.nn.CrossEntropyLoss()
-            #assert out_channels==1, "Classification require only one channel"
-        
-        emb_channels = 0
-        self.optim = optim
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
+       
+        self.emb_past = Embedding_cat_variables(self.past_steps,self.emb_dim,self.embs_past, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        emb_past_out_channel = self.emb_past.output_channels
+        emb_fut_out_channel = self.emb_fut.output_channels
 
 
-        for k in embs:
-            self.embs.append(nn.Embedding(k+1,cat_emb_dim))
-            emb_channels+=cat_emb_dim
-            
-            
-        if sum_emb and (emb_channels>0):
-            emb_channels = cat_emb_dim
-            beauty_string('Using sum','info',self.verbose)
-        else:
-            beauty_string('Using stacked',"info",self.verbose)
-    
+
         ## ne faccio uno per ogni canale
         self.linear =  nn.ModuleList()
 
@@ -179,16 +118,16 @@ class LinearTS(Base):
         if kind=='dlinear':
             self.decompsition = series_decomp(kernel_size)    
             self.Linear_Trend = nn.ModuleList()
-            for _ in range(out_channels):
-                self.Linear_Trend.append(nn.Linear(past_steps,future_steps))
+            for _ in range(self.out_channels):
+                self.Linear_Trend.append(nn.Linear(self.past_steps,self.future_steps))
             
         
-        for _ in range(out_channels):
+        for _ in range(self.out_channels):
             if simple:
-                self.linear.append(nn.Linear(past_steps,self.future_steps*self.mul))
+                self.linear.append(nn.Linear(self.past_steps,self.future_steps*self.mul))
                                                
             else:
-                self.linear.append(nn.Sequential(nn.Linear(emb_channels*(past_steps+future_steps)+past_steps*past_channels+future_channels*future_steps,hidden_size),
+                self.linear.append(nn.Sequential(nn.Linear(emb_past_out_channel*self.past_steps+emb_fut_out_channel*self.future_steps+self.past_steps*self.past_channels+self.future_channels*self.future_steps,hidden_size),
                                                     activation(),
                                                     nn.BatchNorm1d(hidden_size) if use_bn else nn.Dropout(dropout_rate) ,    
                                                     nn.Linear(hidden_size,hidden_size//2), 
@@ -206,14 +145,24 @@ class LinearTS(Base):
       
         x =  batch['x_num_past'].to(self.device)
         idx_target = batch['idx_target'][0]
+        
+        BS = x.shape[0]
+        if 'x_cat_future' in batch.keys():
+            emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
+        else:
+            emb_fut = self.emb_fut(BS,None)
+        if 'x_cat_past' in batch.keys():
+            emb_past = self.emb_past(BS,batch['x_cat_past'].to(self.device))
+        else:
+            emb_past = self.emb_past(BS,None)
+        
         if self.kind=='nlinear':
             
             x_start = x[:,-1,idx_target].unsqueeze(1)
-            ##BxC
             x[:,:,idx_target]-=x_start
         
         if self.kind=='alinear':
-            x[:,:,idx_target]=0
+            x[:,:,idx_target] = 0
         
         if self.kind=='dlinear':
             x_start = x[:,:,idx_target]
@@ -228,62 +177,31 @@ class LinearTS(Base):
             trend = torch.stack(tmp,2)
             
         if self.simple is False:
-            if 'x_cat_future' in batch.keys():
-                cat_future = batch['x_cat_future'].to(self.device)
-            if 'x_cat_past' in batch.keys():
-                cat_past = batch['x_cat_past'].to(self.device)
             if 'x_num_future' in batch.keys():
                 x_future = batch['x_num_future'].to(self.device)
             else:
                 x_future = None
                 
-            tmp = [x]
-    
-            tmp_emb = None
-            for i in range(len(self.embs)):
-                if self.sum_emb:
-                    if i>0:
-                        tmp_emb+=self.embs[i](cat_past[:,:,i])
-                    else:
-                        tmp_emb=self.embs[i](cat_past[:,:,i])
-                else:
-                    tmp.append(self.embs[i](cat_past[:,:,i]))
-            if self.sum_emb and (len(self.embs)>0):
-                tmp.append(tmp_emb)
-            ##BxLxC
+            tmp = [x,emb_past]
             tot_past = torch.cat(tmp,2).flatten(1)
         
 
 
-            tmp = []
-            for i in range(len(self.embs)):
-                if self.sum_emb:
-                    if i>0:
-                        tmp_emb+=self.embs[i](cat_future[:,:,i])
-                    else:
-                        tmp_emb=self.embs[i](cat_future[:,:,i])
-                else:
-                    tmp.append(self.embs[i](cat_future[:,:,i]))   
-            if self.sum_emb and (len(self.embs)):
-                tmp.append(tmp_emb)
-                
+            tmp = [emb_fut]
+                          
             if x_future is not None:
                 tmp.append(x_future)
-            if len(tmp)>0:           
-
-                tot_future = torch.cat(tmp,2).flatten(1)
-                tot = torch.cat([tot_past,tot_future],1)
+           
+            tot_future = torch.cat(tmp,2).flatten(1)
+            tot = torch.cat([tot_past,tot_future],1)
                 
-            else:
-                tot = tot_past
             tot = tot.unsqueeze(2).repeat(1,1,len(self.linear)).permute(0,2,1)
         else:
-            tot = seasonal_init
+            tot = x.permute(0,2,1)
         res = []
-        B = tot.shape[0]
- 
+
         for j in range(len(self.linear)):
-            res.append(self.linear[j](tot[:,j,:]).reshape(B,-1,self.mul))
+            res.append(self.linear[j](tot[:,j,:]).reshape(BS,-1,self.mul))
         ## BxLxCxMUL
         res = torch.stack(res,2)
 

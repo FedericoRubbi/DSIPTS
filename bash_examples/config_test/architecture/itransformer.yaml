@@ -11,6 +11,9 @@ ts:
 
 
 model_configs:
+  use_classical_positional_encoder: true #Not used, custom cat embeddings
+  emb_dim: 16  #Not used, custom cat embeddings
+  reduction_mode: mean #Not used, custom cat embeddings
   d_model: 4
   n_head: 4
   hidden_size: 64

@@ -313,7 +313,6 @@ class TimeSeries():
                 beauty_string(f'I will add {group} to the categorical past/future variables','info',self.verbose)
                 self.cat_fut_var.append(group)   
                 
-        self.cat_var = list(set(cat_past_var+cat_fut_var)) ## all categorical data
         self.enrich_cat = enrich_cat
         for c in enrich_cat:
             self.cat_past_var = list(set(self.cat_past_var+[c]))
@@ -322,6 +321,8 @@ class TimeSeries():
                 beauty_string('Categorical {c} already present, it will be added to categorical variable but not call the enriching function','info',self.verbose) 
             else:
                 self.enrich(dataset,c)
+        self.cat_var = list(set(self.cat_past_var+self.cat_fut_var)) ## all categorical data
+
         self.dataset = dataset
         self.past_variables = past_variables
         self.future_variables = future_variables
@@ -641,7 +642,7 @@ class TimeSeries():
                         if c!=self.group:                               
                             self.scaler_cat[f'{c}_{group}'] =  LabelEncoder()
                             self.scaler_cat[f'{c}_{group}'].fit(tmp[c].values.ravel())  
-        
+
         dl_train = self.create_data_loader(train,past_steps,future_steps,shift,keep_entire_seq_while_shifting,starting_point,skip_step)
         dl_validation = self.create_data_loader(validation,past_steps,future_steps,shift,keep_entire_seq_while_shifting,starting_point,skip_step)
         if test.shape[0]>0:
