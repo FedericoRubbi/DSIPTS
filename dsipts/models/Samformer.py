@@ -149,7 +149,8 @@ class Samformer(Base):
         out = self.linear_forecaster(out) # (n, D, H)
         # RevIN Denormalization
         if self.use_revin:
-            out = self.revin(out, mode='denorm') # (n, D, H)
+            out = self.revin(out.transpose(1, 2), mode='denorm').transpose(1, 2) # (n, D, H)
+
         out = out[:,idx_target,:]
 
         return out.reshape(BS,self.future_steps,self.out_channels,self.mul)
