@@ -386,9 +386,7 @@ and then open the url (http://127.0.0.1:43800)[http://127.0.0.1:43800]. It will 
 
 [ ] add https://github.com/decisionintelligence/pathformer
 
-[ ] add categorical support to Crossformer
-
-[ ] update D3vae and Diffusion for being compatible with v.1.1.5
+[ ] add categorical support to Crossformer, Samformer 
 
 [ ] in 1.1.5 we split the future and past categorical variables. D3VAE, Diffusion 
 ## UPDATES TRACK

@@ -2,20 +2,22 @@
   
 model:
   type: 'rnn'
-  
+  retrain: true
+
 ts:
-  name: 'weather_lstm'
+  name: 'test_lstm'
   version: 1
   enrich: ['hour']
   use_covariates: false
   
 model_configs:
-  cat_emb_dim: 16
+  use_classical_positional_encoder: true 
+  emb_dim: 16 
+  reduction_mode: mean 
   hidden_RNN: 12
   num_layers_RNN: 3
   kernel_size: 5
   kind: 'lstm'
-  sum_emb: true
   optim: torch.optim.SGD
   activation: torch.nn.SELU
   

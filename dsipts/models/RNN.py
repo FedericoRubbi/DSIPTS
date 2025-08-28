@@ -15,6 +15,8 @@ from typing import List,Union
 from ..data_structure.utils import beauty_string
 from .utils import  get_scope
 from .xlstm.xLSTM import xLSTM
+from .utils import Embedding_cat_variables
+
 
 class MyBN(nn.Module):
     def __init__(self,channels):
@@ -32,18 +34,11 @@ class RNN(Base):
     
     
     def __init__(self, 
-                 past_steps:int,
-                 future_steps:int,
-                 past_channels:int,
-                 future_channels:int,
-                 embs:List[int],
-                 cat_emb_dim:int,
+                
                  hidden_RNN:int,
                  num_layers_RNN:int,
                  kind:str,
                  kernel_size:int,
-                 sum_emb:bool,
-                 out_channels:int,
                  activation:str='torch.nn.ReLU',
                  remove_last = False,
                  dropout_rate:float=0.1,
@@ -51,13 +46,7 @@ class RNN(Base):
                  num_blocks:int=4, 
                  bidirectional:bool=True,
                  lstm_type:str='slstm',
-                 persistence_weight:float=0.0,
-                 loss_type: str='l1',
-                 quantiles:List[int]=[],
-                 n_classes:int=0,
-                 optim:Union[str,None]=None,
-                 optim_config:dict=None,
-                 scheduler_config:dict=None,
+                
                  **kwargs)->None:
         """ Recurrent model with an encoder decoder structure
 
@@ -100,56 +89,24 @@ class RNN(Base):
             beauty_string('There is a bug in pytorch lightening, the constructior is called twice ','info',self.verbose)
         
         self.save_hyperparameters(logger=False)
-        self.past_steps = past_steps
-        self.future_steps = future_steps
-        self.persistence_weight = persistence_weight 
-        self.loss_type = loss_type
+
         self.num_layers_RNN = num_layers_RNN
         self.hidden_RNN = hidden_RNN
-        self.past_channels = past_channels 
-        self.future_channels = future_channels 
-        self.embs = nn.ModuleList()
-        self.sum_emb = sum_emb
+
         self.kind = kind
         self.remove_last = remove_last
-        if n_classes==0:
-            self.is_classification = False
-            if len(quantiles)>0:
-                assert len(quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
-                self.use_quantiles = True
-                self.mul = len(quantiles)
-                self.loss = QuantileLossMO(quantiles)
-            else:
-                self.use_quantiles = False
-                self.mul = 1
-                if self.loss_type == 'mse':
-                    self.loss = nn.MSELoss()
-                else:
-                    self.loss = nn.L1Loss()
-        else:
-            self.is_classification = True
-            self.use_quantiles = False
-            self.mul = n_classes
-            self.loss = torch.nn.CrossEntropyLoss()
-            #assert out_channels==1, "Classification require only one channel"
         
-        emb_channels = 0
-        self.optim = optim
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
+        
+        self.emb_past = Embedding_cat_variables(self.past_steps,self.emb_dim,self.embs_past, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        emb_past_out_channel = self.emb_past.output_channels
+        emb_fut_out_channel = self.emb_fut.output_channels
 
-        for k in embs:
-            self.embs.append(nn.Embedding(k+1,cat_emb_dim))
-            emb_channels+=cat_emb_dim
-            
-            
-        if sum_emb and (emb_channels>0):
-            emb_channels = cat_emb_dim
-            beauty_string('Using sum','info',self.verbose)
-        else:
-            beauty_string('Using stacked','info',self.verbose)
+        
 
-        self.initial_linear_encoder =  nn.Sequential(nn.Linear(past_channels,4),
+
+     
+        self.initial_linear_encoder =  nn.Sequential(nn.Linear(self.past_channels,4),
                                                      activation(),
                                                      
                                                     MyBN(4) if use_bn else nn.Dropout(dropout_rate) ,
@@ -157,7 +114,7 @@ class RNN(Base):
                                                      activation(),
                                                     MyBN(8) if use_bn else nn.Dropout(dropout_rate) ,
                                                      nn.Linear(8,hidden_RNN//8))
-        self.initial_linear_decoder =  nn.Sequential(nn.Linear(future_channels,4),
+        self.initial_linear_decoder =  nn.Sequential(nn.Linear(self.future_channels,4),
                                                      activation(),
                                                      MyBN(4) if use_bn else nn.Dropout(dropout_rate) ,
                                                      nn.Linear(4,8),
@@ -166,13 +123,13 @@ class RNN(Base):
                                                      nn.Linear(8,hidden_RNN//8))
         
         
-        self.conv_encoder = nn.Sequential(Permute(), nn.Conv1d(emb_channels+hidden_RNN//8, hidden_RNN//8, kernel_size, stride=1,padding='same'),Permute(),nn.Dropout(0.3))
+        self.conv_encoder = nn.Sequential(Permute(), nn.Conv1d(emb_past_out_channel+hidden_RNN//8, hidden_RNN//8, kernel_size, stride=1,padding='same'),Permute(),nn.Dropout(0.3))
         
-        if future_channels+emb_channels==0:
+        if self.future_channels+emb_fut_out_channel==0:
             ## occhio che vuol dire che non ho futuro , per ora ci metto una pezza e uso hidden dell'encoder
             self.conv_decoder =  nn.Sequential(Permute(),nn.Conv1d(hidden_RNN, hidden_RNN//8, kernel_size=kernel_size, stride=1,padding='same'),   Permute())
         else:
-            self.conv_decoder =  nn.Sequential(Permute(),nn.Conv1d(future_channels+emb_channels, hidden_RNN//8, kernel_size=kernel_size, stride=1,padding='same'),   Permute())
+            self.conv_decoder =  nn.Sequential(Permute(),nn.Conv1d(self.future_channels+emb_fut_out_channel, hidden_RNN//8, kernel_size=kernel_size, stride=1,padding='same'),   Permute())
             
             
         if self.kind=='lstm':
@@ -188,7 +145,7 @@ class RNN(Base):
         else:
             beauty_string('Speciky kind= lstm or gru please','section',True)
         self.final_linear = nn.ModuleList()
-        for _ in range(out_channels*self.mul):
+        for _ in range(self.out_channels*self.mul):
             self.final_linear.append(nn.Sequential(nn.Linear(hidden_RNN,hidden_RNN//2), 
                                             activation(),
                                             MyBN(hidden_RNN//2) if use_bn else nn.Dropout(dropout_rate) ,
@@ -203,20 +160,19 @@ class RNN(Base):
   
 
     def forward(self, batch):
-        """It is mandatory to implement this method
-
-        Args:
-            batch (dict): batch of the dataloader
-
-        Returns:
-            torch.tensor: result
-        """
+  
         x =  batch['x_num_past'].to(self.device)
 
+        BS = x.shape[0]
         if 'x_cat_future' in batch.keys():
-            cat_future = batch['x_cat_future'].to(self.device)
+            emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
+        else:
+            emb_fut = self.emb_fut(BS,None)
         if 'x_cat_past' in batch.keys():
-            cat_past = batch['x_cat_past'].to(self.device)
+            emb_past = self.emb_past(BS,batch['x_cat_past'].to(self.device))
+        else:
+            emb_past = self.emb_past(BS,None)
+
         if 'x_num_future' in batch.keys():
             x_future = batch['x_num_future'].to(self.device)
         else:
@@ -229,35 +185,15 @@ class RNN(Base):
             ##BxC
             x[:,:,idx_target]-=x_start        
         
-        tmp = [self.initial_linear_encoder(x)]
+        tmp = [self.initial_linear_encoder(x),emb_past]
         
-        tmp_emb = None
-        for i in range(len(self.embs)):
-            if self.sum_emb:
-                if i>0:
-                    tmp_emb+=self.embs[i](cat_past[:,:,i])
-                else:
-                    tmp_emb=self.embs[i](cat_past[:,:,i])
-            else:
-                tmp.append(self.embs[i](cat_past[:,:,i]))
-        if self.sum_emb and (len(self.embs)>0):
-            tmp.append(tmp_emb)
+        
         tot = torch.cat(tmp,2)
 
         out, hidden = self.Encoder(self.conv_encoder(tot))      
 
-        tmp = []
-        for i in range(len(self.embs)):
-            if self.sum_emb:
-                if i>0:
-                    tmp_emb+=self.embs[i](cat_future[:,:,i])
-                else:
-                    tmp_emb=self.embs[i](cat_future[:,:,i])
-            else:
-                tmp.append(self.embs[i](cat_future[:,:,i]))   
-        if self.sum_emb and (len(self.embs)):
-            tmp.append(tmp_emb)
-            
+        tmp = [emb_fut]
+                   
         if x_future is not None:
             tmp.append(x_future)
             

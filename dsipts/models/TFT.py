@@ -14,6 +14,7 @@ from .utils import QuantileLossMO
 from typing import List, Union
 from ..data_structure.utils import beauty_string
 from .utils import  get_scope
+from .utils import Embedding_cat_variables
 
 class TFT(Base):
     handle_multivariate = True
@@ -24,22 +25,11 @@ class TFT(Base):
     
     def __init__(self, 
                  d_model: int,
-                 out_channels:int,
-                 past_steps:int,
-                 future_steps: int, 
-                 past_channels:int,
-                 future_channels:int,
                  num_layers_RNN: int,
-                 embs: list[int],
                  d_head: int,
                  n_head: int,
                  dropout_rate: float,
-                 persistence_weight:float=0.0,
-                 loss_type: str='l1',
-                 quantiles:List[float]=[],
-                 optim:Union[str,None]=None,
-                 optim_config:dict=None,
-                 scheduler_config:dict=None,
+                
                  **kwargs)->None:
         """TEMPORAL FUSION TRANSFORMER - Multi-Horizon TimeSeries Forecasting
 
@@ -58,49 +48,45 @@ class TFT(Base):
 
         Args:
             d_model (int): general hidden dimension across the Net. Could be changed in subNets 
-            out_channels (int): number of variables to predict
-            past_steps (int): steps of the look-back window
-            future_steps (int): steps in the future to be predicted
-            past_channels (int): total number of variables available in the past
-            future_channels (int): total number of variables available in the future
             num_layers_RNN (int): number of layers for recurrent NN (here LSTM)
-            embs (list[int]): embedding dimensions for added categorical variables (here for pos_seq, is_fut, pos_fut)
             d_head (int): attention head dimension
             n_head (int): number of attention heads
             dropout_rate (float): dropout. Common rate for all dropout layers used.
-            persistence_weight (float, optional): ASK TO GOBBI. Defaults to 0.0.
-            loss_type (str, optional): Type of loss for prediction. Defaults to 'l1'.
-            quantiles (List[float], optional):  list of quantiles to predict. If empty, only the exact value. Only empty list or lisst of len 3 allowed. Defaults to [].
-            optim (Union[str,None], optional):  ASK TO GOBBI. Defaults to None.
-            optim_config (dict, optional):  ASK TO GOBBI. Defaults to None.
-            scheduler_config (dict, optional):  ASK TO GOBBI. Defaults to None.
-        """
+         """
 
 
         super().__init__(**kwargs)
         self.save_hyperparameters(logger=False)
         # assert out_channels==1, logging.info("ONLY ONE CHANNEL IMPLEMENTED")
-        self.future_steps = future_steps
         self.d_model = d_model
-        self.out_channels = out_channels
         # linear to embed the target vartiable
-        self.target_linear = nn.Linear(out_channels, d_model) # same for past and fut! (same variable)
+        self.target_linear = nn.Linear(self.out_channels, d_model) # same for past and fut! (same variable)
         # number of variables in the past different from the target one(s)
-        self.aux_past_channels = past_channels - out_channels # -1 because one channel is occupied by the target variable
+        self.aux_past_channels = self.past_channels - self.out_channels # -1 because one channel is occupied by the target variable
         # one linear for each auxiliar past var
         self.linear_aux_past = nn.ModuleList([nn.Linear(1, d_model) for _ in range(self.aux_past_channels)])
         # number of variables in the future used to predict the target one(s)
-        self.aux_fut_channels = future_channels
+        self.aux_fut_channels = self.future_channels
         # one linear for each auxiliar future var
         self.linear_aux_fut = nn.ModuleList([nn.Linear(1, d_model) for _ in range(self.aux_fut_channels)])
         # length of the full sequence, parameter used for the embedding of all categorical variables
         # - we assume that these are no available or available both for past and future
-        seq_len = past_steps+future_steps
-        self.emb_cat_var = sub_nn.embedding_cat_variables(seq_len, future_steps, d_model, embs, self.device)
+        seq_len = self.past_steps+self.future_steps
+        
+        
+        ##in v.1.1.5 this is not working, past and future are different for categorical
+        #self.emb_cat_var = sub_nn.embedding_cat_variables(seq_len, self.future_steps, d_model, embs, self.device)
+        
+        self.emb_past = Embedding_cat_variables(self.past_steps,self.emb_dim,self.embs_past, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        emb_past_out_channel = self.emb_past.output_channels
+        emb_fut_out_channel = self.emb_fut.output_channels
+        
+        
         # Recurrent Neural Network for first aproximated inference of the target variable(s) - IT IS NON RE-EMBEDDED YET
-        self.rnn = sub_nn.LSTM_Model(num_var=out_channels, 
+        self.rnn = sub_nn.LSTM_Model(num_var=self.out_channels, 
                                      d_model = d_model, 
-                                     pred_step = future_steps, 
+                                     pred_step = self.future_steps, 
                                      num_layers = num_layers_RNN, 
                                      dropout = dropout_rate)
         # PARTS OF TFT:
@@ -116,29 +102,7 @@ class TFT(Base):
         self.grn2_att = sub_nn.GRN(d_model, dropout_rate)
         self.res_conn3_out = sub_nn.ResidualConnection(d_model, dropout_rate)
 
-        self.persistence_weight = persistence_weight 
-        self.loss_type = loss_type
-
-        # output, handling quantiles or not
-        assert (len(quantiles) ==0) or (len(quantiles)==3), beauty_string('Only 3 quantiles are availables, otherwise set quantiles=[]','block',True)
-        if len(quantiles)==0:
-            self.mul = 1
-            self.use_quantiles = False
-            self.outLinear = nn.Linear(d_model, out_channels)
-            if self.loss_type == 'mse':
-                self.loss = nn.MSELoss()
-            else:
-                self.loss = nn.L1Loss()
-        else:
-            assert len(quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
-            
-            self.mul = len(quantiles)
-            self.use_quantiles = True
-            self.outLinear = nn.Linear(d_model, out_channels*len(quantiles))
-            self.loss = QuantileLossMO(quantiles)
-        self.optim = optim
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
+        self.outLinear = nn.Linear(d_model, self.out_channels*self.mul)
 
     def forward(self, batch:dict) -> torch.Tensor:
         """Temporal Fusion Transformer
@@ -207,8 +171,8 @@ class TFT(Base):
                 aux_emb_num_fut = torch.cat((aux_emb_num_fut, aux_emb_fut), dim=2)
             ## update summary about future
             summary_fut = torch.cat((summary_fut, aux_emb_num_fut), dim=2)
- 
-        ### CATEGORICAL VARIABLES 
+        '''
+        ### CATEGORICAL VARIABLES changed in 1.1.5
         if 'x_cat_past' in batch.keys() and 'x_cat_future' in batch.keys(): # if we have both
             # HERE WE ASSUME SAME NUMBER AND KIND OF VARIABLES IN PAST AND FUTURE
             cat_past = batch['x_cat_past'].to(self.device)
@@ -221,11 +185,29 @@ class TFT(Base):
             
         cat_emb_past = emb_cat_full[:,:-self.future_steps,:,:]
         cat_emb_fut = emb_cat_full[:,-self.future_steps:,:,:]
+        
         ## update summary
         # past
         summary_past = torch.cat((summary_past, cat_emb_past), dim=2)
         # future
         summary_fut = torch.cat((summary_fut, cat_emb_fut), dim=2)
+        '''
+        BS = num_past.shape[0]
+        if 'x_cat_future' in batch.keys():
+            emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
+        else:
+            emb_fut = self.emb_fut(BS,None)
+        if 'x_cat_past' in batch.keys():
+            emb_past = self.emb_past(BS,batch['x_cat_past'].to(self.device))
+        else:
+            emb_past = self.emb_past(BS,None)
+            
+        ## update summary
+        # past
+
+        summary_past = torch.cat((summary_past, emb_past.unsqueeze(-1).repeat((1,1,1,summary_past.shape[-1]))), dim=2)
+        # future
+        summary_fut = torch.cat((summary_fut, emb_fut.unsqueeze(-1).repeat((1,1,1,summary_past.shape[-1]))), dim=2)
 
         # >>> PAST:
         summary_past = torch.mean(summary_past, dim=2)

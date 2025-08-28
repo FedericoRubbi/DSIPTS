@@ -21,37 +21,19 @@ class Persistent(Base):
     description = get_scope(handle_multivariate,handle_future_covariates,handle_categorical_variables,handle_quantile_loss)
     
     def __init__(self, 
-                 future_steps:int,
-                 past_steps:int,
-                 loss_type:str=None,#not used but needed
-                 persistence_weight:float=0.1,#not used but needed
-                 optim_config:dict=None,
-                 scheduler_config:dict=None,
                  **kwargs)->None:
-        """Persistent model propagatinng  last observed values
-
-        Args:
-          
-            future_steps (int): number of future lag to predict   
-            past_steps (int): number of future lag to predict. Useless but needed for the other stuff
-
-            optim_config (dict, optional): configuration for Adam optimizer. Defaults to None. Usless for this model
-            scheduler_config (dict, optional): configuration for stepLR scheduler. Defaults to None. Usless for this model
-        """
+ 
         
     
         super().__init__(**kwargs)
         self.save_hyperparameters(logger=False)
-        self.past_steps = past_steps
-        self.future_steps = future_steps
-        self.optim = None
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
-        self.loss = L1Loss()
+
+        #self.optim = None
+        #self.loss = L1Loss()
         self.fake = nn.Linear(1,1)
         self.use_quantiles = False
-        self.loss_type = 'l1'
-        self.loss = nn.L1Loss()
+        #self.loss_type = 'l1'
+        #self.loss = nn.L1Loss()
         
     def forward(self, batch):
         """It is mandatory to implement this method

@@ -11,6 +11,9 @@ ts:
 
 
 model_configs:
+  use_classical_positional_encoder: true 
+  emb_dim: 16 
+  reduction_mode: mean 
   d_model: 4
   d_head: 4
   n_head: 4
