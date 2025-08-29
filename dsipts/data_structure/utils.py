@@ -152,7 +152,7 @@ class MyDataset(Dataset):
 
     def __len__(self):
         
-        return len(self.data['y'])
+        return len(self.data['x_num_past'])
 
     def __getitem__(self, idxs):
         sample = {}

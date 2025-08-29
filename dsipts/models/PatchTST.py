@@ -29,7 +29,7 @@ class PatchTST(Base):
     handle_multivariate = True
     handle_future_covariates = False
     handle_categorical_variables = True
-    handle_quantile_loss = False
+    handle_quantile_loss = True
     description = get_scope(handle_multivariate,handle_future_covariates,handle_categorical_variables,handle_quantile_loss)
     
     
@@ -73,9 +73,9 @@ class PatchTST(Base):
         self.remove_last = remove_last
      
         self.emb_past = Embedding_cat_variables(self.past_steps,self.emb_dim,self.embs_past, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
-        #self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
         emb_past_out_channel = self.emb_past.output_channels
-        #emb_fut_out_channel = self.emb_fut.output_channels
+        emb_fut_out_channel = self.emb_fut.output_channels
 
      
     
@@ -112,6 +112,15 @@ class PatchTST(Base):
                                   pretrain_head=False, head_type='flatten', individual=False, revin=True, affine=False,
                                   subtract_last=remove_last, verbose=False)
     
+    
+        dim = self.past_channels+emb_fut_out_channel+self.future_channels
+        self.final_layer = nn.Sequential(activation(),
+                                         nn.Linear(dim, dim*2),
+                                         activation(),
+                                         nn.Linear(dim*2,self.out_channels*self.mul  ))
+
+
+    
         #self.final_linear = nn.Sequential(nn.Linear(past_channels,past_channels//2),activation(),nn.Dropout(dropout_rate), nn.Linear(past_channels//2,out_channels)  )
     
     def forward(self, batch):           # x: [Batch, Input length, Channel]
@@ -119,16 +128,21 @@ class PatchTST(Base):
 
         x_seq = batch['x_num_past'].to(self.device)#[:,:,idx_target]
         BS = x_seq.shape[0]
-        #if 'x_cat_future' in batch.keys():
-        #    emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
-        #else:
-        #    emb_fut = self.emb_fut(BS,None)
+        if 'x_cat_future' in batch.keys():
+            emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
+        else:
+            emb_fut = self.emb_fut(BS,None)
         if 'x_cat_past' in batch.keys():
             emb_past = self.emb_past(BS,batch['x_cat_past'].to(self.device))
         else:
             emb_past = self.emb_past(BS,None)
             
-
+        tmp_future = [emb_fut]
+        if 'x_num_future' in batch.keys():
+            x_future = batch['x_num_future'].to(self.device)
+            tmp_future.append(x_future)
+        
+        
         tot = [x_seq,emb_past]
     
         x_seq = torch.cat(tot,axis=2)
@@ -144,10 +158,13 @@ class PatchTST(Base):
             x = x_seq.permute(0,2,1)# x: [Batch, Channel, Input length]
             x = self.model(x)
             x = x.permute(0,2,1)    # x: [Batch, Input length, Channel]
-        res = x.unsqueeze(3)
         
-        idx_target = batch['idx_target'][0]
-        return res[:, :,idx_target,:]
+        
+        tmp_future.append(x)
+        tmp_future = torch.cat(tmp_future,2)
+        output = self.final_layer(tmp_future)
+        return output.reshape(BS,self.future_steps,self.out_channels,self.mul)
+
         
         
         

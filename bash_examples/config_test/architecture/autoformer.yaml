@@ -6,11 +6,15 @@ model:
 ts:
   name: 'test'
   version: 1
-  enrich: []
+  enrich: ['minute']
   use_covariates: true
 
 
 model_configs:
+  use_classical_positional_encoder: true
+  emb_dim: 7 
+  reduction_mode: mean
+
   d_model: 4
   kernel_size: 3
   n_layer_encoder: 2

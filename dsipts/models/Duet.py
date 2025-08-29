@@ -31,9 +31,9 @@ from .utils import Embedding_cat_variables
 
 class Duet(Base):
     handle_multivariate = True
-    handle_future_covariates = False # or at least it seems...
-    handle_categorical_variables = True #solo nel encoder
-    handle_quantile_loss = True # NOT EFFICIENTLY ADDED, TODO fix this
+    handle_future_covariates = True 
+    handle_categorical_variables = True
+    handle_quantile_loss = True 
     description = get_scope(handle_multivariate,handle_future_covariates,handle_categorical_variables,handle_quantile_loss)
     
     def __init__(self, 
@@ -71,9 +71,9 @@ class Duet(Base):
 
 
         self.emb_past = Embedding_cat_variables(self.past_steps,self.emb_dim,self.embs_past, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
-        #self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
         emb_past_out_channel = self.emb_past.output_channels
-        #emb_fut_out_channel = self.emb_fut.output_channels
+        emb_fut_out_channel = self.emb_fut.output_channels
 
 
        
@@ -116,6 +116,11 @@ class Duet(Base):
         self.linear_head = nn.Sequential(nn.Linear(d_model, self.future_steps), nn.Dropout(dropout_rate))
 
 
+        dim = self.past_channels+emb_past_out_channel+emb_fut_out_channel+self.future_channels
+        self.final_layer = nn.Sequential(activation(),
+                                         nn.Linear(dim, dim*2),
+                                         activation(),
+                                         nn.Linear(dim*2,self.out_channels*self.mul  ))
 
 
     def forward(self, batch:dict)-> float:
@@ -123,15 +128,22 @@ class Duet(Base):
         x_enc = batch['x_num_past'].to(self.device)
         idx_target = batch['idx_target'][0]
         BS = x_enc.shape[0]
-        #if 'x_cat_future' in batch.keys():
-        #    emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
-        #else:
-        #    emb_fut = self.emb_fut(BS,None)
+        
         if 'x_cat_past' in batch.keys():
             emb_past = self.emb_past(BS,batch['x_cat_past'].to(self.device))
         else:
             emb_past = self.emb_past(BS,None)
-   
+
+        
+        if 'x_cat_future' in batch.keys():
+            emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
+        else:
+            emb_fut = self.emb_fut(BS,None)  
+            
+        tmp_future = [emb_fut]
+        if 'x_num_future' in batch.keys():
+            x_future = batch['x_num_future'].to(self.device)
+            tmp_future.append(x_future)
       
         x_enc = torch.concat([x_enc,emb_past],axis=-1)
         
@@ -158,8 +170,12 @@ class Duet(Base):
             output = temporal_feature
             output = self.linear_head(output)
 
+        
         output = rearrange(output, 'b n d -> b d n')
-        output = self.cluster.revin(output, "denorm")[:,:,idx_target]
+        output = self.cluster.revin(output, "denorm")
+        tmp_future.append(output)
+        tmp_future = torch.cat(tmp_future,2)
+        output = self.final_layer(tmp_future)
 
         return output.reshape(BS,self.future_steps,self.n_vars,self.mul)
 

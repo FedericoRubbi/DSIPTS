@@ -24,6 +24,7 @@ from .timexer.Layers import FlattenHead,EnEmbedding, EncoderLayer, Encoder
 from typing import List, Union
 from ..data_structure.utils import beauty_string
 from .utils import  get_scope
+from .utils import Embedding_cat_variables
 
 
 
@@ -36,39 +37,19 @@ class TimeXER(Base):
     description = get_scope(handle_multivariate,handle_future_covariates,handle_categorical_variables,handle_quantile_loss)
     
     def __init__(self, 
-                 out_channels: int,
-                 past_steps: int,
-                 future_steps: int, 
-                 past_channels: int,
-                 future_channels: int,
-                 embs: List[int],
-
-                 # specific params
                  patch_len:int,
                  d_model: int,
-
                  n_head: int,
                  d_ff:int=512,
                  dropout_rate: float=0.1,
-                 
-                 
-           
                  n_layer_decoder: int=1,
-
                  activation: str='',
-                 
-                 persistence_weight:float=0.0,
-                 loss_type: str='l1',
-                 quantiles:List[float]=[],
-                 optim:Union[str,None]=None,
-                 optim_config:Union[dict,None]=None,
-                 scheduler_config:Union[dict,None]=None,
                  **kwargs)->None:
         """https://github.com/thuml/Time-Series-Library/blob/main/models/TimeMixer.py
 
    
         Args:
-            UPDATE THOSE
+            UPDATE 
         """
         
         super().__init__(**kwargs)
@@ -79,52 +60,25 @@ class TimeXER(Base):
             activation = get_activation(activation)
         self.save_hyperparameters(logger=False)
 
-        # self.dropout = dropout_rate
-        self.persistence_weight = persistence_weight 
-        self.optim = optim
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
-        self.loss_type = loss_type
-        self.future_steps = future_steps
-                
-        if len(quantiles)==0:
-            self.mul = 1
-            self.use_quantiles = False
-            if self.loss_type == 'mse':
-                self.loss = nn.MSELoss()
-            else:
-                self.loss = nn.L1Loss()
-        else:
-            assert len(quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
-            self.mul = len(quantiles)
-            self.use_quantiles = True
-            self.loss = QuantileLossMO(quantiles)
 
+                
 
 
         self.patch_len = patch_len
-        self.patch_num = int(past_steps // patch_len)
-        ##my update
-        self.embs = nn.ModuleList()
-
-        
+        self.patch_num = int(self.past_steps // patch_len)
         d_model = d_model*self.mul
         
-        for k in embs:
-            self.embs.append(nn.Embedding(k+1,d_model))
-         
-        
+        self.emb_past = Embedding_cat_variables(self.past_steps,self.emb_dim,self.embs_past, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        emb_past_out_channel = self.emb_past.output_channels
+        emb_fut_out_channel = self.emb_fut.output_channels
 
-
-        self.out_channels = out_channels
-        self.seq_len = past_steps
-        self.pred_len = future_steps
         self.output_attention = False## not need output attention
         
         ###
-        self.en_embedding = EnEmbedding(past_channels, d_model, patch_len, dropout_rate)
+        self.en_embedding = EnEmbedding(self.past_channels, d_model, patch_len, dropout_rate)
 
-        self.ex_embedding = DataEmbedding_inverted(past_steps, d_model, embed_type='what?', freq='what?', dropout=dropout_rate)  ##embed, freq not used inside
+        self.ex_embedding = DataEmbedding_inverted(self.past_steps, d_model, embed_type='what?', freq='what?', dropout=dropout_rate)  ##embed, freq not used inside
 
 
         # Encoder-only architecture
@@ -149,9 +103,15 @@ class TimeXER(Base):
             norm_layer=torch.nn.LayerNorm(d_model)
         )
         self.head_nf = d_model * (self.patch_num + 1)
-        self.head = FlattenHead(past_channels, self.head_nf, future_steps*self.mul,  head_dropout=dropout_rate)
+        self.head = FlattenHead(self.past_channels, self.head_nf, self.future_steps*self.mul,  head_dropout=dropout_rate)
         
         
+        self.future_reshape = nn.Linear(self.future_steps,self.future_steps*self.mul)
+        self.final_linear = nn.Sequential(activation(),
+            nn.Linear(self.past_channels+self.future_channels+emb_fut_out_channel,(self.past_channels+self.future_channels+emb_fut_out_channel)//2),
+            activation(),
+            nn.Linear((self.past_channels+self.future_channels+emb_fut_out_channel)//2,self.out_channels)  
+        )
 
         
 
@@ -162,38 +122,32 @@ class TimeXER(Base):
 
 
         x_enc = batch['x_num_past'].to(self.device)
-        
-        if 'x_cat_past' in batch.keys():
-            x_mark_enc =  batch['x_cat_past'].to(self.device)
-            tmp = []
-            for i in range(len(self.embs)):
-                tmp.append(self.embs[i](x_mark_enc[:,:,i]))
-            x_mark_enc = torch.cat(tmp,2)
-            
+
+        BS = x_enc.shape[0]
+        if 'x_cat_future' in batch.keys():
+            emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
         else:
-            x_mark_enc = None  
-            
-        #if 'x_num_future' in batch.keys():
-        #    x_dec = batch['x_num_future'].to(self.device)
-        #else:
-        #    x_dec = None    
-            
-        #if 'x_cat_future' in batch.keys():
-        #    x_mark_dec =  batch['x_cat_future'].to(self.device)
-        #    tmp = []
-        #    for i in range(len(self.embs)):
-        #        tmp.append(self.embs[i](x_mark_dec[:,:,i]))
-        #    x_mark_dec = torch.cat(tmp,2)
-            
-        #else:
-        #    x_mark_dec = None  
-        
+            emb_fut = self.emb_fut(BS,None)
+        tmp_future = [emb_fut]
+        if 'x_cat_past' in batch.keys():
+            emb_past = self.emb_past(BS,batch['x_cat_past'].to(self.device))
+        else:
+            emb_past = self.emb_past(BS,None)
+
+        if 'x_num_future' in batch.keys():
+            x_future = batch['x_num_future'].to(self.device)
+            tmp_future.append(x_future)
+        if len(tmp_future)>0:
+            tmp_future = torch.cat(tmp_future,2)
+        else:
+            tmp_future = None
+
 
 
 
 
         en_embed, n_vars = self.en_embedding(x_enc.permute(0, 2, 1))
-        ex_embed = self.ex_embedding(x_enc, x_mark_enc)
+        ex_embed = self.ex_embedding(x_enc, emb_past)
 
         enc_out = self.encoder(en_embed, ex_embed)
         
@@ -207,12 +161,14 @@ class TimeXER(Base):
         enc_out = enc_out.permute(0, 1, 3, 2)
 
         dec_out = self.head(enc_out)  # z: [bs x nvars x target_window]
-        dec_out = dec_out.permute(0, 2, 1)
-
-        BS = x_enc.shape[0]
-
-
-        idx_target = batch['idx_target'][0]
-        return dec_out[:, :,idx_target].reshape(BS,self.future_steps,self.out_channels,self.mul)
+        #dec_out = dec_out.permute(0, 2, 1)
+        if tmp_future is not None:
+            tmp_future = self.future_reshape(tmp_future.permute(0, 2, 1))
+            dec_out = torch.cat([tmp_future,dec_out],1)
+        dec_out = self.final_linear(dec_out.permute(0, 2, 1))
+        return dec_out.reshape(BS,self.future_steps,self.out_channels,self.mul)
+        
+        #idx_target = batch['idx_target'][0]
+        #return dec_out[:, :,idx_target].reshape(BS,self.future_steps,self.out_channels,self.mul)
         
 

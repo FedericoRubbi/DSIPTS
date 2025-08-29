@@ -28,9 +28,9 @@ from .utils import Embedding_cat_variables
 
 class ITransformer(Base):
     handle_multivariate = True
-    handle_future_covariates = False # or at least it seems...
-    handle_categorical_variables = True #solo nel encoder
-    handle_quantile_loss = True # NOT EFFICIENTLY ADDED, TODO fix this
+    handle_future_covariates = True
+    handle_categorical_variables = True
+    handle_quantile_loss = True
     description = get_scope(handle_multivariate,handle_future_covariates,handle_categorical_variables,handle_quantile_loss)
     
     def __init__(self, 

@@ -10,14 +10,15 @@ ts:
   use_covariates: false
 
 model_configs:
-  cat_emb_dim: 4
+  use_classical_positional_encoder: true 
+  emb_dim: 17
+  reduction_mode: mean 
   kernel_size: 3
-  sum_emb: true
   hidden_size: 12
   kind: 'dlinear'
   optim: torch.optim.SGD
   activation: torch.nn.LeakyReLU
-  simple: true
+  simple: false
 train_config:
   batch_size: 256
   max_epochs: 2

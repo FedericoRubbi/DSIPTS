@@ -555,10 +555,12 @@ class Embedding_cat_variables(nn.Module):
 
             # Compute the div_term (frequencies for sinusoids)
             div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model)).to(device)
+            div_term_odd = torch.exp(torch.arange(0, d_model-d_model%2, 2).float() * (-math.log(10000.0) / d_model)).to(device)
 
             # Apply sine to even indices, cosine to odd indices
+
             pe[:, 0::2] = torch.sin(position * div_term)
-            pe[:, 1::2] = torch.cos(position * div_term)
+            pe[:, 1::2] = torch.cos(position * div_term_odd)
             ## this is static positional encoder
             self.register_buffer('pe', pe)##static
 

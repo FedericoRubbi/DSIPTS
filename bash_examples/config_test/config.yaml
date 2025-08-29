@@ -1,6 +1,13 @@
 dataset:
   dataset: 'weather'  
   path: null
+  
+ts:
+  name: 'test'
+  version: 1
+  enrich: ['hour']
+  use_covariates: true
+  use_future_covariates: true
 
 scheduler_config:
   gamma: 1.0

@@ -61,22 +61,50 @@ class Samformer(Base):
             activation = get_activation(activation)
         self.save_hyperparameters(logger=False)
 
+
+        self.emb_past = Embedding_cat_variables(self.past_steps,self.emb_dim,self.embs_past, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        self.emb_fut = Embedding_cat_variables(self.future_steps,self.emb_dim,self.embs_fut, reduction_mode=self.reduction_mode,use_classical_positional_encoder=self.use_classical_positional_encoder,device = self.device)
+        emb_past_out_channel = self.emb_past.output_channels
+        emb_fut_out_channel = self.emb_fut.output_channels
         
         
-        self.revin = RevIN(num_features=self.past_channels)
+        self.revin = RevIN(num_features=self.past_channels+emb_past_out_channel)
         self.compute_keys = nn.Linear(self.past_steps, hidden_size)
         self.compute_queries = nn.Linear(self.past_steps, hidden_size)
         self.compute_values = nn.Linear(self.past_steps, self.past_steps)
         self.linear_forecaster = nn.Linear(self.past_steps, self.future_steps)
         self.use_revin = use_revin
 
- 
+        dim = emb_past_out_channel+self.past_channels+emb_fut_out_channel+self.future_channels
+        self.final_layer = nn.Sequential(activation(),
+                                         nn.Linear(dim, dim*2),
+                                         activation(),
+                                         nn.Linear(dim*2,self.out_channels*self.mul  ))
+
 
     def forward(self, batch:dict)-> float:
 
         x = batch['x_num_past'].to(self.device)
-        idx_target = batch['idx_target'][0]
         BS = x.shape[0]
+        if 'x_cat_future' in batch.keys():
+            emb_fut = self.emb_fut(BS,batch['x_cat_future'].to(self.device))
+        else:
+            emb_fut = self.emb_fut(BS,None)
+        if 'x_cat_past' in batch.keys():
+            emb_past = self.emb_past(BS,batch['x_cat_past'].to(self.device))
+        else:
+            emb_past = self.emb_past(BS,None)
+            
+        tmp_future = [emb_fut]
+        if 'x_num_future' in batch.keys():
+            x_future = batch['x_num_future'].to(self.device)
+            tmp_future.append(x_future)
+            
+        tot = [x,emb_past]
+        x = torch.cat(tot,axis=2)
+
+        
+ 
 
         if self.use_revin:
             x_norm = self.revin(x, mode='norm').transpose(1, 2) # (n, D, L)
@@ -98,7 +126,10 @@ class Samformer(Base):
         if self.use_revin:
             out = self.revin(out.transpose(1, 2), mode='denorm').transpose(1, 2) # (n, D, H)
 
-        out = out[:,idx_target,:]
 
-        return out.reshape(BS,self.future_steps,self.out_channels,self.mul)
+        tmp_future.append(out.permute(0,2,1))
+        tmp_future = torch.cat(tmp_future,2)
+        output = self.final_layer(tmp_future)
+
+        return output.reshape(BS,self.future_steps,self.out_channels,self.mul)
 

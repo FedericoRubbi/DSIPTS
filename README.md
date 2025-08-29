@@ -386,9 +386,14 @@ and then open the url (http://127.0.0.1:43800)[http://127.0.0.1:43800]. It will 
 
 [ ] add https://github.com/decisionintelligence/pathformer
 
-[ ] add categorical support to Crossformer, Samformer 
+[x] add Duet
 
-[ ] in 1.1.5 we split the future and past categorical variables. D3VAE, Diffusion 
+[x] add categorical support to Crossformer, Samformer 
+
+[ ] in 1.1.5 we split the future and past categorical variables. D3VAE, Diffusion, TTM need to be revised 
+
+[ ] all snippet of code and notebook must be review in 1.1.5 (categorical past and future, embedding layer parameters)
+
 ## UPDATES TRACK
 1.1.1 --> added [SAM optimizer](https://arxiv.org/pdf/2402.10198) need to write also the architecture
 ```
