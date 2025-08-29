@@ -13,7 +13,7 @@ This library allows to:
 -  define more complex structures using Modifiers (e.g. combining unsupervised learning + deep learning)
 
 ## Disclamer
-The original repository is located [here](https://gitlab.fbk.eu/dsip/dsip_dlresearch/timeseries) but there is a push mirror in gitlab containing only the versioned branches (e.g. v.1.0.0) and you can find it [here](https://github.com/DSIP-FBK/DSIPTS/). Depending on the evolution of the library we will decide if keep both or move definetively to github.
+The original repository is located [here](https://gitlab.fbk.eu/dsip/dsip_dlresearch/timeseries) but there is a push mirror in gitlab and you can find it [here](https://github.com/DSIP-FBK/DSIPTS/). Depending on the evolution of the library we will decide if keep both or move definitively to github.
 
 
 ## Background
@@ -35,15 +35,15 @@ x_cat_past: the categorical past variables
 x_cat_future: the categorical future variables
 idx_target: index containing the y variables in the past dataset. Can be used during the training for train a differential model
 ```
-by default, during the dataset construction, the target variable will be added to the `x_num_past` list. Moreover the set of categorical variable will be the same in the past and the future but we choose to distinguish the two parts during the forward loop for seek of generability.
+by default, during the dataset construction, the target variable will be added to the `x_num_past` list. Moreover the set of categorical variable can be different in the past and the future but we choose to distinguish the two parts during the forward loop for seek of generability.
 
 During the forward process, the batch is a dictionary with some of the key showed above, remember that not all keys are always present (check it please) and build a model accordlying. The shape of such tensor are in the form $[B,L,C]$ where $B$ indicates the batch size, $L$ the length and $C$ the number of channels.
 
 The output of a new model must be $[B,L,C,1]$ in case of single prediction or $[B,L,C,3]$ in case you are using quantile loss.
 
 
-Try to reuse some of the common keyworks while building your model. After the initialization of the model you can use whatever variable you want but during the initialization please use the following conventions.
-This frist block maybe is common between several architectures:
+Try to reuse some of the common keywords while building your model. After the initialization of the model you can use whatever variable you want but during the initialization please use the following conventions.
+This first block maybe is common between several architectures:
 
 ---
 
@@ -51,10 +51,12 @@ This frist block maybe is common between several architectures:
 - **future_steps** = int. THIS IS CRUCIAL and self explanatory
 - **past_channels** = len(ts.num_var). THIS IS CRUCIAL and self explanatory
 - **future_channels** = len(ts.future_variables). THIS IS CRUCIAL and self explanatory
-- **embs** = [ts.dataset[c].nunique() for c in ts.cat_var]. THIS IS CRUCIAL and self explanatory. 
 - **out_channels** = len(ts.target_variables). THIS IS CRUCIAL and self explanatory
-- **cat_emb_dim** = int. Dimension of embedded categorical variables, the choice here is to use a constant value and let the user chose if concatenate or sum the variables
-- **sum_emb** = boolean. If true the contribution of each categorical variable is summed
+- **embs_past** = [ts.dataset[c].nunique() for c in ts.cat_past_var]. THIS IS CRUCIAL and self explanatory. 
+- **embs_fut** = [ts.dataset[c].nunique() for c in ts.cat_fut_var]. THIS IS CRUCIAL and self explanatory.
+ - **use_classical_positional_encoder** = classical positioal code are done with the combination of sin/cos/exponenstial function, otherwise the positional encoding is done with the `nn.Embedding` like the other categorical variables
+ - **reduction_mode** = the categorical metafeatures can be summed, averaged or stacked depending on what behavior you like more.
+- **emb_dim** = int. Dimension of embedded categorical variables, the choice here is to use a constant value and let the user chose if concatenate or sum the variables
 - **quantiles** =[0.1,0.5,0.9]. Quantiles for quantile loss
 - **kind** =str. If there are some similar architectures with small differences maybe is better to use the same code specifying some properties (e.g. GRU vs LSTM)
 - **activation** = str ('torch.nn.ReLU' default). activation function between layers (see  [pytorch activation functions](https://pytorch.org/docs/stable/nn.html#non-linear-activations-weighted-sum-nonlinearity))
@@ -63,7 +65,7 @@ This frist block maybe is common between several architectures:
 - **use_bn** =boolean . Use or not batch normalization
 - **persistence_weight** = float . Penalization weight for persistent predictions
 - **loss_type** = str . There are some other metrics implemented, see the [metric section](#metrics) for details
-- **remove_last** = boolean. It is possible to subctract the last observation and let the network learn the difference respect to the last value.
+
 
 ---
 some are more specific for RNN-CONV architectures:
@@ -94,13 +96,8 @@ or attention based models:
 ## How to
 Clone the repo (gitlab or github)
 
-In a pre-generated environment install pytorch and pytorch-lightning (`pip install pytorch-lightning==1.9.4`) then go inside the lib folder and execute:
+See [here](uv_installation.MD)
 
-
-``
-python setup.py install --force
-``
-In the gitlab repository it is possible to find the documentation (pages) and the package in the package registry. As soon as possible the CI/CD pipeline will update for working also in the github mirrored repository.
 
 ## AIM
 DSIPTS uses AIM for tracking losses, parameters and other useful information. The first time you use DSIPTS you may need to initialize aim executing:
@@ -190,34 +187,43 @@ future_steps = 20
 
 Let suppose to use a RNN encoder-decoder sturcture, then the model has the following parameters:
 ```
-past_steps = 100
-future_steps = 20
+past_steps = 12*7
+future_steps = 12
 config = dict(model_configs =dict(
-                                    cat_emb_dim = 16,
-                                    kind = 'gru',
-                                    hidden_RNN = 32,
-                                    num_layers_RNN = 2,
-                                    sum_emb = True,
-                                    kernel_size = 15,
-                                    past_steps = past_steps,
-                                    future_steps = future_steps,
-                                    past_channels = len(ts.num_var),
-                                    future_channels = len(ts.future_variables),
-                                    embs = [ts.dataset[c].nunique() for c in ts.cat_var],
-                                    quantiles=[0.1,0.5,0.9],
-                                    dropout_rate= 0.5,
-                                    persistence_weight= 0.010,
-                                    loss_type= 'l1',
-                                    remove_last= True,
-                                    use_bn = False,
-                                    optim= 'torch.optim.Adam',
-                                    activation= 'torch.nn.GELU', 
-                                    verbose = True,
-                                    out_channels = len(ts.target_variables)),
+
+                                    past_steps = past_steps, #TASK DEPENDENT 
+                                    future_steps = future_steps,#TASK DEPENDENT  
+    
+                                    emb_dim = 16, # categorical stuff
+                                    use_classical_positional_encoder = True, # categorical stuff
+                                    reduction_mode = 'mean',# categorical stuff
+    
+                                    kind = 'gru',# model dependent
+                                    hidden_RNN = 12,# model dependent
+                                    num_layers_RNN = 2,# model dependent
+                                    kernel_size = 15,# model dependent
+                                    dropout_rate= 0.5,# model dependent
+                                    remove_last= True,# model dependent
+                                    use_bn = False,# model dependent
+                                    activation= 'torch.nn.PReLU', # model dependent
+    
+                                    quantiles=[0.1,0.5,0.9], #LOSS
+                                    persistence_weight= 0.010, #LOSS
+                                    loss_type= 'l1', #LOSS
+    
+                                    optim= 'torch.optim.Adam', #OPTIMIZER
+    
+                                    past_channels = len(ts.past_variables), #parameter that depends on the ts dataset
+                                    future_channels = len(ts.future_variables), #parameter that depends on the ts dataset
+                                    embs_past = [ts.dataset[c].nunique() for c in ts.cat_past_var], #parameter that depends on the ts dataset
+                                    embs_fut = [ts.dataset[c].nunique() for c in ts.cat_fut_var], #parameter that depends on the ts dataset
+                                    out_channels = len(ts.target_variables)),             #parameter that depends on the ts dataset
+              
                 scheduler_config = dict(gamma=0.1,step_size=100),
                 optim_config = dict(lr = 0.0005,weight_decay=0.01))
-model_sum = RNN(**config['model_configs'],optim_config = config['optim_config'],scheduler_config =config['scheduler_config'] )
-ts.set_model(model_sum,config=config )
+model_rnn = RNN(**config['model_configs'],optim_config = config['optim_config'],scheduler_config =config['scheduler_config'],verbose=False )
+
+ts.set_model(model_rnn,config=config )
 ```
 Once the model is selected, it will display some information like follows:
 ```
@@ -228,13 +234,13 @@ Can   handle Quantile loss function
 ```
 This can help you knowing which models can be used for multioutput prediction and also if the quantile loss can be used and provide the confidence interval of the predictions.
 
-Notice that there are some free parameters: `cat_emb_dim` for example represent the dimension of the embedded categorical variable, `sum_embs` will sum all the categorical contribution otherwise it will concatenate them. It is possible to use a quantile loss, specify some parameters of the scheduler (StepLR) and optimizer parameters (Adam). 
 
 
 Now we are ready to split and train our model using:
 ```
 ts.train_model(dirpath="/home/agobbi/Projects/TT/tmp/4656719v2",split_params=dict(perc_train=0.6, perc_valid=0.2,past_steps = past_steps,future_steps=future_steps, range_train=None, range_validation=None, range_test=None,shift = 0,starting_point=None,skip_step=1,scaler='StandardScaler()'),batch_size=100,num_workers=4,max_epochs=40,auto_lr_find=True,devices='auto')
 ```
+
 It is possble to split the data indicating the percentage of data to use in train, validation, test or the ranges. The `shift` parameters indicates if there is a shift constucting the y array. It cab be used for some attention model where we need to know the first value of the timeseries to predict. It may disappear in future because it is misleading. The `skip_step` parameters indicates how many temporal steps there are between samples. If you need a futture signal that is long `skip_step+future_steps` then you should put `keep_entire_seq_while_shifting` to True (see Informer model).
 
 During the training phase a log stream will be generated. If a single process is spawned the log will be displayed, otherwise a file will be generated. Moreover, inside the `weight` path there wil be the `loss.csv` file containing the running losses.
