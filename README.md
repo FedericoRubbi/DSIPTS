@@ -7,7 +7,7 @@ THE DOCUMENTATION, README and notebook are somehow outdated, please be patient!
 This library allows to:
 
 -  load timeseries in a convenient format
--  create tool timeseries with controlled categorical features (additive and multiplicative)
+-  create tool timeseries with controlled categorical features
 -  load public timeseries
 -  train a predictive model using different PyTorch architectures
 -  define more complex structures using Modifiers (e.g. combining unsupervised learning + deep learning)
@@ -37,7 +37,7 @@ idx_target: index containing the y variables in the past dataset. Can be used du
 ```
 by default, during the dataset construction, the target variable will be added to the `x_num_past` list. Moreover the set of categorical variable can be different in the past and the future but we choose to distinguish the two parts during the forward loop for seek of generability.
 
-During the forward process, the batch is a dictionary with some of the key showed above, remember that not all keys are always present (check it please) and build a model accordlying. The shape of such tensor are in the form $[B,L,C]$ where $B$ indicates the batch size, $L$ the length and $C$ the number of channels.
+During the forward process, the batch is a dictionary with some of the key showed above, remember that not all keys are always present (check it please) and build a model according. The shape of such tensor are in the form $[B,L,C]$ where $B$ indicates the batch size, $L$ the length and $C$ the number of channels.
 
 The output of a new model must be $[B,L,C,1]$ in case of single prediction or $[B,L,C,3]$ in case you are using quantile loss.
 
@@ -93,100 +93,58 @@ or attention based models:
 - **n_layer_decoder** = int. decoder layers
 ---
 
-## How to
+## Install
 Clone the repo (gitlab or github)
+The library is structured to work with [uv](https://github.com/astral-sh/uv). After installing `uv` just run  
+```
+uv pip install .
+```
+The pip package wi
 
-See [here](uv_installation.MD)
 
-
+## For developers
+- Remember to update the `pyproject.toml`
+- use `uv add` and `uv sync` for update the project 
+- `uv pip install -e .` for install dsipts
+- `uv build` for building it
+- `uv pip install dist/dsipts-X.Y.Z-py3-none-any.whl` for checking the installation 
+- generate documentation with `uv run sphinx-quickstart docs` (just the first time)
+- `uv run sphinx-apidoc -o docs/source src/dsipts`
+- `uv run sphinx-build -b html docs/source docs/build`
 ## AIM
 DSIPTS uses AIM for tracking losses, parameters and other useful information. The first time you use DSIPTS you may need to initialize aim executing:
-```
+```bash
 aim init
 ```
 
+## Usage
 
-## Test 
-You can test your model using a tool timeseries
+Let make an example with the public weather data (you can find it [here](https://drive.google.com/drive/folders/13Cg1KYOlzM5C7K8gK8NfC-F3EYxkM3D2) or [here](https://github.com/thuml/Time-Series-Library?tab=readme-ov-file))
 
-```
-##import modules
-from dsipts import Categorical,TimeSeries, RNN
-
-#############define some categorical features##########
-
-##weekly, multiplicative
-settimana = Categorical('settimanale',1,[1,1,1,1,1,1,1],7,'multiplicative',[0.9,0.8,0.7,0.6,0.5,0.99,0.99])
-
-##montly, additive (here there are only 5 month)
-mese = Categorical('mensile',1,[31,28,20,10,33],5,'additive',[10,20,-10,20,0])
-
-##spot categorical variables: in this case it occurs every 100 days and it lasts 7 days adding 10 to the original timeseries
-spot = Categorical('spot',100,[7],1,'additive',[10])
-
-##initizate a timeseries object
-ts = TimeSeries('prova')
-```
-The baseline tool timeseries is defined as:
-
-$$
-y(t) = \left[A(t) + 10\cos{\left(\frac{50}{l \cdot \pi}\right)} \right] * M(t) + Noise
-$$
-
-where $l$ is the length of the signal, $A(t)$ correspond to all the contribution of the additive categorical variable and $M(t)$ all the multiplicative contributions.
-
-We can now generate a timeseries of length 5000 and the cateorical features described above:
-```
-ts.generate_signal(noise_mean=1,categorical_variables=[settimana,mese,spot],length=5000,type=0)
-```
-
-`type=0` is the base function used. In this case the name of the time variable is `time` and the timeseries is called `signal`.
-
-In a real application generally we have a pandas data frame with a temporal column and a set of numerical/categorical features. In this case we can define a timeseries object as:
-
-```
-ts.load_signal(dataset,past_variables =[list of past variables],target_variables =[list of target variables],cat_var = [categorical variables], future_variables = [list of future variables],enrich_cat=[automatic categorical variables extracted from the time column])
-```
-Up to now, the automathic categorical features extracted can be: `'hour','dow','month','minute'`.
-If you want to use a public dataset there is a wrapper in the library for downloading some datasets using [Monash](https://forecastingdata.org/).
-```
-from dsipts import Monash, get_freq, TimeSeries, RNN
+```python
 import pandas as pd
-m = Monash(filename='monash',baseUrl='https://forecastingdata.org/', rebuild=True)
+import numpy as np
+from dsipts import TimeSeries, RNN,read_public_dataset
+import matplotlib.pyplot as plt
+from datetime import timedelta
+import logging
+import sys
+data, columns = read_public_dataset(PATH_TO_DATA,'weather') 
 ```
-This code will scrap the website and save the URLs connected to the dataset. After downloading it will save a file using the `filename` and, the next time you use it you can set `rebuild=False` avoinding the scraping procedure. 
-After that `m.table` contains the table. Each dataset has an ID, you can downloadthe data:
-
-```
-m.download_dataset(path='data',id=4656144,rebuild=True)
-m.save('monash')##remember to save after each download in order to update the class for following uses.
-```
-In the attribute `m.downloaded` you can see a dictionary with an association ID--> folder. Finally, you can get the data from the downloaded files:
-
-```
-loaded_data,frequency,forecast_horizon,contain_missing_values,contain_equal_length = m.generate_dataset(4656144)
-```
-and create a timeseries object using the auxiliary function `get_freq`:
-```
-serie = pd.DataFrame({'signal':loaded_data.series_value.iloc[0]})
-serie['time'] = pd.date_range(start = loaded_data.start_timestamp.iloc[0], periods=  serie.shape[0],freq=get_freq(frequency))
-serie['cum'] = serie.time.dt.minute  + serie.time.dt.hour 
-starting_point = {'cum':0} ##this can be used for creating the dataset: only samples with cum=0 in the first future lag will be used as samples! 
-ts = TimeSeries('4656144')
-ts.load_signal(serie.iloc[0:8000],enrich_cat=['dow','hour'],target_variables=['signal'])
-ts.plot();
+define then how to use the information and define the time series. You can add automatically the `hour` categorical data using the key `enrich_cat` that will be automatically added to the categorical past and categorical future list of columns:
+```pyhon
+use_covariates = False  #use only y in the PAST
+use_future_covariate = True #suppose to have some future covariates
+ts = TimeSeries('weather')
+ts.load_signal( data,enrich_cat=['hour'],target_variables=['y'],past_variables=columns if use_covariates else [], future_variables=columns if use_future_covariate else [] )
+fig = ts.plot() # plot the target variable(s    )
 ```
 
 
+Now we can define a forecasting problem (`past_steps` as context, `future_steps` as future horizon )
 
-Now we can define a forecasting problem, for example using the last 100 steps for predicting the 20 steps in the future. In this case we have one time series so:
-```
-past_steps = 100
-future_steps = 20
-```
-
-Let suppose to use a RNN encoder-decoder sturcture, then the model has the following parameters:
-```
+Let suppose to use a RNN encoder-decoder structure, then the model has the following parameters:
+```python
 past_steps = 12*7
 future_steps = 12
 config = dict(model_configs =dict(
@@ -224,66 +182,71 @@ config = dict(model_configs =dict(
 model_rnn = RNN(**config['model_configs'],optim_config = config['optim_config'],scheduler_config =config['scheduler_config'],verbose=False )
 
 ts.set_model(model_rnn,config=config )
+
 ```
-Once the model is selected, it will display some information like follows:
-```
-Can   handle multivariate output 
-Can   handle future covariates
-Can   handle categorical covariates
-Can   handle Quantile loss function
-```
-This can help you knowing which models can be used for multioutput prediction and also if the quantile loss can be used and provide the confidence interval of the predictions.
 
 
+Now we are ready to split and train our model. First define the splitting configuration:
+```python
+split_params = {'perc_train':0.7,'perc_valid':0.1,                             ##if not None it will split 70% 10% 20%
+               'range_train':None, 'range_validation':None, 'range_test':None, ## or we can split using ranges for example range_train=['2021-02-03','2022-04-08']
+               'past_steps':past_steps,
+               'future_steps':future_steps,
+               'starting_point':None,                                          ## do not skip samples
+               'skip_step' : 10                                                ## distance between two consecutive samples, aka the stride (larger it is, less point we have in train)
+                             }
 
-Now we are ready to split and train our model using:
-```
-ts.train_model(dirpath="/home/agobbi/Projects/TT/tmp/4656719v2",split_params=dict(perc_train=0.6, perc_valid=0.2,past_steps = past_steps,future_steps=future_steps, range_train=None, range_validation=None, range_test=None,shift = 0,starting_point=None,skip_step=1,scaler='StandardScaler()'),batch_size=100,num_workers=4,max_epochs=40,auto_lr_find=True,devices='auto')
+ ts.train_model(dirpath=PATH_TO_SAVING_STUFF,
+                   split_params=split_params,
+                   batch_size=128,
+                   num_workers=4,
+                   max_epochs=2,
+                   gradient_clip_val= 0.0,
+                   gradient_clip_algorithm='value',
+                   precision='bf16',
+                   auto_lr_find=True)
+
+    ts.losses.plot()
+    ts.save("weather") ##save all the metadata to use it in inference mode after
+
 ```
 
-It is possble to split the data indicating the percentage of data to use in train, validation, test or the ranges. The `shift` parameters indicates if there is a shift constucting the y array. It cab be used for some attention model where we need to know the first value of the timeseries to predict. It may disappear in future because it is misleading. The `skip_step` parameters indicates how many temporal steps there are between samples. If you need a futture signal that is long `skip_step+future_steps` then you should put `keep_entire_seq_while_shifting` to True (see Informer model).
+It is possble to split the data indicating the percentage of data to use in train, validation, test or the ranges. The `shift` parameters indicates if there is a shift constucting the y array. It cab be used for some attention model where we need to know the first value of the timeseries to predict. It may disappear in future because it is misleading. The `skip_step` parameters indicates how many temporal steps there are between samples. If you need a future signal that is long `skip_step+future_steps` then you should put `keep_entire_seq_while_shifting` to True (see Informer model).
 
 During the training phase a log stream will be generated. If a single process is spawned the log will be displayed, otherwise a file will be generated. Moreover, inside the `weight` path there wil be the `loss.csv` file containing the running losses.
 
-At the end of the trainin process it is possible to plot the losses and get the prediction for the test set:
+At the end of the training process it is possible to load the model passing the model class (`RNN`) and the saving name used before (`weather`)
+If the same model and the same name are used for defining the time series, the training procedure will continue from the last checkpoint. Due to lightening related usage, the counting of the epochs will start from the last stage (if you trained if for 10 epochs and you want to train 10 epochs more you need to change it to 20).
+
+
+
+```python
+
+ts.load(RNN,"weather",load_last=True)
+res = ts.inference_on_set(200,4,set='test',rescaling=True)
+error = res.groupby('lag').apply(lambda x: np.nanmean((x.y-x.y_median)**2)).reset_index().rename(columns={0:'error'}) 
+
 ```
-
-ts.save('tmp')  ## save the timeseries object
-ts.load( RNN,'tmp',load_last=True) ## load the timeseries object using the weights of the last training step
-
-ts.losses.plot()
-res = ts.inference_on_set(set='test',batch_size=100,num_workers=4)
-res.head() ##it contains something like
-
-
-
-	lag	time	signal	signal_low	signal_median	signal_high	prediction_time
-0	1	2006-02-15 03:20:01	-2.009074e-07	-8.994338	-0.003175	0.997296	2006-02-15 03:10:01
-1	1	2006-02-15 03:30:01	-2.009074e-07	-8.994338	-0.003175	0.992540	2006-02-15 03:20:01
-2	1	2006-02-15 03:40:01	-2.009074e-07	-8.994338	-0.003175	1.019817	2006-02-15 03:30:01
-3	1	2006-02-15 03:50:01	-2.009074e-07	-8.994338	-0.003175	0.987681	2006-02-15 03:40:01
-4	1	2006-02-15 04:00:01	-2.009074e-07	-8.994338	-0.003175	1.006510	2006-02-15 03:50:01
-```
-Where signal is the target variable (same name). If a quantile loss has been selected the model generares three signals `_low, _median, _high`, if not the output the model is indicated with `_pred`. Lag indicates wich step the prediction is referred (eg. lag=1 is the frist output of the model along the sequence output). 
+If a quantile loss has been selected the model generates three signals `_low, _median, _high`, if not the output the model is indicated with `_pred`. Lag indicates which step the prediction is referred (eg. lag=1 is the first output of the model along the sequence output). 
 
 ```
 import matplotlib.pyplot as plt
-mask = res.prediction_time=='2006-02-14 12:30:01'   
-plt.plot(res.lag[mask],res.signal[mask],label='real')
-plt.plot(res.lag[mask],res.signal_median[mask],label='median')
+mask = res.prediction_time=='2020-10-19 19:50:00'   
+plt.plot(res.lag[mask],res.y[mask],label='real')
+plt.plot(res.lag[mask],res.y_median[mask],label='median')
 plt.legend()
 ```
 Another useful plot is the error plot per lag where it is possible to observe the increment of the error in correlation with the lag time:
 
 ```
 import numpy as np
-res['error'] =np.abs( res['signal']-res['signal_median'])
+res['error'] =np.abs( res['y']-res['y_median'])
 res.groupby('lag').error.mean().plot()
 ```
 
 
 
-This example can be found in the [first notebook](/notebooks/1-monash_timeseries.ipynb). Another example can be found [here](/notebooks/3-public_timeseries.ipynb).
+This example can be found [here](/notebooks/public_timeseries.ipynb).
 
 # Categorical variables
 Most of the models implemented can deal with categorical variables. In particulare there are some variables that you don't need to computed. When declaring a `ts` obejct you can pass also the parameter `enrich_cat=['dow']` that will add to the dataframe (and to the dataloader) the day of the week. Since now you can automatically add `hour, dow, month and minute`. If there are other categorical variables pleas add it to the list while loading your data.
@@ -298,17 +261,22 @@ It is possible to use one of the following architectures:
 - **Informer** [official repository](https://github.com/zhouhaoyi/Informer2020), [paper](https://arxiv.org/abs/2012.07436)
 - **Autoformer** [non official repository](https://github.com/yuqinie98/PatchTST/tree/main), [paper](https://arxiv.org/abs/2106.13008)
 - **PatchTST** [official repository](https://github.com/yuqinie98/PatchTST/tree/main), [paper](https://arxiv.org/abs/2211.14730)
-- **D3VAE** adaptation of the [official repository](https://github.com/PaddlePaddle/PaddleSpatial), [paper](https://arxiv.org/abs/2301.03028)
 - **Persistent** baseline model
 - **TFT** [paper](https://arxiv.org/abs/1912.09363)
-- **VQVAE** adaptation of [vqvae for images](https://nbviewer.org/github/zalandoresearch/pytorch-vq-vae/blob/master/vq-vae.ipynb) decribed in this [paper](https://arxiv.org/abs/1711.00937) paired with [GPT](https://github.com/karpathy/minGPT) transformer.
-- **VVA** like VQVAE but the tokenization step is performed using a clustering standard procedure.
 - **DilatedConv** dilated convolutional RNN: the transfer of knowledge between past and future is performed reusing the final hidden status of the RNN of the encoder as initial hidden status of the decoder.
 - **DilatedConvED** dilated convolutional RNN with an encoder/decoder structure.
-- **Diffusion** custom [diffusion process](https://arxiv.org/abs/2102.09672) using the attention mechanism in the subnets.
+
 - **ITransformer**  [paper](https://arxiv.org/abs/2310.06625), [official repo](https://github.com/thuml/iTransformer)
 - **TIDE**  [paper](https://arxiv.org/abs/2304.08424)
 - **Samformer**  [paper](https://arxiv.org/pdf/2402.10198) [official repo](https://github.com/romilbert/samformer/tree/main?tab=MIT-1-ov-)
+- **Duet**  [paper](https://arxiv.org/abs/2412.10859) [official repo](https://github.com/decisionintelligence/DUET)
+
+These models are under review because broken or not aligned with the recent distinction between past and future categorical data:
+
+- **Diffusion** custom [diffusion process](https://arxiv.org/abs/2102.09672) using the attention mechanism in the subnets.
+- **D3VAE** adaptation of the [official repository](https://github.com/PaddlePaddle/PaddleSpatial), [paper](https://arxiv.org/abs/2301.03028)
+- **VQVAE** adaptation of [vqvae for images](https://nbviewer.org/github/zalandoresearch/pytorch-vq-vae/blob/master/vq-vae.ipynb) decribed in this [paper](https://arxiv.org/abs/1711.00937) paired with [GPT](https://github.com/karpathy/minGPT) transformer.
+- **VVA** like VQVAE but the tokenization step is performed using a clustering standard procedure.
 
 ## Metrics
 In some cases the persistence model is hard to beat and even the more complex model can fall in the persistence trap that propagates the last seen values. 
@@ -317,8 +285,8 @@ loss, quantile loss, MDA and a couple of experimental losses for minimizing the 
 
 
 
-# Usage 
-In the folder `bash_examples` you can find an example in wich the library is used for training a model from command line using OmegaConf and Hydra with more updated models and examples. Please read the documentation [here](/bash_examples/README.md)
+# Bash experiment
+Most of the time you want to train the models in a cluster with a GPU and command line training procedure can help speedup the process. DSIPTS leverages on OmegaConf-Hydra to to this and in the folder `bash_examples` you can find an examples. Please read the documentation [here](/bash_examples/README.md)
 
 
 
@@ -400,8 +368,4 @@ and then open the url (http://127.0.0.1:43800)[http://127.0.0.1:43800]. It will 
 
 [ ] all snippet of code and notebook must be review in 1.1.5 (categorical past and future, embedding layer parameters)
 
-## UPDATES TRACK
-1.1.1 --> added [SAM optimizer](https://arxiv.org/pdf/2402.10198) need to write also the architecture
-```
- python train.py  --config-dir=config_test --config-name=config architecture=itransformer dataset.path=/home/agobbi/Projects/ExpTS/data train_config.dirpath=tmp inference=tmp model_configs.optim=SAM +optim_config.rho=0.5
- ```
+

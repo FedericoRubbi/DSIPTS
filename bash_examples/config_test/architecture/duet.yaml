@@ -18,7 +18,7 @@ model_configs:
   d_model: 16
   n_head: 1
   n_layer: 2
-  CI: 1
+  CI: false
   d_ff: 16
   noisy_gating: True
   num_experts: 4
