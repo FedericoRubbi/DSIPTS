@@ -27,11 +27,7 @@ Data Structure
 Models
 ------
 
-.. autosummary::
-   :toctree: generated
-   :show-inheritance:
-   :special-members: __init__
-   :undoc-members:
+
 
 .. autoclass:: dsipts.RNN
    :undoc-members:
