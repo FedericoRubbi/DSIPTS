@@ -3,12 +3,14 @@
 model:
   type: 'dilated_conv_ed'
   retrain: true
+  restart: false
 ts:
   name: 'dilated_conv_ed'
   version: 1
   enrich: ['hour']
   use_covariates: true
-  
+  use_future_covariates: true
+  silly: false
 model_configs:
   hidden_RNN: 16
   num_layers_RNN: 1

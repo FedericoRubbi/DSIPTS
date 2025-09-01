@@ -3,12 +3,13 @@
 model:
   type: 'duet'
   retrain: true
+  restart: false
 ts:
   name: 'test'
   version: 1
   enrich: ['hour']
   use_covariates: true
-
+  use_future_covariates: true
 
 model_configs:
   use_classical_positional_encoder: true
@@ -31,7 +32,7 @@ model_configs:
   persistence_weight: 0.010
   loss_type: 'l1'
   activation: torch.nn.ReLU
-
+  quantiles: [0.1,0.5,0.9]
 train_config:
   batch_size: 64
   max_epochs: 2

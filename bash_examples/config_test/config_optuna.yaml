@@ -16,7 +16,8 @@ model_configs:
   quantiles: [0.1,0.5,0.9]
   past_channels : null #dataset dependent
   future_channels : null #dataset dependent
-  embs: null #dataset dependent
+  embs_fut: null #dataset dependent
+  embs_past: null #dataset dependent
   out_channels: null #dataset dependent
 
 split_params:

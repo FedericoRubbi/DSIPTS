@@ -9,20 +9,7 @@ This particular repo is structured for working with the six datasets (that are 9
 
 # Installation
 
-
-In a pre-generated environment install pytorch and pytorch-lightning (`pip install pytorch-lightning==1.9.4`) then go inside the lib folder and execute:
-
-```
-python setup.py install --force
-```
-
-Alternatively, you can install it from the package registry:
-
-```
-pip install --force dsipts --index-url TOKEN
-```
-where token changes frequently (ask to agobbi@fbk.eu). We will find a cleaner solution for this.
-
+See the main documentation. 
 
 # Configuration
 
@@ -201,7 +188,7 @@ ts:
 
 ## for more information about the models please look at the documentation [here] (https://dsip.pages.fbk.eu/dsip_dl research/timeseries/)
 model_configs:
-  cat_emb_dim: 32             # dimension of categorical variables
+  emb_dim: 32             # dimension of categorical variables
   kernel_size: 5              # kernel size 
   sum_emb: true               # if true each embdedding will be summed otherwise stacked
   hidden_size: 256            # hidden size of the fully connected block

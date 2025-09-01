@@ -121,6 +121,9 @@ aim init
 
 Let make an example with the public weather data (you can find it [here](https://drive.google.com/drive/folders/13Cg1KYOlzM5C7K8gK8NfC-F3EYxkM3D2) or [here](https://github.com/thuml/Time-Series-Library?tab=readme-ov-file))
 
+
+
+
 ```python
 import pandas as pd
 import numpy as np
@@ -139,6 +142,31 @@ ts = TimeSeries('weather')
 ts.load_signal( data,enrich_cat=['hour'],target_variables=['y'],past_variables=columns if use_covariates else [], future_variables=columns if use_future_covariate else [] )
 fig = ts.plot() # plot the target variable(s    )
 ```
+The most important part is the method `ts.load_signal` where the user can specify the parameters of the timeseries such as:
+
+
+- **data** (pd.DataFrame) – input dataset the column indicating the time must be called time
+
+- **enrich_cat** (List[str], optional) – it is possible to let this function enrich the dataset for example adding the standard columns: hour, dow, month and minute. Defaults to [].
+
+- **past_variables** (List[str], optional) – list of column names of past variables not available for future times . Defaults to [].
+
+- **future_variables** (List[str], optional) – list of future variables available for future times. Defaults to [].
+
+- **target_variables** (List[str], optional) – list of the target variables. They will added to past_variables by default unless check_past is false. Defaults to [].
+
+- **cat_past_var** (List[str], optional) – list of the past categorical variables. Defaults to [].
+
+- **cat_future_var** (List[str], optional) – list of the future categorical variables. Defaults to [].
+
+- **check_past** (bool, optional) – see target_variables. Defaults to True.
+
+- **group** (str or None, optional) – if not None the time series dataset is considered composed by homogeneous timeseries coming from different realization (for example point of sales, cities, locations) default None (and the relative series are not split during the sample generation. Defaults to)
+
+- **check_holes_and_duplicates** (bool, optional) – if False duplicates or holes will not checked, the dataloader can not correctly work, disable at your own risk. Defaults True
+
+- **silly_model (bool, optional)** – if True, target variables will be added to the pool of the future variables. This can be useful to see if information passes thought the decoder part of your model (if any)
+
 
 
 Now we can define a forecasting problem (`past_steps` as context, `future_steps` as future horizon )
@@ -249,7 +277,9 @@ res.groupby('lag').error.mean().plot()
 This example can be found [here](/notebooks/public_timeseries.ipynb).
 
 # Categorical variables
-Most of the models implemented can deal with categorical variables. In particulare there are some variables that you don't need to computed. When declaring a `ts` obejct you can pass also the parameter `enrich_cat=['dow']` that will add to the dataframe (and to the dataloader) the day of the week. Since now you can automatically add `hour, dow, month and minute`. If there are other categorical variables pleas add it to the list while loading your data.
+Most of the models implemented can deal with categorical variables (`cat_past_var` and `cat_fut_var`). In particulare there are some variables that you don't need to computed. When declaring a `ts` obejct you can pass also the parameter `enrich_cat=['dow']` that will add to the dataframe (and to the dataloader) the day of the week. Since now you can automatically add `hour, dow, month and minute`. If there are other categorical variables pleas add it to the list while loading your data.
+
+
 
 # Models
 A description of each model can be found in the class documentation [here](https://dsip.pages.fbk.eu/dsip_dlresearch/timeseries/). 

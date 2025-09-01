@@ -3,13 +3,14 @@
 model:
   type: 'rnn'
   retrain: true
-
+  restart: false
 ts:
   name: 'test_lstm'
   version: 1
   enrich: ['hour']
   use_covariates: false
-  
+  use_future_covariates: true
+  silly: false
 model_configs:
   use_classical_positional_encoder: true 
   emb_dim: 16 
@@ -20,7 +21,7 @@ model_configs:
   kind: 'lstm'
   optim: torch.optim.SGD
   activation: torch.nn.SELU
-  
+  quantiles: [0.1,0.5,0.9]
 train_config:
   batch_size: 256
   max_epochs: 3

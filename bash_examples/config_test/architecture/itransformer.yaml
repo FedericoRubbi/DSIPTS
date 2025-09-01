@@ -3,13 +3,14 @@
 model:
   type: 'itransformer'
   retrain: true
+  restart: false
 ts:
   name: 'test'
   version: 1
   enrich: ['hour']
   use_covariates: true
-
-
+  use_future_covariates: true
+  silly: false
 model_configs:
   use_classical_positional_encoder: true 
   emb_dim: 16 
@@ -25,7 +26,7 @@ model_configs:
   loss_type: 'l1'
   activation: torch.nn.ReLU
   class_strategy: 'projection' #projection/average/cls_token
-
+  quantiles: [0.1,0.5,0.9]
 train_config:
   batch_size: 32
   max_epochs: 1

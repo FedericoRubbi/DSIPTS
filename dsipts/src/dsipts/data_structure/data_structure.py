@@ -239,7 +239,9 @@ class TimeSeries():
         """ This is a crucial point in the data structure. We expect here to have a dataset with time as timestamp.
             There are some checks:
                 1- the duplicates will tbe removed taking the first instance
+                
                 2- the frequency will the inferred taking the minumum time distance between samples
+               
                 3- the dataset will be filled completing the missing timestamps
 
         Args:
@@ -250,10 +252,8 @@ class TimeSeries():
             target_variables (List[str], optional): list of the target variables. They will added to past_variables by default unless `check_past` is false. Defaults to [].
             cat_past_var (List[str], optional): list of the past categorical variables. Defaults to [].
             cat_future_var (List[str], optional): list of the future categorical variables. Defaults to [].
-
             check_past (bool, optional): see `target_variables`. Defaults to True.
-            group (str or None, optional): if not None the time serie dataset is considered composed by omogeneus timeseries coming from different realization (for example point of sales, cities, locations)
-            and the relative series are not splitted during the sample generation. Defaults to None
+            group (str or None, optional): if not None the time serie dataset is considered composed by omogeneus timeseries coming from different realization (for example point of sales, cities, locations) and the relative series are not splitted during the sample generation. Defaults to None
             check_holes_and_duplicates (bool, optional): if False duplicates or holes will not checked, the dataloader can not correctly work, disable at your own risk. Defaults True
             silly_model (bool, optional): if True, target variables will be added to the pool of the future variables. This can be useful to see if information passes throught the decoder part of your model (if any)
         """

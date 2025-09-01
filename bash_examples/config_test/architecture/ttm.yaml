@@ -3,13 +3,14 @@
 model:
   type: 'ttm'
   retrain: true
+  restart: false
 ts:
   name: 'test'
   version: 1
   enrich: ['hour']
   use_covariates: false
-  silly: True
-
+  silly: false
+  use_future_covariates: true
 
 model_configs:
   model_path: "ibm-granite/granite-timeseries-ttm-r2"

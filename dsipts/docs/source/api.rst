@@ -9,7 +9,6 @@ Data Management
    :nosignatures:
 
    dsipts.Monash
-   dsipts.get_freq
    dsipts.read_public_dataset
 
 Data Structure
@@ -20,10 +19,8 @@ Data Structure
    :nosignatures:
 
    dsipts.TimeSeries
-   dsipts.Categorical
-   dsipts.extend_time_df
-   dsipts.beauty_string
-
+   dsipts.TimeSeries.load_signal
+   
 Models
 ------
 

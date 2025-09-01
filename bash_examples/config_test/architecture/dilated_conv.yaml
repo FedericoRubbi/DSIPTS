@@ -3,12 +3,14 @@
 model:
   type: 'dilated_conv'
   retrain: true
+  restart: false
 ts:
   name: 'dilated_conv'
   version: 1
   enrich: []
   use_covariates: true
-
+  use_future_covariates: true
+  silly: false
 model_configs:
   hidden_RNN: 16
   num_layers_RNN: 1
