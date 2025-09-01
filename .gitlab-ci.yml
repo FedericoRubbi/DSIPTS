@@ -1,5 +1,5 @@
 image: python:3.11
-run:
+#run:
   #script:
   #- pip install twine sphinx-pdj-theme sphinx
   #- python setup.py sdist bdist_wheel
