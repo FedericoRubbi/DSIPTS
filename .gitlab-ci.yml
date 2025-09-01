@@ -8,11 +8,12 @@ image: python:3.11
   #  dist/*
 pages:
   script:
+  - mkdir .public
   - cd dsipts
   - pip install -e .
   - sphinx-build -b html docs/source docs/build
-  - mkdir .public
-  - cp -r docs/build/* .public
+  - cd ..
+  - cp -r dsipts/docs/build/* .public
   - mv .public public
   artifacts:
     paths:
