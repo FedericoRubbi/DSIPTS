@@ -12,7 +12,7 @@ pages:
   - pip install -e .
   - sphinx-build -b html docs/source docs/build
   - mkdir .public
-  - cp -r docs/_build/* .public
+  - cp -r docs/build/* .public
   - mv .public public
   artifacts:
     paths:
