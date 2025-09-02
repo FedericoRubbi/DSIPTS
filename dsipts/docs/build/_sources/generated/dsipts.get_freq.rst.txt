@@ -1,6 +1,0 @@
-﻿dsipts.get\_freq
-================
-
-.. currentmodule:: dsipts
-
-.. autofunction:: get_freq
