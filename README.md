@@ -110,7 +110,7 @@ The pip package wi
 - `uv pip install dist/dsipts-X.Y.Z-py3-none-any.whl` for checking the installation 
 - generate documentation with `uv run sphinx-quickstart docs` (just the first time)
 - `uv run sphinx-apidoc -o docs/source src/dsipts`
-- `uv run sphinx-build -b html docs/source docs/build`
+- `uv run sphinx-build -b html docs/source ../docs`
 ## AIM
 DSIPTS uses AIM for tracking losses, parameters and other useful information. The first time you use DSIPTS you may need to initialize aim executing:
 ```bash
