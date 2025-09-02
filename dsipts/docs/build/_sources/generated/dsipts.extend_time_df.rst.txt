@@ -1,0 +1,6 @@
+﻿dsipts.extend\_time\_df
+=======================
+
+.. currentmodule:: dsipts
+
+.. autofunction:: extend_time_df

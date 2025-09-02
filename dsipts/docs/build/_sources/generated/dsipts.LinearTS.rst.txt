@@ -1,0 +1,186 @@
+﻿dsipts.LinearTS
+===============
+
+.. currentmodule:: dsipts
+
+.. autoclass:: LinearTS
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LinearTS.__init__
+      ~LinearTS.add_module
+      ~LinearTS.all_gather
+      ~LinearTS.apply
+      ~LinearTS.backward
+      ~LinearTS.bfloat16
+      ~LinearTS.buffers
+      ~LinearTS.children
+      ~LinearTS.clip_gradients
+      ~LinearTS.compile
+      ~LinearTS.compute_loss
+      ~LinearTS.configure_callbacks
+      ~LinearTS.configure_gradient_clipping
+      ~LinearTS.configure_model
+      ~LinearTS.configure_optimizers
+      ~LinearTS.configure_sharded_model
+      ~LinearTS.cpu
+      ~LinearTS.cuda
+      ~LinearTS.double
+      ~LinearTS.eval
+      ~LinearTS.extra_repr
+      ~LinearTS.float
+      ~LinearTS.forward
+      ~LinearTS.freeze
+      ~LinearTS.get_buffer
+      ~LinearTS.get_extra_state
+      ~LinearTS.get_parameter
+      ~LinearTS.get_submodule
+      ~LinearTS.half
+      ~LinearTS.inference
+      ~LinearTS.ipu
+      ~LinearTS.load_from_checkpoint
+      ~LinearTS.load_state_dict
+      ~LinearTS.log
+      ~LinearTS.log_dict
+      ~LinearTS.lr_scheduler_step
+      ~LinearTS.lr_schedulers
+      ~LinearTS.manual_backward
+      ~LinearTS.modules
+      ~LinearTS.mtia
+      ~LinearTS.named_buffers
+      ~LinearTS.named_children
+      ~LinearTS.named_modules
+      ~LinearTS.named_parameters
+      ~LinearTS.on_after_backward
+      ~LinearTS.on_after_batch_transfer
+      ~LinearTS.on_before_backward
+      ~LinearTS.on_before_batch_transfer
+      ~LinearTS.on_before_optimizer_step
+      ~LinearTS.on_before_zero_grad
+      ~LinearTS.on_fit_end
+      ~LinearTS.on_fit_start
+      ~LinearTS.on_load_checkpoint
+      ~LinearTS.on_predict_batch_end
+      ~LinearTS.on_predict_batch_start
+      ~LinearTS.on_predict_end
+      ~LinearTS.on_predict_epoch_end
+      ~LinearTS.on_predict_epoch_start
+      ~LinearTS.on_predict_model_eval
+      ~LinearTS.on_predict_start
+      ~LinearTS.on_save_checkpoint
+      ~LinearTS.on_test_batch_end
+      ~LinearTS.on_test_batch_start
+      ~LinearTS.on_test_end
+      ~LinearTS.on_test_epoch_end
+      ~LinearTS.on_test_epoch_start
+      ~LinearTS.on_test_model_eval
+      ~LinearTS.on_test_model_train
+      ~LinearTS.on_test_start
+      ~LinearTS.on_train_batch_end
+      ~LinearTS.on_train_batch_start
+      ~LinearTS.on_train_end
+      ~LinearTS.on_train_epoch_end
+      ~LinearTS.on_train_epoch_start
+      ~LinearTS.on_train_start
+      ~LinearTS.on_validation_batch_end
+      ~LinearTS.on_validation_batch_start
+      ~LinearTS.on_validation_end
+      ~LinearTS.on_validation_epoch_end
+      ~LinearTS.on_validation_epoch_start
+      ~LinearTS.on_validation_model_eval
+      ~LinearTS.on_validation_model_train
+      ~LinearTS.on_validation_model_zero_grad
+      ~LinearTS.on_validation_start
+      ~LinearTS.optimizer_step
+      ~LinearTS.optimizer_zero_grad
+      ~LinearTS.optimizers
+      ~LinearTS.parameters
+      ~LinearTS.predict_dataloader
+      ~LinearTS.predict_step
+      ~LinearTS.prepare_data
+      ~LinearTS.print
+      ~LinearTS.register_backward_hook
+      ~LinearTS.register_buffer
+      ~LinearTS.register_forward_hook
+      ~LinearTS.register_forward_pre_hook
+      ~LinearTS.register_full_backward_hook
+      ~LinearTS.register_full_backward_pre_hook
+      ~LinearTS.register_load_state_dict_post_hook
+      ~LinearTS.register_load_state_dict_pre_hook
+      ~LinearTS.register_module
+      ~LinearTS.register_parameter
+      ~LinearTS.register_state_dict_post_hook
+      ~LinearTS.register_state_dict_pre_hook
+      ~LinearTS.requires_grad_
+      ~LinearTS.save_hyperparameters
+      ~LinearTS.set_extra_state
+      ~LinearTS.set_submodule
+      ~LinearTS.setup
+      ~LinearTS.share_memory
+      ~LinearTS.state_dict
+      ~LinearTS.teardown
+      ~LinearTS.test_dataloader
+      ~LinearTS.test_step
+      ~LinearTS.to
+      ~LinearTS.to_empty
+      ~LinearTS.to_onnx
+      ~LinearTS.to_torchscript
+      ~LinearTS.toggle_optimizer
+      ~LinearTS.toggled_optimizer
+      ~LinearTS.train
+      ~LinearTS.train_dataloader
+      ~LinearTS.training_step
+      ~LinearTS.transfer_batch_to_device
+      ~LinearTS.type
+      ~LinearTS.unfreeze
+      ~LinearTS.untoggle_optimizer
+      ~LinearTS.val_dataloader
+      ~LinearTS.validation_step
+      ~LinearTS.xpu
+      ~LinearTS.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~LinearTS.CHECKPOINT_HYPER_PARAMS_KEY
+      ~LinearTS.CHECKPOINT_HYPER_PARAMS_NAME
+      ~LinearTS.CHECKPOINT_HYPER_PARAMS_TYPE
+      ~LinearTS.T_destination
+      ~LinearTS.automatic_optimization
+      ~LinearTS.call_super_init
+      ~LinearTS.current_epoch
+      ~LinearTS.description
+      ~LinearTS.device
+      ~LinearTS.device_mesh
+      ~LinearTS.dtype
+      ~LinearTS.dump_patches
+      ~LinearTS.example_input_array
+      ~LinearTS.fabric
+      ~LinearTS.global_rank
+      ~LinearTS.global_step
+      ~LinearTS.handle_categorical_variables
+      ~LinearTS.handle_future_covariates
+      ~LinearTS.handle_multivariate
+      ~LinearTS.handle_quantile_loss
+      ~LinearTS.hparams
+      ~LinearTS.hparams_initial
+      ~LinearTS.local_rank
+      ~LinearTS.logger
+      ~LinearTS.loggers
+      ~LinearTS.on_gpu
+      ~LinearTS.strict_loading
+      ~LinearTS.trainer
+      ~LinearTS.training
+   
+   

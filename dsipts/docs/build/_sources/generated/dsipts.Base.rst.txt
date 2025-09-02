@@ -1,0 +1,186 @@
+﻿dsipts.Base
+===========
+
+.. currentmodule:: dsipts
+
+.. autoclass:: Base
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Base.__init__
+      ~Base.add_module
+      ~Base.all_gather
+      ~Base.apply
+      ~Base.backward
+      ~Base.bfloat16
+      ~Base.buffers
+      ~Base.children
+      ~Base.clip_gradients
+      ~Base.compile
+      ~Base.compute_loss
+      ~Base.configure_callbacks
+      ~Base.configure_gradient_clipping
+      ~Base.configure_model
+      ~Base.configure_optimizers
+      ~Base.configure_sharded_model
+      ~Base.cpu
+      ~Base.cuda
+      ~Base.double
+      ~Base.eval
+      ~Base.extra_repr
+      ~Base.float
+      ~Base.forward
+      ~Base.freeze
+      ~Base.get_buffer
+      ~Base.get_extra_state
+      ~Base.get_parameter
+      ~Base.get_submodule
+      ~Base.half
+      ~Base.inference
+      ~Base.ipu
+      ~Base.load_from_checkpoint
+      ~Base.load_state_dict
+      ~Base.log
+      ~Base.log_dict
+      ~Base.lr_scheduler_step
+      ~Base.lr_schedulers
+      ~Base.manual_backward
+      ~Base.modules
+      ~Base.mtia
+      ~Base.named_buffers
+      ~Base.named_children
+      ~Base.named_modules
+      ~Base.named_parameters
+      ~Base.on_after_backward
+      ~Base.on_after_batch_transfer
+      ~Base.on_before_backward
+      ~Base.on_before_batch_transfer
+      ~Base.on_before_optimizer_step
+      ~Base.on_before_zero_grad
+      ~Base.on_fit_end
+      ~Base.on_fit_start
+      ~Base.on_load_checkpoint
+      ~Base.on_predict_batch_end
+      ~Base.on_predict_batch_start
+      ~Base.on_predict_end
+      ~Base.on_predict_epoch_end
+      ~Base.on_predict_epoch_start
+      ~Base.on_predict_model_eval
+      ~Base.on_predict_start
+      ~Base.on_save_checkpoint
+      ~Base.on_test_batch_end
+      ~Base.on_test_batch_start
+      ~Base.on_test_end
+      ~Base.on_test_epoch_end
+      ~Base.on_test_epoch_start
+      ~Base.on_test_model_eval
+      ~Base.on_test_model_train
+      ~Base.on_test_start
+      ~Base.on_train_batch_end
+      ~Base.on_train_batch_start
+      ~Base.on_train_end
+      ~Base.on_train_epoch_end
+      ~Base.on_train_epoch_start
+      ~Base.on_train_start
+      ~Base.on_validation_batch_end
+      ~Base.on_validation_batch_start
+      ~Base.on_validation_end
+      ~Base.on_validation_epoch_end
+      ~Base.on_validation_epoch_start
+      ~Base.on_validation_model_eval
+      ~Base.on_validation_model_train
+      ~Base.on_validation_model_zero_grad
+      ~Base.on_validation_start
+      ~Base.optimizer_step
+      ~Base.optimizer_zero_grad
+      ~Base.optimizers
+      ~Base.parameters
+      ~Base.predict_dataloader
+      ~Base.predict_step
+      ~Base.prepare_data
+      ~Base.print
+      ~Base.register_backward_hook
+      ~Base.register_buffer
+      ~Base.register_forward_hook
+      ~Base.register_forward_pre_hook
+      ~Base.register_full_backward_hook
+      ~Base.register_full_backward_pre_hook
+      ~Base.register_load_state_dict_post_hook
+      ~Base.register_load_state_dict_pre_hook
+      ~Base.register_module
+      ~Base.register_parameter
+      ~Base.register_state_dict_post_hook
+      ~Base.register_state_dict_pre_hook
+      ~Base.requires_grad_
+      ~Base.save_hyperparameters
+      ~Base.set_extra_state
+      ~Base.set_submodule
+      ~Base.setup
+      ~Base.share_memory
+      ~Base.state_dict
+      ~Base.teardown
+      ~Base.test_dataloader
+      ~Base.test_step
+      ~Base.to
+      ~Base.to_empty
+      ~Base.to_onnx
+      ~Base.to_torchscript
+      ~Base.toggle_optimizer
+      ~Base.toggled_optimizer
+      ~Base.train
+      ~Base.train_dataloader
+      ~Base.training_step
+      ~Base.transfer_batch_to_device
+      ~Base.type
+      ~Base.unfreeze
+      ~Base.untoggle_optimizer
+      ~Base.val_dataloader
+      ~Base.validation_step
+      ~Base.xpu
+      ~Base.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Base.CHECKPOINT_HYPER_PARAMS_KEY
+      ~Base.CHECKPOINT_HYPER_PARAMS_NAME
+      ~Base.CHECKPOINT_HYPER_PARAMS_TYPE
+      ~Base.T_destination
+      ~Base.automatic_optimization
+      ~Base.call_super_init
+      ~Base.current_epoch
+      ~Base.description
+      ~Base.device
+      ~Base.device_mesh
+      ~Base.dtype
+      ~Base.dump_patches
+      ~Base.example_input_array
+      ~Base.fabric
+      ~Base.global_rank
+      ~Base.global_step
+      ~Base.handle_categorical_variables
+      ~Base.handle_future_covariates
+      ~Base.handle_multivariate
+      ~Base.handle_quantile_loss
+      ~Base.hparams
+      ~Base.hparams_initial
+      ~Base.local_rank
+      ~Base.logger
+      ~Base.loggers
+      ~Base.on_gpu
+      ~Base.strict_loading
+      ~Base.trainer
+      ~Base.training
+   
+   

@@ -1,0 +1,6 @@
+﻿dsipts.beauty\_string
+=====================
+
+.. currentmodule:: dsipts
+
+.. autofunction:: beauty_string

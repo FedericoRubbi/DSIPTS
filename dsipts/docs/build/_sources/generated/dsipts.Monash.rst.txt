@@ -1,0 +1,27 @@
+﻿dsipts.Monash
+=============
+
+.. currentmodule:: dsipts
+
+.. autoclass:: Monash
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Monash.__init__
+      ~Monash.download_dataset
+      ~Monash.generate_dataset
+      ~Monash.get_table
+      ~Monash.load
+      ~Monash.save
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+﻿dsipts.TimeSeries.load\_signal
+==============================
+
+.. currentmodule:: dsipts
+
+.. automethod:: TimeSeries.load_signal

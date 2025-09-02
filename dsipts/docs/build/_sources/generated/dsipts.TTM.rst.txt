@@ -1,0 +1,186 @@
+﻿dsipts.TTM
+==========
+
+.. currentmodule:: dsipts
+
+.. autoclass:: TTM
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TTM.__init__
+      ~TTM.add_module
+      ~TTM.all_gather
+      ~TTM.apply
+      ~TTM.backward
+      ~TTM.bfloat16
+      ~TTM.buffers
+      ~TTM.children
+      ~TTM.clip_gradients
+      ~TTM.compile
+      ~TTM.compute_loss
+      ~TTM.configure_callbacks
+      ~TTM.configure_gradient_clipping
+      ~TTM.configure_model
+      ~TTM.configure_optimizers
+      ~TTM.configure_sharded_model
+      ~TTM.cpu
+      ~TTM.cuda
+      ~TTM.double
+      ~TTM.eval
+      ~TTM.extra_repr
+      ~TTM.float
+      ~TTM.forward
+      ~TTM.freeze
+      ~TTM.get_buffer
+      ~TTM.get_extra_state
+      ~TTM.get_parameter
+      ~TTM.get_submodule
+      ~TTM.half
+      ~TTM.inference
+      ~TTM.ipu
+      ~TTM.load_from_checkpoint
+      ~TTM.load_state_dict
+      ~TTM.log
+      ~TTM.log_dict
+      ~TTM.lr_scheduler_step
+      ~TTM.lr_schedulers
+      ~TTM.manual_backward
+      ~TTM.modules
+      ~TTM.mtia
+      ~TTM.named_buffers
+      ~TTM.named_children
+      ~TTM.named_modules
+      ~TTM.named_parameters
+      ~TTM.on_after_backward
+      ~TTM.on_after_batch_transfer
+      ~TTM.on_before_backward
+      ~TTM.on_before_batch_transfer
+      ~TTM.on_before_optimizer_step
+      ~TTM.on_before_zero_grad
+      ~TTM.on_fit_end
+      ~TTM.on_fit_start
+      ~TTM.on_load_checkpoint
+      ~TTM.on_predict_batch_end
+      ~TTM.on_predict_batch_start
+      ~TTM.on_predict_end
+      ~TTM.on_predict_epoch_end
+      ~TTM.on_predict_epoch_start
+      ~TTM.on_predict_model_eval
+      ~TTM.on_predict_start
+      ~TTM.on_save_checkpoint
+      ~TTM.on_test_batch_end
+      ~TTM.on_test_batch_start
+      ~TTM.on_test_end
+      ~TTM.on_test_epoch_end
+      ~TTM.on_test_epoch_start
+      ~TTM.on_test_model_eval
+      ~TTM.on_test_model_train
+      ~TTM.on_test_start
+      ~TTM.on_train_batch_end
+      ~TTM.on_train_batch_start
+      ~TTM.on_train_end
+      ~TTM.on_train_epoch_end
+      ~TTM.on_train_epoch_start
+      ~TTM.on_train_start
+      ~TTM.on_validation_batch_end
+      ~TTM.on_validation_batch_start
+      ~TTM.on_validation_end
+      ~TTM.on_validation_epoch_end
+      ~TTM.on_validation_epoch_start
+      ~TTM.on_validation_model_eval
+      ~TTM.on_validation_model_train
+      ~TTM.on_validation_model_zero_grad
+      ~TTM.on_validation_start
+      ~TTM.optimizer_step
+      ~TTM.optimizer_zero_grad
+      ~TTM.optimizers
+      ~TTM.parameters
+      ~TTM.predict_dataloader
+      ~TTM.predict_step
+      ~TTM.prepare_data
+      ~TTM.print
+      ~TTM.register_backward_hook
+      ~TTM.register_buffer
+      ~TTM.register_forward_hook
+      ~TTM.register_forward_pre_hook
+      ~TTM.register_full_backward_hook
+      ~TTM.register_full_backward_pre_hook
+      ~TTM.register_load_state_dict_post_hook
+      ~TTM.register_load_state_dict_pre_hook
+      ~TTM.register_module
+      ~TTM.register_parameter
+      ~TTM.register_state_dict_post_hook
+      ~TTM.register_state_dict_pre_hook
+      ~TTM.requires_grad_
+      ~TTM.save_hyperparameters
+      ~TTM.set_extra_state
+      ~TTM.set_submodule
+      ~TTM.setup
+      ~TTM.share_memory
+      ~TTM.state_dict
+      ~TTM.teardown
+      ~TTM.test_dataloader
+      ~TTM.test_step
+      ~TTM.to
+      ~TTM.to_empty
+      ~TTM.to_onnx
+      ~TTM.to_torchscript
+      ~TTM.toggle_optimizer
+      ~TTM.toggled_optimizer
+      ~TTM.train
+      ~TTM.train_dataloader
+      ~TTM.training_step
+      ~TTM.transfer_batch_to_device
+      ~TTM.type
+      ~TTM.unfreeze
+      ~TTM.untoggle_optimizer
+      ~TTM.val_dataloader
+      ~TTM.validation_step
+      ~TTM.xpu
+      ~TTM.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TTM.CHECKPOINT_HYPER_PARAMS_KEY
+      ~TTM.CHECKPOINT_HYPER_PARAMS_NAME
+      ~TTM.CHECKPOINT_HYPER_PARAMS_TYPE
+      ~TTM.T_destination
+      ~TTM.automatic_optimization
+      ~TTM.call_super_init
+      ~TTM.current_epoch
+      ~TTM.description
+      ~TTM.device
+      ~TTM.device_mesh
+      ~TTM.dtype
+      ~TTM.dump_patches
+      ~TTM.example_input_array
+      ~TTM.fabric
+      ~TTM.global_rank
+      ~TTM.global_step
+      ~TTM.handle_categorical_variables
+      ~TTM.handle_future_covariates
+      ~TTM.handle_multivariate
+      ~TTM.handle_quantile_loss
+      ~TTM.hparams
+      ~TTM.hparams_initial
+      ~TTM.local_rank
+      ~TTM.logger
+      ~TTM.loggers
+      ~TTM.on_gpu
+      ~TTM.strict_loading
+      ~TTM.trainer
+      ~TTM.training
+   
+   

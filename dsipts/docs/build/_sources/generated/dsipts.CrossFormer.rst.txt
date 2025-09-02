@@ -1,0 +1,186 @@
+﻿dsipts.CrossFormer
+==================
+
+.. currentmodule:: dsipts
+
+.. autoclass:: CrossFormer
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~CrossFormer.__init__
+      ~CrossFormer.add_module
+      ~CrossFormer.all_gather
+      ~CrossFormer.apply
+      ~CrossFormer.backward
+      ~CrossFormer.bfloat16
+      ~CrossFormer.buffers
+      ~CrossFormer.children
+      ~CrossFormer.clip_gradients
+      ~CrossFormer.compile
+      ~CrossFormer.compute_loss
+      ~CrossFormer.configure_callbacks
+      ~CrossFormer.configure_gradient_clipping
+      ~CrossFormer.configure_model
+      ~CrossFormer.configure_optimizers
+      ~CrossFormer.configure_sharded_model
+      ~CrossFormer.cpu
+      ~CrossFormer.cuda
+      ~CrossFormer.double
+      ~CrossFormer.eval
+      ~CrossFormer.extra_repr
+      ~CrossFormer.float
+      ~CrossFormer.forward
+      ~CrossFormer.freeze
+      ~CrossFormer.get_buffer
+      ~CrossFormer.get_extra_state
+      ~CrossFormer.get_parameter
+      ~CrossFormer.get_submodule
+      ~CrossFormer.half
+      ~CrossFormer.inference
+      ~CrossFormer.ipu
+      ~CrossFormer.load_from_checkpoint
+      ~CrossFormer.load_state_dict
+      ~CrossFormer.log
+      ~CrossFormer.log_dict
+      ~CrossFormer.lr_scheduler_step
+      ~CrossFormer.lr_schedulers
+      ~CrossFormer.manual_backward
+      ~CrossFormer.modules
+      ~CrossFormer.mtia
+      ~CrossFormer.named_buffers
+      ~CrossFormer.named_children
+      ~CrossFormer.named_modules
+      ~CrossFormer.named_parameters
+      ~CrossFormer.on_after_backward
+      ~CrossFormer.on_after_batch_transfer
+      ~CrossFormer.on_before_backward
+      ~CrossFormer.on_before_batch_transfer
+      ~CrossFormer.on_before_optimizer_step
+      ~CrossFormer.on_before_zero_grad
+      ~CrossFormer.on_fit_end
+      ~CrossFormer.on_fit_start
+      ~CrossFormer.on_load_checkpoint
+      ~CrossFormer.on_predict_batch_end
+      ~CrossFormer.on_predict_batch_start
+      ~CrossFormer.on_predict_end
+      ~CrossFormer.on_predict_epoch_end
+      ~CrossFormer.on_predict_epoch_start
+      ~CrossFormer.on_predict_model_eval
+      ~CrossFormer.on_predict_start
+      ~CrossFormer.on_save_checkpoint
+      ~CrossFormer.on_test_batch_end
+      ~CrossFormer.on_test_batch_start
+      ~CrossFormer.on_test_end
+      ~CrossFormer.on_test_epoch_end
+      ~CrossFormer.on_test_epoch_start
+      ~CrossFormer.on_test_model_eval
+      ~CrossFormer.on_test_model_train
+      ~CrossFormer.on_test_start
+      ~CrossFormer.on_train_batch_end
+      ~CrossFormer.on_train_batch_start
+      ~CrossFormer.on_train_end
+      ~CrossFormer.on_train_epoch_end
+      ~CrossFormer.on_train_epoch_start
+      ~CrossFormer.on_train_start
+      ~CrossFormer.on_validation_batch_end
+      ~CrossFormer.on_validation_batch_start
+      ~CrossFormer.on_validation_end
+      ~CrossFormer.on_validation_epoch_end
+      ~CrossFormer.on_validation_epoch_start
+      ~CrossFormer.on_validation_model_eval
+      ~CrossFormer.on_validation_model_train
+      ~CrossFormer.on_validation_model_zero_grad
+      ~CrossFormer.on_validation_start
+      ~CrossFormer.optimizer_step
+      ~CrossFormer.optimizer_zero_grad
+      ~CrossFormer.optimizers
+      ~CrossFormer.parameters
+      ~CrossFormer.predict_dataloader
+      ~CrossFormer.predict_step
+      ~CrossFormer.prepare_data
+      ~CrossFormer.print
+      ~CrossFormer.register_backward_hook
+      ~CrossFormer.register_buffer
+      ~CrossFormer.register_forward_hook
+      ~CrossFormer.register_forward_pre_hook
+      ~CrossFormer.register_full_backward_hook
+      ~CrossFormer.register_full_backward_pre_hook
+      ~CrossFormer.register_load_state_dict_post_hook
+      ~CrossFormer.register_load_state_dict_pre_hook
+      ~CrossFormer.register_module
+      ~CrossFormer.register_parameter
+      ~CrossFormer.register_state_dict_post_hook
+      ~CrossFormer.register_state_dict_pre_hook
+      ~CrossFormer.requires_grad_
+      ~CrossFormer.save_hyperparameters
+      ~CrossFormer.set_extra_state
+      ~CrossFormer.set_submodule
+      ~CrossFormer.setup
+      ~CrossFormer.share_memory
+      ~CrossFormer.state_dict
+      ~CrossFormer.teardown
+      ~CrossFormer.test_dataloader
+      ~CrossFormer.test_step
+      ~CrossFormer.to
+      ~CrossFormer.to_empty
+      ~CrossFormer.to_onnx
+      ~CrossFormer.to_torchscript
+      ~CrossFormer.toggle_optimizer
+      ~CrossFormer.toggled_optimizer
+      ~CrossFormer.train
+      ~CrossFormer.train_dataloader
+      ~CrossFormer.training_step
+      ~CrossFormer.transfer_batch_to_device
+      ~CrossFormer.type
+      ~CrossFormer.unfreeze
+      ~CrossFormer.untoggle_optimizer
+      ~CrossFormer.val_dataloader
+      ~CrossFormer.validation_step
+      ~CrossFormer.xpu
+      ~CrossFormer.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~CrossFormer.CHECKPOINT_HYPER_PARAMS_KEY
+      ~CrossFormer.CHECKPOINT_HYPER_PARAMS_NAME
+      ~CrossFormer.CHECKPOINT_HYPER_PARAMS_TYPE
+      ~CrossFormer.T_destination
+      ~CrossFormer.automatic_optimization
+      ~CrossFormer.call_super_init
+      ~CrossFormer.current_epoch
+      ~CrossFormer.description
+      ~CrossFormer.device
+      ~CrossFormer.device_mesh
+      ~CrossFormer.dtype
+      ~CrossFormer.dump_patches
+      ~CrossFormer.example_input_array
+      ~CrossFormer.fabric
+      ~CrossFormer.global_rank
+      ~CrossFormer.global_step
+      ~CrossFormer.handle_categorical_variables
+      ~CrossFormer.handle_future_covariates
+      ~CrossFormer.handle_multivariate
+      ~CrossFormer.handle_quantile_loss
+      ~CrossFormer.hparams
+      ~CrossFormer.hparams_initial
+      ~CrossFormer.local_rank
+      ~CrossFormer.logger
+      ~CrossFormer.loggers
+      ~CrossFormer.on_gpu
+      ~CrossFormer.strict_loading
+      ~CrossFormer.trainer
+      ~CrossFormer.training
+   
+   

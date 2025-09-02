@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>dsipts.VVA &#8212; DSIPTS 1.1.5 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=a48ae3df"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="dsipts-vva">
+<h1>dsipts.VVA<a class="headerlink" href="#dsipts-vva" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="dsipts.VVA">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dsipts.</span></span><span class="sig-name descname"><span class="pre">VVA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">past_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">past_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_voc_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_heads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persistence_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'l1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dsipts.VVA" title="Link to this definition">¶</a></dt>
+<dd><p>Custom encoder-decoder</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>past_steps</strong> (<em>int</em>) – number of past datapoints used</p></li>
+<li><p><strong>future_steps</strong> (<em>int</em>) – number of future lag to predict</p></li>
+<li><p><strong>past_channels</strong> (<em>int</em>) – number of numeric past variables, must be &gt;0</p></li>
+<li><p><strong>future_channels</strong> (<em>int</em>) – number of future numeric variables</p></li>
+<li><p><strong>embs</strong> (<em>List</em>) – list of the initial dimension of the categorical variables</p></li>
+<li><p><strong>cat_emb_dim</strong> (<em>int</em>) – final dimension of each categorical variable</p></li>
+<li><p><strong>hidden_RNN</strong> (<em>int</em>) – hidden size of the RNN block</p></li>
+<li><p><strong>num_layers_RNN</strong> (<em>int</em>) – number of RNN layers</p></li>
+<li><p><strong>kind</strong> (<em>str</em>) – one among GRU or LSTM</p></li>
+<li><p><strong>kernel_size</strong> (<em>int</em>) – kernel size in the encoder convolutional block</p></li>
+<li><p><strong>sum_emb</strong> (<em>bool</em>) – if true the contribution of each embedding will be summed-up otherwise stacked</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – number of output channels</p></li>
+<li><p><strong>activation</strong> (<em>str</em><em>, </em><em>optional</em>) – activation fuction function pytorch. Default torch.nn.ReLU</p></li>
+<li><p><strong>remove_last</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True the model learns the difference respect to the last seen point</p></li>
+<li><p><strong>persistence_weight</strong> (<em>float</em>) – weight controlling the divergence from persistence model. Default 0</p></li>
+<li><p><strong>loss_type</strong> (<em>str</em><em>, </em><em>optional</em>) – this model uses custom losses or l1 or mse. Custom losses can be linear_penalization or exponential_penalization. Default l1,</p></li>
+<li><p><strong>quantiles</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – we can use quantile loss il len(quantiles) = 0 (usually 0.1,0.5, 0.9) or L1loss in case len(quantiles)==0. Defaults to [].</p></li>
+<li><p><strong>dropout_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – dropout rate in Dropout layers</p></li>
+<li><p><strong>use_bn</strong> (<em>bool</em><em>, </em><em>optional</em>) – if true BN layers will be added and dropouts will be removed</p></li>
+<li><p><strong>use_glu</strong> (<em>bool</em><em>,</em><em>optional</em>) – use GLU for feature selection. Defaults to True.</p></li>
+<li><p><strong>glu_percentage</strong> (<em>float</em><em>, </em><em>optiona</em>) – percentage of features to use. Defaults to 1.0.</p></li>
+<li><p><strong>n_classes</strong> (<em>int</em>) – number of classes (0 in regression)</p></li>
+<li><p><strong>optim</strong> (<em>str</em><em>, </em><em>optional</em>) – if not None it expects a pytorch optim method. Defaults to None that is mapped to Adam.</p></li>
+<li><p><strong>optim_config</strong> (<em>dict</em><em>, </em><em>optional</em>) – configuration for Adam optimizer. Defaults to None.</p></li>
+<li><p><strong>scheduler_config</strong> (<em>dict</em><em>, </em><em>optional</em>) – configuration for stepLR scheduler. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="dsipts.VVA.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">past_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">past_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_voc_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_heads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persistence_weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'l1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optim_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#dsipts.VVA.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Custom encoder-decoder</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>past_steps</strong> (<em>int</em>) – number of past datapoints used</p></li>
+<li><p><strong>future_steps</strong> (<em>int</em>) – number of future lag to predict</p></li>
+<li><p><strong>past_channels</strong> (<em>int</em>) – number of numeric past variables, must be &gt;0</p></li>
+<li><p><strong>future_channels</strong> (<em>int</em>) – number of future numeric variables</p></li>
+<li><p><strong>embs</strong> (<em>List</em>) – list of the initial dimension of the categorical variables</p></li>
+<li><p><strong>cat_emb_dim</strong> (<em>int</em>) – final dimension of each categorical variable</p></li>
+<li><p><strong>hidden_RNN</strong> (<em>int</em>) – hidden size of the RNN block</p></li>
+<li><p><strong>num_layers_RNN</strong> (<em>int</em>) – number of RNN layers</p></li>
+<li><p><strong>kind</strong> (<em>str</em>) – one among GRU or LSTM</p></li>
+<li><p><strong>kernel_size</strong> (<em>int</em>) – kernel size in the encoder convolutional block</p></li>
+<li><p><strong>sum_emb</strong> (<em>bool</em>) – if true the contribution of each embedding will be summed-up otherwise stacked</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – number of output channels</p></li>
+<li><p><strong>activation</strong> (<em>str</em><em>, </em><em>optional</em>) – activation fuction function pytorch. Default torch.nn.ReLU</p></li>
+<li><p><strong>remove_last</strong> (<em>bool</em><em>, </em><em>optional</em>) – if True the model learns the difference respect to the last seen point</p></li>
+<li><p><strong>persistence_weight</strong> (<em>float</em>) – weight controlling the divergence from persistence model. Default 0</p></li>
+<li><p><strong>loss_type</strong> (<em>str</em><em>, </em><em>optional</em>) – this model uses custom losses or l1 or mse. Custom losses can be linear_penalization or exponential_penalization. Default l1,</p></li>
+<li><p><strong>quantiles</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – we can use quantile loss il len(quantiles) = 0 (usually 0.1,0.5, 0.9) or L1loss in case len(quantiles)==0. Defaults to [].</p></li>
+<li><p><strong>dropout_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – dropout rate in Dropout layers</p></li>
+<li><p><strong>use_bn</strong> (<em>bool</em><em>, </em><em>optional</em>) – if true BN layers will be added and dropouts will be removed</p></li>
+<li><p><strong>use_glu</strong> (<em>bool</em><em>,</em><em>optional</em>) – use GLU for feature selection. Defaults to True.</p></li>
+<li><p><strong>glu_percentage</strong> (<em>float</em><em>, </em><em>optiona</em>) – percentage of features to use. Defaults to 1.0.</p></li>
+<li><p><strong>n_classes</strong> (<em>int</em>) – number of classes (0 in regression)</p></li>
+<li><p><strong>optim</strong> (<em>str</em><em>, </em><em>optional</em>) – if not None it expects a pytorch optim method. Defaults to None that is mapped to Adam.</p></li>
+<li><p><strong>optim_config</strong> (<em>dict</em><em>, </em><em>optional</em>) – configuration for Adam optimizer. Defaults to None.</p></li>
+<li><p><strong>scheduler_config</strong> (<em>dict</em><em>, </em><em>optional</em>) – configuration for stepLR scheduler. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#dsipts.VVA.__init__" title="dsipts.VVA.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(past_steps, future_steps, ...[, ...])</p></td>
+<td><p>Custom encoder-decoder</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_module</span></code>(name, module)</p></td>
+<td><p>Add a child module to the current module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_gather</span></code>(data[, group, sync_grads])</p></td>
+<td><p>Gather tensors or collections of tensors from multiple processes.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply</span></code>(fn)</p></td>
+<td><p>Apply <code class="docutils literal notranslate"><span class="pre">fn</span></code> recursively to every submodule (as returned by <code class="docutils literal notranslate"><span class="pre">.children()</span></code>) as well as self.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">backward</span></code>(loss, *args, **kwargs)</p></td>
+<td><p>Called to perform backward on the loss returned in <code class="xref py py-meth docutils literal notranslate"><span class="pre">training_step()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bfloat16</span></code>()</p></td>
+<td><p>Casts all floating point parameters and buffers to <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> datatype.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">buffers</span></code>([recurse])</p></td>
+<td><p>Return an iterator over module buffers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">children</span></code>()</p></td>
+<td><p>Return an iterator over immediate children modules.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">clip_gradients</span></code>(optimizer[, ...])</p></td>
+<td><p>Handles gradient clipping internally.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile</span></code>(*args, **kwargs)</p></td>
+<td><p>Compile this Module's forward using <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_loss</span></code>(batch, y_hat)</p></td>
+<td><p>custom loss calculation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">configure_callbacks</span></code>()</p></td>
+<td><p>Configure model-specific callbacks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">configure_gradient_clipping</span></code>(optimizer[, ...])</p></td>
+<td><p>Perform gradient clipping for the optimizer parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">configure_model</span></code>()</p></td>
+<td><p>Hook to create modules in a strategy and precision aware context.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">configure_optimizers</span></code>()</p></td>
+<td><p>This long function is unfortunately doing something very simple and is being very defensive: We are separating out all parameters of the model into two buckets: those that will experience weight decay for regularization and those that won't (biases, and layernorm/embedding weights).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">configure_sharded_model</span></code>()</p></td>
+<td><p>Deprecated.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cpu</span></code>()</p></td>
+<td><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.nn.Module.cpu()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cuda</span></code>([device])</p></td>
+<td><p>Moves all model parameters and buffers to the GPU.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">double</span></code>()</p></td>
+<td><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.nn.Module.double()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval</span></code>()</p></td>
+<td><p>Set the module in evaluation mode.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extra_repr</span></code>()</p></td>
+<td><p>Return the extra representation of the module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>()</p></td>
+<td><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.nn.Module.float()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">forward</span></code>(batch)</p></td>
+<td><p>Forlward method used during the training loop</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">freeze</span></code>()</p></td>
+<td><p>Freeze all params for inference.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate</span></code>(idx, max_new_tokens[, temperature, ...])</p></td>
+<td><p>Take a conditioning sequence of indices idx (LongTensor of shape (b,t)) and complete the sequence max_new_tokens times, feeding the predictions back into the model each time.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer</span></code>(target)</p></td>
+<td><p>Return the buffer given by <code class="docutils literal notranslate"><span class="pre">target</span></code> if it exists, otherwise throw an error.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_extra_state</span></code>()</p></td>
+<td><p>Return any extra state to include in the module's state_dict.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_parameter</span></code>(target)</p></td>
+<td><p>Return the parameter given by <code class="docutils literal notranslate"><span class="pre">target</span></code> if it exists, otherwise throw an error.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_submodule</span></code>(target)</p></td>
+<td><p>Return the submodule given by <code class="docutils literal notranslate"><span class="pre">target</span></code> if it exists, otherwise throw an error.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">half</span></code>()</p></td>
+<td><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.nn.Module.half()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">inference</span></code>(batch)</p></td>
+<td><p>Usually it is ok to return the output of the forward method but sometimes not (e.g. RNN).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ipu</span></code>([device])</p></td>
+<td><p>Move all model parameters and buffers to the IPU.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_from_checkpoint</span></code>(checkpoint_path[, ...])</p></td>
+<td><p>Primary way of loading a model from a checkpoint.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_state_dict</span></code>(state_dict[, strict, assign])</p></td>
+<td><p>Copy parameters and buffers from <code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code> into this module and its descendants.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code>(name, value[, prog_bar, logger, ...])</p></td>
+<td><p>Log a key, value pair.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_dict</span></code>(dictionary[, prog_bar, logger, ...])</p></td>
+<td><p>Log a dictionary of values at once.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lr_scheduler_step</span></code>(scheduler, metric)</p></td>
+<td><p>Override this method to adjust the default way the <code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code> calls each scheduler.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lr_schedulers</span></code>()</p></td>
+<td><p>Returns the learning rate scheduler(s) that are being used during training.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">manual_backward</span></code>(loss, *args, **kwargs)</p></td>
+<td><p>Call this directly from your <code class="xref py py-meth docutils literal notranslate"><span class="pre">training_step()</span></code> when doing optimizations manually.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modules</span></code>()</p></td>
+<td><p>Return an iterator over all modules in the network.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mtia</span></code>([device])</p></td>
+<td><p>Move all model parameters and buffers to the MTIA.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">named_buffers</span></code>([prefix, recurse, ...])</p></td>
+<td><p>Return an iterator over module buffers, yielding both the name of the buffer as well as the buffer itself.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">named_children</span></code>()</p></td>
+<td><p>Return an iterator over immediate children modules, yielding both the name of the module as well as the module itself.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">named_modules</span></code>([memo, prefix, remove_duplicate])</p></td>
+<td><p>Return an iterator over all modules in the network, yielding both the name of the module as well as the module itself.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">named_parameters</span></code>([prefix, recurse, ...])</p></td>
+<td><p>Return an iterator over module parameters, yielding both the name of the parameter as well as the parameter itself.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_after_backward</span></code>()</p></td>
+<td><p>Called after <code class="docutils literal notranslate"><span class="pre">loss.backward()</span></code> and before optimizers are stepped.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_after_batch_transfer</span></code>(batch, dataloader_idx)</p></td>
+<td><p>Override to alter or apply batch augmentations to your batch after it is transferred to the device.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_before_backward</span></code>(loss)</p></td>
+<td><p>Called before <code class="docutils literal notranslate"><span class="pre">loss.backward()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_before_batch_transfer</span></code>(batch, dataloader_idx)</p></td>
+<td><p>Override to alter or apply batch augmentations to your batch before it is transferred to the device.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_before_optimizer_step</span></code>(optimizer)</p></td>
+<td><p>Called before <code class="docutils literal notranslate"><span class="pre">optimizer.step()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_before_zero_grad</span></code>(optimizer)</p></td>
+<td><p>Called after <code class="docutils literal notranslate"><span class="pre">training_step()</span></code> and before <code class="docutils literal notranslate"><span class="pre">optimizer.zero_grad()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_fit_end</span></code>()</p></td>
+<td><p>Called at the very end of fit.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_fit_start</span></code>()</p></td>
+<td><p>Called at the very beginning of fit.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_load_checkpoint</span></code>(checkpoint)</p></td>
+<td><p>Called by Lightning to restore your model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_predict_batch_end</span></code>(outputs, batch, batch_idx)</p></td>
+<td><p>Called in the predict loop after the batch.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_predict_batch_start</span></code>(batch, batch_idx[, ...])</p></td>
+<td><p>Called in the predict loop before anything happens for that batch.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_predict_end</span></code>()</p></td>
+<td><p>Called at the end of predicting.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_predict_epoch_end</span></code>()</p></td>
+<td><p>Called at the end of predicting.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_predict_epoch_start</span></code>()</p></td>
+<td><p>Called at the beginning of predicting.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_predict_model_eval</span></code>()</p></td>
+<td><p>Called when the predict loop starts.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_predict_start</span></code>()</p></td>
+<td><p>Called at the beginning of predicting.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_save_checkpoint</span></code>(checkpoint)</p></td>
+<td><p>Called by Lightning when saving a checkpoint to give you a chance to store anything else you might want to save.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_test_batch_end</span></code>(outputs, batch, batch_idx)</p></td>
+<td><p>Called in the test loop after the batch.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_test_batch_start</span></code>(batch, batch_idx[, ...])</p></td>
+<td><p>Called in the test loop before anything happens for that batch.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_test_end</span></code>()</p></td>
+<td><p>Called at the end of testing.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_test_epoch_end</span></code>()</p></td>
+<td><p>Called in the test loop at the very end of the epoch.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_test_epoch_start</span></code>()</p></td>
+<td><p>Called in the test loop at the very beginning of the epoch.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_test_model_eval</span></code>()</p></td>
+<td><p>Called when the test loop starts.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_test_model_train</span></code>()</p></td>
+<td><p>Called when the test loop ends.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_test_start</span></code>()</p></td>
+<td><p>Called at the beginning of testing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_train_batch_end</span></code>(outputs, batch, batch_idx)</p></td>
+<td><p>Called in the training loop after the batch.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_train_batch_start</span></code>(batch, batch_idx)</p></td>
+<td><p>Called in the training loop before anything happens for that batch.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_train_end</span></code>()</p></td>
+<td><p>Called at the end of training before logger experiment is closed.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_train_epoch_end</span></code>()</p></td>
+<td><p>pythotrch lightening stuff</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_train_epoch_start</span></code>()</p></td>
+<td><p>Called in the training loop at the very beginning of the epoch.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_train_start</span></code>()</p></td>
+<td><p>Called at the beginning of training after sanity check.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_validation_batch_end</span></code>(outputs, batch, ...)</p></td>
+<td><p>Called in the validation loop after the batch.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_validation_batch_start</span></code>(batch, batch_idx)</p></td>
+<td><p>Called in the validation loop before anything happens for that batch.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_validation_end</span></code>()</p></td>
+<td><p>Called at the end of validation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_validation_epoch_end</span></code>()</p></td>
+<td><p>pythotrch lightening stuff</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_validation_epoch_start</span></code>()</p></td>
+<td><p>Called in the validation loop at the very beginning of the epoch.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_validation_model_eval</span></code>()</p></td>
+<td><p>Called when the validation loop starts.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_validation_model_train</span></code>()</p></td>
+<td><p>Called when the validation loop ends.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_validation_model_zero_grad</span></code>()</p></td>
+<td><p>Called by the training loop to release gradients before entering the validation loop.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_validation_start</span></code>()</p></td>
+<td><p>Called at the beginning of validation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimizer_step</span></code>(epoch, batch_idx, optimizer)</p></td>
+<td><p>Override this method to adjust the default way the <code class="xref py py-class docutils literal notranslate"><span class="pre">Trainer</span></code> calls the optimizer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimizer_zero_grad</span></code>(epoch, batch_idx, optimizer)</p></td>
+<td><p>Override this method to change the default behaviour of <code class="docutils literal notranslate"><span class="pre">optimizer.zero_grad()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimizers</span></code>([use_pl_optimizer])</p></td>
+<td><p>Returns the optimizer(s) that are being used during training.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameters</span></code>([recurse])</p></td>
+<td><p>Return an iterator over module parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_dataloader</span></code>()</p></td>
+<td><p>An iterable or collection of iterables specifying prediction samples.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict_step</span></code>(*args, **kwargs)</p></td>
+<td><p>Step function called during <code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_data</span></code>()</p></td>
+<td><p>Use this to download and prepare data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">print</span></code>(*args, **kwargs)</p></td>
+<td><p>Prints only from process 0.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_backward_hook</span></code>(hook)</p></td>
+<td><p>Register a backward hook on the module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_buffer</span></code>(name, tensor[, persistent])</p></td>
+<td><p>Add a buffer to the module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_forward_hook</span></code>(hook, *[, prepend, ...])</p></td>
+<td><p>Register a forward hook on the module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_forward_pre_hook</span></code>(hook, *[, ...])</p></td>
+<td><p>Register a forward pre-hook on the module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_full_backward_hook</span></code>(hook[, prepend])</p></td>
+<td><p>Register a backward hook on the module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_full_backward_pre_hook</span></code>(hook[, prepend])</p></td>
+<td><p>Register a backward pre-hook on the module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_load_state_dict_post_hook</span></code>(hook)</p></td>
+<td><p>Register a post-hook to be run after module's <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_state_dict()</span></code> is called.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_load_state_dict_pre_hook</span></code>(hook)</p></td>
+<td><p>Register a pre-hook to be run before module's <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_state_dict()</span></code> is called.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_module</span></code>(name, module)</p></td>
+<td><p>Alias for <code class="xref py py-func docutils literal notranslate"><span class="pre">add_module()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_parameter</span></code>(name, param)</p></td>
+<td><p>Add a parameter to the module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_state_dict_post_hook</span></code>(hook)</p></td>
+<td><p>Register a post-hook for the <code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code> method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_state_dict_pre_hook</span></code>(hook)</p></td>
+<td><p>Register a pre-hook for the <code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code> method.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">requires_grad_</span></code>([requires_grad])</p></td>
+<td><p>Change if autograd should record operations on parameters in this module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_hyperparameters</span></code>(*args[, ignore, frame, ...])</p></td>
+<td><p>Save arguments to <code class="docutils literal notranslate"><span class="pre">hparams</span></code> attribute.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_extra_state</span></code>(state)</p></td>
+<td><p>Set extra state contained in the loaded <cite>state_dict</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_submodule</span></code>(target, module[, strict])</p></td>
+<td><p>Set the submodule given by <code class="docutils literal notranslate"><span class="pre">target</span></code> if it exists, otherwise throw an error.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup</span></code>(stage)</p></td>
+<td><p>Called at the beginning of fit (train + validate), validate, test, or predict.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">share_memory</span></code>()</p></td>
+<td><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.Tensor.share_memory_()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">state_dict</span></code>(*args[, destination, prefix, ...])</p></td>
+<td><p>Return a dictionary containing references to the whole state of the module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">teardown</span></code>(stage)</p></td>
+<td><p>Called at the end of fit (train + validate), validate, test, or predict.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_dataloader</span></code>()</p></td>
+<td><p>An iterable or collection of iterables specifying test samples.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_step</span></code>(*args, **kwargs)</p></td>
+<td><p>Operates on a single batch of data from the test set.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code>(*args, **kwargs)</p></td>
+<td><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.nn.Module.to()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_empty</span></code>(*, device[, recurse])</p></td>
+<td><p>Move the parameters and buffers to the specified device without copying storage.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_onnx</span></code>([file_path, input_sample])</p></td>
+<td><p>Saves the model in ONNX format.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_torchscript</span></code>([file_path, method, ...])</p></td>
+<td><p>By default compiles the whole model to a <code class="xref py py-class docutils literal notranslate"><span class="pre">ScriptModule</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">toggle_optimizer</span></code>(optimizer)</p></td>
+<td><p>Makes sure only the gradients of the current optimizer's parameters are calculated in the training step to prevent dangling gradients in multiple-optimizer setup.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">toggled_optimizer</span></code>(optimizer)</p></td>
+<td><p>Makes sure only the gradients of the current optimizer's parameters are calculated in the training step to prevent dangling gradients in multiple-optimizer setup.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code>([mode])</p></td>
+<td><p>Set the module in training mode.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_dataloader</span></code>()</p></td>
+<td><p>An iterable or collection of iterables specifying training samples.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training_step</span></code>(batch, batch_idx)</p></td>
+<td><p>pythotrch lightening stuff</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">transfer_batch_to_device</span></code>(batch, device, ...)</p></td>
+<td><p>Override this hook if your <code class="xref py py-class docutils literal notranslate"><span class="pre">DataLoader</span></code> returns tensors wrapped in a custom data structure.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code>(dst_type)</p></td>
+<td><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.nn.Module.type()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unfreeze</span></code>()</p></td>
+<td><p>Unfreeze all parameters for training.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">untoggle_optimizer</span></code>(optimizer)</p></td>
+<td><p>Resets the state of required gradients that were toggled with <code class="xref py py-meth docutils literal notranslate"><span class="pre">toggle_optimizer()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">val_dataloader</span></code>()</p></td>
+<td><p>An iterable or collection of iterables specifying validation samples.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation_step</span></code>(batch, batch_idx)</p></td>
+<td><p>pythotrch lightening stuff</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpu</span></code>([device])</p></td>
+<td><p>Move all model parameters and buffers to the XPU.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zero_grad</span></code>([set_to_none])</p></td>
+<td><p>Reset gradients of all model parameters.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CHECKPOINT_HYPER_PARAMS_KEY</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CHECKPOINT_HYPER_PARAMS_NAME</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CHECKPOINT_HYPER_PARAMS_TYPE</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">T_destination</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">automatic_optimization</span></code></p></td>
+<td><p>If set to <code class="docutils literal notranslate"><span class="pre">False</span></code> you are responsible for calling <code class="docutils literal notranslate"><span class="pre">.backward()</span></code>, <code class="docutils literal notranslate"><span class="pre">.step()</span></code>, <code class="docutils literal notranslate"><span class="pre">.zero_grad()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">call_super_init</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">current_epoch</span></code></p></td>
+<td><p>The current epoch in the <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>, or 0 if not attached.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">description</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">device</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">device_mesh</span></code></p></td>
+<td><p>Strategies like <code class="docutils literal notranslate"><span class="pre">ModelParallelStrategy</span></code> will create a device mesh that can be accessed in the <code class="xref py py-meth docutils literal notranslate"><span class="pre">configure_model()</span></code> hook to parallelize the LightningModule.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_patches</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">example_input_array</span></code></p></td>
+<td><p>The example input array is a specification of what the module can consume in the <code class="xref py py-meth docutils literal notranslate"><span class="pre">forward()</span></code> method.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fabric</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_rank</span></code></p></td>
+<td><p>The index of the current process across all nodes and devices.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">global_step</span></code></p></td>
+<td><p>Total training batches seen across all epochs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_categorical_variables</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_future_covariates</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_multivariate</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">handle_quantile_loss</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hparams</span></code></p></td>
+<td><p>The collection of hyperparameters saved with <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_hyperparameters()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hparams_initial</span></code></p></td>
+<td><p>The collection of hyperparameters saved with <code class="xref py py-meth docutils literal notranslate"><span class="pre">save_hyperparameters()</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">local_rank</span></code></p></td>
+<td><p>The index of the current process within a single node.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">logger</span></code></p></td>
+<td><p>Reference to the logger object in the Trainer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">loggers</span></code></p></td>
+<td><p>Reference to the list of loggers in the Trainer.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_gpu</span></code></p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this model is currently located on a GPU.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strict_loading</span></code></p></td>
+<td><p>Determines how Lightning loads this model using <cite>.load_state_dict(..., strict=model.strict_loading)</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">trainer</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">DSIPTS</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/generated/dsipts.VVA.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

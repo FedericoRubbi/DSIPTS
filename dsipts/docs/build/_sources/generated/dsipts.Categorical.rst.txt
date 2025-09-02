@@ -1,0 +1,25 @@
+﻿dsipts.Categorical
+==================
+
+.. currentmodule:: dsipts
+
+.. autoclass:: Categorical
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Categorical.__init__
+      ~Categorical.generate_signal
+      ~Categorical.plot
+      ~Categorical.validate
+   
+   
+
+   
+   
+   

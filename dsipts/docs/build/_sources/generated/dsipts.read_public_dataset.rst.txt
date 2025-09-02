@@ -1,0 +1,6 @@
+﻿dsipts.read\_public\_dataset
+============================
+
+.. currentmodule:: dsipts
+
+.. autofunction:: read_public_dataset
