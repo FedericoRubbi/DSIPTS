@@ -130,7 +130,7 @@ def train(conf: DictConfig) -> None:
         ts.save(os.path.join(conf.train_config.dirpath,'model'))
         with open(os.path.join(used_config,selection+'.yaml'),'w') as f:
             f.write(OmegaConf.to_yaml(conf))
-        beauty_string(f'FINISH TRAINING PROCEDURE in {(time.time()-tot_seconds)/60} with loss = {valid_loss}','block', VERBOSE)
+        beauty_string(f'FINISH TRAINING PROCEDURE in {((time.time()-tot_seconds)/60):.2f} minutes with loss = {(valid_loss):.2f}','block', VERBOSE)
     
         
     return valid_loss ##for optuna!    

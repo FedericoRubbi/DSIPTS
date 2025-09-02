@@ -11,6 +11,7 @@ ts:
   use_covariates: false
   use_future_covariates: true
   silly: false
+  
 model_configs:
   use_classical_positional_encoder: true 
   emb_dim: 17

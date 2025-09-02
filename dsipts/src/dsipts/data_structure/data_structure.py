@@ -2,7 +2,7 @@ import numpy as np
 import plotly.express as px
 import pandas as pd
 from typing import List
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
 from sklearn.preprocessing import * 
 from torch.utils.data import DataLoader
 from .utils import extend_time_df,MetricsCallback, MyDataset, ActionEnum,beauty_string
@@ -410,7 +410,7 @@ class TimeSeries():
             tot = []
             groups = data[self.group].unique()
             
-            data[self.group] = self.scaler_cat[self.group].transform(data[self.group].values.ravel()).flatten()
+            data[self.group] = self.scaler_cat[self.group].transform(data[self.group].values.reshape(-1,1)).flatten()
             
             for group in groups:
                 tmp = data[data['_GROUP_']==group].copy()
@@ -419,12 +419,12 @@ class TimeSeries():
                     tmp[c] = self.scaler_num[f'{c}_{group}'].transform(tmp[c].values.reshape(-1,1)).flatten()
                 for c in self.cat_var:      
                     if c!=self.group:                         
-                        tmp[c] = self.scaler_cat[f'{c}_{group}'].transform(tmp[c].values.ravel()).flatten()
+                        tmp[c] = self.scaler_cat[f'{c}_{group}'].transform(tmp[c].values.reshape(-1,1)).flatten()
                 tot.append(tmp)
             data = pd.concat(tot,ignore_index=True)
         else:
             for c in self.cat_var:
-                data[c] = self.scaler_cat[c].transform(data[c].values.ravel()).flatten()
+                data[c] = self.scaler_cat[c].transform(data[c].values.reshape(-1,1)).flatten()
             for c in self.num_var: 
                 data[c] = self.scaler_num[c].transform(data[c].values.reshape(-1,1)).flatten()
 
@@ -510,9 +510,9 @@ class TimeSeries():
         g_samples = np.stack(g_samples)
 
         if len(self.cat_past_var)>0:
-            x_cat_past_samples = np.stack(x_cat_past_samples)
+            x_cat_past_samples = np.stack(x_cat_past_samples).astype(np.int32)
         if len(self.cat_fut_var)>0:
-            x_cat_future_samples = np.stack(x_cat_future_samples)
+            x_cat_future_samples = np.stack(x_cat_future_samples).astype(np.int32)
         x_num_past_samples = np.stack(x_num_past_samples)
         if self.stacked:
             mod = 0
@@ -619,19 +619,19 @@ class TimeSeries():
         else:
             self.scaler_cat = {}
             self.scaler_num = {}
-        
             if self.group is None or normalize_per_group is False:
                 self.normalize_per_group = False
                 for c in self.num_var:
                     self.scaler_num[c] =  eval(scaler)
                     self.scaler_num[c].fit(train[c].values.reshape(-1,1))
                 for c in self.cat_var:                               
-                    self.scaler_cat[c] =  LabelEncoder()
-                    self.scaler_cat[c].fit(train[c].values.ravel())  
+                    self.scaler_cat[c] =  OrdinalEncoder(dtype=np.int32,handle_unknown= 'use_encoded_value',unknown_value=train[c].nunique())
+                   
+                    self.scaler_cat[c].fit(train[c].values.reshape(-1,1))  
             else:
                 self.normalize_per_group = True
-                self.scaler_cat[self.group] =  LabelEncoder()
-                self.scaler_cat[self.group].fit(train[self.group].values.ravel())  
+                self.scaler_cat[self.group] =  OrdinalEncoder(dtype=np.int32,handle_unknown= 'use_encoded_value',unknown_value=train[c].nunique())
+                self.scaler_cat[self.group].fit(train[self.group].values.reshape(-1,1))  
                 for group in train[self.group].unique():
                     tmp = train[train[self.group]==group]
 
@@ -640,8 +640,8 @@ class TimeSeries():
                         self.scaler_num[f'{c}_{group}'].fit(tmp[c].values.reshape(-1,1))
                     for c in self.cat_var:
                         if c!=self.group:                               
-                            self.scaler_cat[f'{c}_{group}'] =  LabelEncoder()
-                            self.scaler_cat[f'{c}_{group}'].fit(tmp[c].values.ravel())  
+                            self.scaler_cat[f'{c}_{group}'] =  OrdinalEncoder(dtype=np.int32,handle_unknown= 'use_encoded_value',unknown_value=train[c].nunique())
+                            self.scaler_cat[f'{c}_{group}'].fit(tmp[c].values.reshape(-1,1))  
 
         dl_train = self.create_data_loader(train,past_steps,future_steps,shift,keep_entire_seq_while_shifting,starting_point,skip_step)
         dl_validation = self.create_data_loader(validation,past_steps,future_steps,shift,keep_entire_seq_while_shifting,starting_point,skip_step)

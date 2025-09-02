@@ -2,6 +2,9 @@ dataset:
   dataset: 'weather'  
   path: null
   
+model:
+  restart: false
+  retrain: true
 ts:
   name: 'test'
   version: 1
@@ -29,7 +32,7 @@ model_configs:
   out_channels: null #dataset dependent
 
 stack:
-  dirpath: null
+  dirpath: null ##leave it null
 
 split_params:
   perc_train: 0.7
@@ -48,7 +51,8 @@ train_config:
   num_workers: 0
   auto_lr_find: true
   devices: [0]                   
-  seed: 42    
+  seed: 42   
+  max_epochs: 5 
 inference:
   output_path: tmp
   load_last: true
