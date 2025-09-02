@@ -1,0 +1,186 @@
+﻿dsipts.Samformer
+================
+
+.. currentmodule:: dsipts
+
+.. autoclass:: Samformer
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Samformer.__init__
+      ~Samformer.add_module
+      ~Samformer.all_gather
+      ~Samformer.apply
+      ~Samformer.backward
+      ~Samformer.bfloat16
+      ~Samformer.buffers
+      ~Samformer.children
+      ~Samformer.clip_gradients
+      ~Samformer.compile
+      ~Samformer.compute_loss
+      ~Samformer.configure_callbacks
+      ~Samformer.configure_gradient_clipping
+      ~Samformer.configure_model
+      ~Samformer.configure_optimizers
+      ~Samformer.configure_sharded_model
+      ~Samformer.cpu
+      ~Samformer.cuda
+      ~Samformer.double
+      ~Samformer.eval
+      ~Samformer.extra_repr
+      ~Samformer.float
+      ~Samformer.forward
+      ~Samformer.freeze
+      ~Samformer.get_buffer
+      ~Samformer.get_extra_state
+      ~Samformer.get_parameter
+      ~Samformer.get_submodule
+      ~Samformer.half
+      ~Samformer.inference
+      ~Samformer.ipu
+      ~Samformer.load_from_checkpoint
+      ~Samformer.load_state_dict
+      ~Samformer.log
+      ~Samformer.log_dict
+      ~Samformer.lr_scheduler_step
+      ~Samformer.lr_schedulers
+      ~Samformer.manual_backward
+      ~Samformer.modules
+      ~Samformer.mtia
+      ~Samformer.named_buffers
+      ~Samformer.named_children
+      ~Samformer.named_modules
+      ~Samformer.named_parameters
+      ~Samformer.on_after_backward
+      ~Samformer.on_after_batch_transfer
+      ~Samformer.on_before_backward
+      ~Samformer.on_before_batch_transfer
+      ~Samformer.on_before_optimizer_step
+      ~Samformer.on_before_zero_grad
+      ~Samformer.on_fit_end
+      ~Samformer.on_fit_start
+      ~Samformer.on_load_checkpoint
+      ~Samformer.on_predict_batch_end
+      ~Samformer.on_predict_batch_start
+      ~Samformer.on_predict_end
+      ~Samformer.on_predict_epoch_end
+      ~Samformer.on_predict_epoch_start
+      ~Samformer.on_predict_model_eval
+      ~Samformer.on_predict_start
+      ~Samformer.on_save_checkpoint
+      ~Samformer.on_test_batch_end
+      ~Samformer.on_test_batch_start
+      ~Samformer.on_test_end
+      ~Samformer.on_test_epoch_end
+      ~Samformer.on_test_epoch_start
+      ~Samformer.on_test_model_eval
+      ~Samformer.on_test_model_train
+      ~Samformer.on_test_start
+      ~Samformer.on_train_batch_end
+      ~Samformer.on_train_batch_start
+      ~Samformer.on_train_end
+      ~Samformer.on_train_epoch_end
+      ~Samformer.on_train_epoch_start
+      ~Samformer.on_train_start
+      ~Samformer.on_validation_batch_end
+      ~Samformer.on_validation_batch_start
+      ~Samformer.on_validation_end
+      ~Samformer.on_validation_epoch_end
+      ~Samformer.on_validation_epoch_start
+      ~Samformer.on_validation_model_eval
+      ~Samformer.on_validation_model_train
+      ~Samformer.on_validation_model_zero_grad
+      ~Samformer.on_validation_start
+      ~Samformer.optimizer_step
+      ~Samformer.optimizer_zero_grad
+      ~Samformer.optimizers
+      ~Samformer.parameters
+      ~Samformer.predict_dataloader
+      ~Samformer.predict_step
+      ~Samformer.prepare_data
+      ~Samformer.print
+      ~Samformer.register_backward_hook
+      ~Samformer.register_buffer
+      ~Samformer.register_forward_hook
+      ~Samformer.register_forward_pre_hook
+      ~Samformer.register_full_backward_hook
+      ~Samformer.register_full_backward_pre_hook
+      ~Samformer.register_load_state_dict_post_hook
+      ~Samformer.register_load_state_dict_pre_hook
+      ~Samformer.register_module
+      ~Samformer.register_parameter
+      ~Samformer.register_state_dict_post_hook
+      ~Samformer.register_state_dict_pre_hook
+      ~Samformer.requires_grad_
+      ~Samformer.save_hyperparameters
+      ~Samformer.set_extra_state
+      ~Samformer.set_submodule
+      ~Samformer.setup
+      ~Samformer.share_memory
+      ~Samformer.state_dict
+      ~Samformer.teardown
+      ~Samformer.test_dataloader
+      ~Samformer.test_step
+      ~Samformer.to
+      ~Samformer.to_empty
+      ~Samformer.to_onnx
+      ~Samformer.to_torchscript
+      ~Samformer.toggle_optimizer
+      ~Samformer.toggled_optimizer
+      ~Samformer.train
+      ~Samformer.train_dataloader
+      ~Samformer.training_step
+      ~Samformer.transfer_batch_to_device
+      ~Samformer.type
+      ~Samformer.unfreeze
+      ~Samformer.untoggle_optimizer
+      ~Samformer.val_dataloader
+      ~Samformer.validation_step
+      ~Samformer.xpu
+      ~Samformer.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Samformer.CHECKPOINT_HYPER_PARAMS_KEY
+      ~Samformer.CHECKPOINT_HYPER_PARAMS_NAME
+      ~Samformer.CHECKPOINT_HYPER_PARAMS_TYPE
+      ~Samformer.T_destination
+      ~Samformer.automatic_optimization
+      ~Samformer.call_super_init
+      ~Samformer.current_epoch
+      ~Samformer.description
+      ~Samformer.device
+      ~Samformer.device_mesh
+      ~Samformer.dtype
+      ~Samformer.dump_patches
+      ~Samformer.example_input_array
+      ~Samformer.fabric
+      ~Samformer.global_rank
+      ~Samformer.global_step
+      ~Samformer.handle_categorical_variables
+      ~Samformer.handle_future_covariates
+      ~Samformer.handle_multivariate
+      ~Samformer.handle_quantile_loss
+      ~Samformer.hparams
+      ~Samformer.hparams_initial
+      ~Samformer.local_rank
+      ~Samformer.logger
+      ~Samformer.loggers
+      ~Samformer.on_gpu
+      ~Samformer.strict_loading
+      ~Samformer.trainer
+      ~Samformer.training
+   
+   

@@ -1,0 +1,186 @@
+﻿dsipts.Duet
+===========
+
+.. currentmodule:: dsipts
+
+.. autoclass:: Duet
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Duet.__init__
+      ~Duet.add_module
+      ~Duet.all_gather
+      ~Duet.apply
+      ~Duet.backward
+      ~Duet.bfloat16
+      ~Duet.buffers
+      ~Duet.children
+      ~Duet.clip_gradients
+      ~Duet.compile
+      ~Duet.compute_loss
+      ~Duet.configure_callbacks
+      ~Duet.configure_gradient_clipping
+      ~Duet.configure_model
+      ~Duet.configure_optimizers
+      ~Duet.configure_sharded_model
+      ~Duet.cpu
+      ~Duet.cuda
+      ~Duet.double
+      ~Duet.eval
+      ~Duet.extra_repr
+      ~Duet.float
+      ~Duet.forward
+      ~Duet.freeze
+      ~Duet.get_buffer
+      ~Duet.get_extra_state
+      ~Duet.get_parameter
+      ~Duet.get_submodule
+      ~Duet.half
+      ~Duet.inference
+      ~Duet.ipu
+      ~Duet.load_from_checkpoint
+      ~Duet.load_state_dict
+      ~Duet.log
+      ~Duet.log_dict
+      ~Duet.lr_scheduler_step
+      ~Duet.lr_schedulers
+      ~Duet.manual_backward
+      ~Duet.modules
+      ~Duet.mtia
+      ~Duet.named_buffers
+      ~Duet.named_children
+      ~Duet.named_modules
+      ~Duet.named_parameters
+      ~Duet.on_after_backward
+      ~Duet.on_after_batch_transfer
+      ~Duet.on_before_backward
+      ~Duet.on_before_batch_transfer
+      ~Duet.on_before_optimizer_step
+      ~Duet.on_before_zero_grad
+      ~Duet.on_fit_end
+      ~Duet.on_fit_start
+      ~Duet.on_load_checkpoint
+      ~Duet.on_predict_batch_end
+      ~Duet.on_predict_batch_start
+      ~Duet.on_predict_end
+      ~Duet.on_predict_epoch_end
+      ~Duet.on_predict_epoch_start
+      ~Duet.on_predict_model_eval
+      ~Duet.on_predict_start
+      ~Duet.on_save_checkpoint
+      ~Duet.on_test_batch_end
+      ~Duet.on_test_batch_start
+      ~Duet.on_test_end
+      ~Duet.on_test_epoch_end
+      ~Duet.on_test_epoch_start
+      ~Duet.on_test_model_eval
+      ~Duet.on_test_model_train
+      ~Duet.on_test_start
+      ~Duet.on_train_batch_end
+      ~Duet.on_train_batch_start
+      ~Duet.on_train_end
+      ~Duet.on_train_epoch_end
+      ~Duet.on_train_epoch_start
+      ~Duet.on_train_start
+      ~Duet.on_validation_batch_end
+      ~Duet.on_validation_batch_start
+      ~Duet.on_validation_end
+      ~Duet.on_validation_epoch_end
+      ~Duet.on_validation_epoch_start
+      ~Duet.on_validation_model_eval
+      ~Duet.on_validation_model_train
+      ~Duet.on_validation_model_zero_grad
+      ~Duet.on_validation_start
+      ~Duet.optimizer_step
+      ~Duet.optimizer_zero_grad
+      ~Duet.optimizers
+      ~Duet.parameters
+      ~Duet.predict_dataloader
+      ~Duet.predict_step
+      ~Duet.prepare_data
+      ~Duet.print
+      ~Duet.register_backward_hook
+      ~Duet.register_buffer
+      ~Duet.register_forward_hook
+      ~Duet.register_forward_pre_hook
+      ~Duet.register_full_backward_hook
+      ~Duet.register_full_backward_pre_hook
+      ~Duet.register_load_state_dict_post_hook
+      ~Duet.register_load_state_dict_pre_hook
+      ~Duet.register_module
+      ~Duet.register_parameter
+      ~Duet.register_state_dict_post_hook
+      ~Duet.register_state_dict_pre_hook
+      ~Duet.requires_grad_
+      ~Duet.save_hyperparameters
+      ~Duet.set_extra_state
+      ~Duet.set_submodule
+      ~Duet.setup
+      ~Duet.share_memory
+      ~Duet.state_dict
+      ~Duet.teardown
+      ~Duet.test_dataloader
+      ~Duet.test_step
+      ~Duet.to
+      ~Duet.to_empty
+      ~Duet.to_onnx
+      ~Duet.to_torchscript
+      ~Duet.toggle_optimizer
+      ~Duet.toggled_optimizer
+      ~Duet.train
+      ~Duet.train_dataloader
+      ~Duet.training_step
+      ~Duet.transfer_batch_to_device
+      ~Duet.type
+      ~Duet.unfreeze
+      ~Duet.untoggle_optimizer
+      ~Duet.val_dataloader
+      ~Duet.validation_step
+      ~Duet.xpu
+      ~Duet.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Duet.CHECKPOINT_HYPER_PARAMS_KEY
+      ~Duet.CHECKPOINT_HYPER_PARAMS_NAME
+      ~Duet.CHECKPOINT_HYPER_PARAMS_TYPE
+      ~Duet.T_destination
+      ~Duet.automatic_optimization
+      ~Duet.call_super_init
+      ~Duet.current_epoch
+      ~Duet.description
+      ~Duet.device
+      ~Duet.device_mesh
+      ~Duet.dtype
+      ~Duet.dump_patches
+      ~Duet.example_input_array
+      ~Duet.fabric
+      ~Duet.global_rank
+      ~Duet.global_step
+      ~Duet.handle_categorical_variables
+      ~Duet.handle_future_covariates
+      ~Duet.handle_multivariate
+      ~Duet.handle_quantile_loss
+      ~Duet.hparams
+      ~Duet.hparams_initial
+      ~Duet.local_rank
+      ~Duet.logger
+      ~Duet.loggers
+      ~Duet.on_gpu
+      ~Duet.strict_loading
+      ~Duet.trainer
+      ~Duet.training
+   
+   
