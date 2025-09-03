@@ -19,6 +19,8 @@ The original repository is located [here](https://gitlab.fbk.eu/dsip/dsip_dlrese
 
 The library can now be found also on pip [here](https://pypi.org/project/dsipts/) and in github [here](https://github.com/DSIP-FBK/DSIPTS`). The readme of the library can be found [here](dsipts/README.md).
 
+The pip package (experimental) is available [here](https://pypi.org/project/dsipts).
+
 ## Suite for training models
 
 [Here](bash_examples/README.md) you can find useful code for training and comparing different architectures using Hydra and Omegaconf (mulitprocess, slurm cluster and optuna sweepers).
