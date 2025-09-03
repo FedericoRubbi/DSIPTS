@@ -21,4 +21,4 @@ The library can now be found also on pip [here](https://pypi.org/project/dsipts/
 
 ## Suite for training models
 
-[Here](bash_examples/README.md) you can find useful code for training and comparing different architectures using Hydra and Omegaconf (multiplrocess, slurm cluster and optuna sweepers).
+[Here](bash_examples/README.md) you can find useful code for training and comparing different architectures using Hydra and Omegaconf (mulitprocess, slurm cluster and optuna sweepers).

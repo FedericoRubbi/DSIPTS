@@ -2,7 +2,7 @@
 
 # DSIPTS: unified library for timeseries modelling
 > [!CAUTION]
-THE DOCUMENTATION, README and notebook are somehow outdated, please be patient!
+The documentation, README and notebook are somehow outdated, some architectures are under review, please be patient. Moreover, there will some frequent changes due to refactoring or documentation update. Wait the version 1.2.0 for more stable library (in terms of structure and documentation) or even 2.0.0 for the tests, assertions and other standard stuff.
 
 This library allows to:
 
