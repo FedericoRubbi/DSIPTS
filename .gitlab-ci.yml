@@ -1,18 +1,19 @@
-image: python:3.9
-run:
-  script:
-  - pip install twine sphinx-pdj-theme sphinx
-  - python setup.py sdist bdist_wheel
-  - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine
-    upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
-    dist/*
+image: python:3.11
+#run:
+  #script:
+  #- pip install twine sphinx-pdj-theme sphinx
+  #- python setup.py sdist bdist_wheel
+  #- TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine
+  #  upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi
+  #  dist/*
 pages:
   script:
-  - pip install -r requirements.txt
-  - pip install --force dsipts --index-url https://dsipts:glpat-98SR11neR7hzxy__SueG@gitlab.fbk.eu/api/v4/projects/4571/packages/pypi/simple
-  - "./make_doc.sh"
   - mkdir .public
-  - cp -r docs/_build/html/* .public
+  - cd dsipts
+  - pip install -e .
+  - sphinx-build -b html docs/source docs/build
+  - cd ..
+  - cp -r dsipts/docs/build/* .public
   - mv .public public
   artifacts:
     paths:

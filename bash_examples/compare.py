@@ -55,7 +55,8 @@ def compare(conf:DictConfig)-> None:
         beauty_string(f'PROCESSING {conf_tmp.model.type}_{conf_tmp.ts.name}_{conf_tmp.ts.version}','section',VERBOSE)
 
         try:
-            tmp,predictions, losses = inference(conf_tmp)
+            conf_tmp.split_params.skip_step = 1 ## FORCE
+            tmp,predictions, losses = inference(conf_tmp,conf_tmp.split_params)
             if tmp is not None:
                 tmp['model'] = f'{conf_tmp.model.type}_{conf_tmp.ts.name}_{conf_tmp.ts.version}'
                 predictions['model'] = f'{conf_tmp.model.type}_{conf_tmp.ts.name}_{conf_tmp.ts.version}'
@@ -76,6 +77,7 @@ def compare(conf:DictConfig)-> None:
 
         
         except Exception as e:
+
             beauty_string(f'Can not load model {conf_tmp.model.type}_{conf_tmp.ts.name}_{conf_tmp.ts.version} {e} ','',True)
             beauty_string(f'ERROR:{traceback.format_exc()}','block',True)
             pass

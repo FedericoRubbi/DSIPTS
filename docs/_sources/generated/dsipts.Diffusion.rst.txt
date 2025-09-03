@@ -1,0 +1,193 @@
+﻿dsipts.Diffusion
+================
+
+.. currentmodule:: dsipts
+
+.. autoclass:: Diffusion
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Diffusion.__init__
+      ~Diffusion.add_module
+      ~Diffusion.all_gather
+      ~Diffusion.apply
+      ~Diffusion.backward
+      ~Diffusion.bfloat16
+      ~Diffusion.buffers
+      ~Diffusion.cat_categorical_vars
+      ~Diffusion.children
+      ~Diffusion.clip_gradients
+      ~Diffusion.compile
+      ~Diffusion.compute_loss
+      ~Diffusion.configure_callbacks
+      ~Diffusion.configure_gradient_clipping
+      ~Diffusion.configure_model
+      ~Diffusion.configure_optimizers
+      ~Diffusion.configure_sharded_model
+      ~Diffusion.cpu
+      ~Diffusion.cuda
+      ~Diffusion.double
+      ~Diffusion.eval
+      ~Diffusion.extra_repr
+      ~Diffusion.float
+      ~Diffusion.forward
+      ~Diffusion.freeze
+      ~Diffusion.gaussian_likelihood
+      ~Diffusion.gaussian_log_likelihood
+      ~Diffusion.get_buffer
+      ~Diffusion.get_extra_state
+      ~Diffusion.get_parameter
+      ~Diffusion.get_submodule
+      ~Diffusion.half
+      ~Diffusion.improving_weight_during_training
+      ~Diffusion.inference
+      ~Diffusion.ipu
+      ~Diffusion.load_from_checkpoint
+      ~Diffusion.load_state_dict
+      ~Diffusion.log
+      ~Diffusion.log_dict
+      ~Diffusion.lr_scheduler_step
+      ~Diffusion.lr_schedulers
+      ~Diffusion.manual_backward
+      ~Diffusion.modules
+      ~Diffusion.mtia
+      ~Diffusion.named_buffers
+      ~Diffusion.named_children
+      ~Diffusion.named_modules
+      ~Diffusion.named_parameters
+      ~Diffusion.normal_kl
+      ~Diffusion.on_after_backward
+      ~Diffusion.on_after_batch_transfer
+      ~Diffusion.on_before_backward
+      ~Diffusion.on_before_batch_transfer
+      ~Diffusion.on_before_optimizer_step
+      ~Diffusion.on_before_zero_grad
+      ~Diffusion.on_fit_end
+      ~Diffusion.on_fit_start
+      ~Diffusion.on_load_checkpoint
+      ~Diffusion.on_predict_batch_end
+      ~Diffusion.on_predict_batch_start
+      ~Diffusion.on_predict_end
+      ~Diffusion.on_predict_epoch_end
+      ~Diffusion.on_predict_epoch_start
+      ~Diffusion.on_predict_model_eval
+      ~Diffusion.on_predict_start
+      ~Diffusion.on_save_checkpoint
+      ~Diffusion.on_test_batch_end
+      ~Diffusion.on_test_batch_start
+      ~Diffusion.on_test_end
+      ~Diffusion.on_test_epoch_end
+      ~Diffusion.on_test_epoch_start
+      ~Diffusion.on_test_model_eval
+      ~Diffusion.on_test_model_train
+      ~Diffusion.on_test_start
+      ~Diffusion.on_train_batch_end
+      ~Diffusion.on_train_batch_start
+      ~Diffusion.on_train_end
+      ~Diffusion.on_train_epoch_end
+      ~Diffusion.on_train_epoch_start
+      ~Diffusion.on_train_start
+      ~Diffusion.on_validation_batch_end
+      ~Diffusion.on_validation_batch_start
+      ~Diffusion.on_validation_end
+      ~Diffusion.on_validation_epoch_end
+      ~Diffusion.on_validation_epoch_start
+      ~Diffusion.on_validation_model_eval
+      ~Diffusion.on_validation_model_train
+      ~Diffusion.on_validation_model_zero_grad
+      ~Diffusion.on_validation_start
+      ~Diffusion.optimizer_step
+      ~Diffusion.optimizer_zero_grad
+      ~Diffusion.optimizers
+      ~Diffusion.parameters
+      ~Diffusion.predict_dataloader
+      ~Diffusion.predict_step
+      ~Diffusion.prepare_data
+      ~Diffusion.print
+      ~Diffusion.q_sample
+      ~Diffusion.register_backward_hook
+      ~Diffusion.register_buffer
+      ~Diffusion.register_forward_hook
+      ~Diffusion.register_forward_pre_hook
+      ~Diffusion.register_full_backward_hook
+      ~Diffusion.register_full_backward_pre_hook
+      ~Diffusion.register_load_state_dict_post_hook
+      ~Diffusion.register_load_state_dict_pre_hook
+      ~Diffusion.register_module
+      ~Diffusion.register_parameter
+      ~Diffusion.register_state_dict_post_hook
+      ~Diffusion.register_state_dict_pre_hook
+      ~Diffusion.remove_var
+      ~Diffusion.requires_grad_
+      ~Diffusion.save_hyperparameters
+      ~Diffusion.set_extra_state
+      ~Diffusion.set_submodule
+      ~Diffusion.setup
+      ~Diffusion.share_memory
+      ~Diffusion.state_dict
+      ~Diffusion.teardown
+      ~Diffusion.test_dataloader
+      ~Diffusion.test_step
+      ~Diffusion.to
+      ~Diffusion.to_empty
+      ~Diffusion.to_onnx
+      ~Diffusion.to_torchscript
+      ~Diffusion.toggle_optimizer
+      ~Diffusion.toggled_optimizer
+      ~Diffusion.train
+      ~Diffusion.train_dataloader
+      ~Diffusion.training_step
+      ~Diffusion.transfer_batch_to_device
+      ~Diffusion.type
+      ~Diffusion.unfreeze
+      ~Diffusion.untoggle_optimizer
+      ~Diffusion.val_dataloader
+      ~Diffusion.validation_step
+      ~Diffusion.xpu
+      ~Diffusion.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Diffusion.CHECKPOINT_HYPER_PARAMS_KEY
+      ~Diffusion.CHECKPOINT_HYPER_PARAMS_NAME
+      ~Diffusion.CHECKPOINT_HYPER_PARAMS_TYPE
+      ~Diffusion.T_destination
+      ~Diffusion.automatic_optimization
+      ~Diffusion.call_super_init
+      ~Diffusion.current_epoch
+      ~Diffusion.description
+      ~Diffusion.device
+      ~Diffusion.device_mesh
+      ~Diffusion.dtype
+      ~Diffusion.dump_patches
+      ~Diffusion.example_input_array
+      ~Diffusion.fabric
+      ~Diffusion.global_rank
+      ~Diffusion.global_step
+      ~Diffusion.handle_categorical_variables
+      ~Diffusion.handle_future_covariates
+      ~Diffusion.handle_multivariate
+      ~Diffusion.handle_quantile_loss
+      ~Diffusion.hparams
+      ~Diffusion.hparams_initial
+      ~Diffusion.local_rank
+      ~Diffusion.logger
+      ~Diffusion.loggers
+      ~Diffusion.on_gpu
+      ~Diffusion.strict_loading
+      ~Diffusion.trainer
+      ~Diffusion.training
+   
+   

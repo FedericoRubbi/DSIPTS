@@ -1,0 +1,186 @@
+﻿dsipts.Persistent
+=================
+
+.. currentmodule:: dsipts
+
+.. autoclass:: Persistent
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Persistent.__init__
+      ~Persistent.add_module
+      ~Persistent.all_gather
+      ~Persistent.apply
+      ~Persistent.backward
+      ~Persistent.bfloat16
+      ~Persistent.buffers
+      ~Persistent.children
+      ~Persistent.clip_gradients
+      ~Persistent.compile
+      ~Persistent.compute_loss
+      ~Persistent.configure_callbacks
+      ~Persistent.configure_gradient_clipping
+      ~Persistent.configure_model
+      ~Persistent.configure_optimizers
+      ~Persistent.configure_sharded_model
+      ~Persistent.cpu
+      ~Persistent.cuda
+      ~Persistent.double
+      ~Persistent.eval
+      ~Persistent.extra_repr
+      ~Persistent.float
+      ~Persistent.forward
+      ~Persistent.freeze
+      ~Persistent.get_buffer
+      ~Persistent.get_extra_state
+      ~Persistent.get_parameter
+      ~Persistent.get_submodule
+      ~Persistent.half
+      ~Persistent.inference
+      ~Persistent.ipu
+      ~Persistent.load_from_checkpoint
+      ~Persistent.load_state_dict
+      ~Persistent.log
+      ~Persistent.log_dict
+      ~Persistent.lr_scheduler_step
+      ~Persistent.lr_schedulers
+      ~Persistent.manual_backward
+      ~Persistent.modules
+      ~Persistent.mtia
+      ~Persistent.named_buffers
+      ~Persistent.named_children
+      ~Persistent.named_modules
+      ~Persistent.named_parameters
+      ~Persistent.on_after_backward
+      ~Persistent.on_after_batch_transfer
+      ~Persistent.on_before_backward
+      ~Persistent.on_before_batch_transfer
+      ~Persistent.on_before_optimizer_step
+      ~Persistent.on_before_zero_grad
+      ~Persistent.on_fit_end
+      ~Persistent.on_fit_start
+      ~Persistent.on_load_checkpoint
+      ~Persistent.on_predict_batch_end
+      ~Persistent.on_predict_batch_start
+      ~Persistent.on_predict_end
+      ~Persistent.on_predict_epoch_end
+      ~Persistent.on_predict_epoch_start
+      ~Persistent.on_predict_model_eval
+      ~Persistent.on_predict_start
+      ~Persistent.on_save_checkpoint
+      ~Persistent.on_test_batch_end
+      ~Persistent.on_test_batch_start
+      ~Persistent.on_test_end
+      ~Persistent.on_test_epoch_end
+      ~Persistent.on_test_epoch_start
+      ~Persistent.on_test_model_eval
+      ~Persistent.on_test_model_train
+      ~Persistent.on_test_start
+      ~Persistent.on_train_batch_end
+      ~Persistent.on_train_batch_start
+      ~Persistent.on_train_end
+      ~Persistent.on_train_epoch_end
+      ~Persistent.on_train_epoch_start
+      ~Persistent.on_train_start
+      ~Persistent.on_validation_batch_end
+      ~Persistent.on_validation_batch_start
+      ~Persistent.on_validation_end
+      ~Persistent.on_validation_epoch_end
+      ~Persistent.on_validation_epoch_start
+      ~Persistent.on_validation_model_eval
+      ~Persistent.on_validation_model_train
+      ~Persistent.on_validation_model_zero_grad
+      ~Persistent.on_validation_start
+      ~Persistent.optimizer_step
+      ~Persistent.optimizer_zero_grad
+      ~Persistent.optimizers
+      ~Persistent.parameters
+      ~Persistent.predict_dataloader
+      ~Persistent.predict_step
+      ~Persistent.prepare_data
+      ~Persistent.print
+      ~Persistent.register_backward_hook
+      ~Persistent.register_buffer
+      ~Persistent.register_forward_hook
+      ~Persistent.register_forward_pre_hook
+      ~Persistent.register_full_backward_hook
+      ~Persistent.register_full_backward_pre_hook
+      ~Persistent.register_load_state_dict_post_hook
+      ~Persistent.register_load_state_dict_pre_hook
+      ~Persistent.register_module
+      ~Persistent.register_parameter
+      ~Persistent.register_state_dict_post_hook
+      ~Persistent.register_state_dict_pre_hook
+      ~Persistent.requires_grad_
+      ~Persistent.save_hyperparameters
+      ~Persistent.set_extra_state
+      ~Persistent.set_submodule
+      ~Persistent.setup
+      ~Persistent.share_memory
+      ~Persistent.state_dict
+      ~Persistent.teardown
+      ~Persistent.test_dataloader
+      ~Persistent.test_step
+      ~Persistent.to
+      ~Persistent.to_empty
+      ~Persistent.to_onnx
+      ~Persistent.to_torchscript
+      ~Persistent.toggle_optimizer
+      ~Persistent.toggled_optimizer
+      ~Persistent.train
+      ~Persistent.train_dataloader
+      ~Persistent.training_step
+      ~Persistent.transfer_batch_to_device
+      ~Persistent.type
+      ~Persistent.unfreeze
+      ~Persistent.untoggle_optimizer
+      ~Persistent.val_dataloader
+      ~Persistent.validation_step
+      ~Persistent.xpu
+      ~Persistent.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Persistent.CHECKPOINT_HYPER_PARAMS_KEY
+      ~Persistent.CHECKPOINT_HYPER_PARAMS_NAME
+      ~Persistent.CHECKPOINT_HYPER_PARAMS_TYPE
+      ~Persistent.T_destination
+      ~Persistent.automatic_optimization
+      ~Persistent.call_super_init
+      ~Persistent.current_epoch
+      ~Persistent.description
+      ~Persistent.device
+      ~Persistent.device_mesh
+      ~Persistent.dtype
+      ~Persistent.dump_patches
+      ~Persistent.example_input_array
+      ~Persistent.fabric
+      ~Persistent.global_rank
+      ~Persistent.global_step
+      ~Persistent.handle_categorical_variables
+      ~Persistent.handle_future_covariates
+      ~Persistent.handle_multivariate
+      ~Persistent.handle_quantile_loss
+      ~Persistent.hparams
+      ~Persistent.hparams_initial
+      ~Persistent.local_rank
+      ~Persistent.logger
+      ~Persistent.loggers
+      ~Persistent.on_gpu
+      ~Persistent.strict_loading
+      ~Persistent.trainer
+      ~Persistent.training
+   
+   

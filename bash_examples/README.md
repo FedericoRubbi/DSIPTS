@@ -9,20 +9,7 @@ This particular repo is structured for working with the six datasets (that are 9
 
 # Installation
 
-
-In a pre-generated environment install pytorch and pytorch-lightning (`pip install pytorch-lightning==1.9.4`) then go inside the lib folder and execute:
-
-```
-python setup.py install --force
-```
-
-Alternatively, you can install it from the package registry:
-
-```
-pip install --force dsipts --index-url TOKEN
-```
-where token changes frequently (ask to agobbi@fbk.eu). We will find a cleaner solution for this.
-
+See the main documentation. 
 
 # Configuration
 
@@ -61,7 +48,7 @@ This structure is a convient way to deal with multiple experiments, feel free to
 Remember also to modify also `train` and `inference` accordingly to your implemented function.
 
 Hydra is used for composing configuration files. In our case most of the parameter can be reused among the different models and are collected under the general configuration file `config/config.yaml`\. In what follows the `weather` dataset is used, and notice that this dataset has a frequency of **10 minutes**. The parameters here are the same described in the `dsitps` documentation but clearly some of them can not be modified since they depend on the selected time series.
-The configuration files related to this experiment can be found in `config_weather`; a generic config folder contains:
+The configuration files related to this experiment can be found in `config_test`; a generic config folder contains:
 ```
 config_gpu.yaml               # containing the global configuration usually for gpu or local train, see below one example
 config_slurm.yaml             # containing the global configuration for slurm training see below one example
@@ -179,7 +166,7 @@ hydra:
 ```
 
 
-In the `config_weather/architecture` folder there are the selected models that have the following structure:
+In the `config_test/architecture` folder there are the selected models that have the following structure:
 
 ```
 # @package _global_  ##care this must be present!
@@ -189,6 +176,7 @@ In the `config_weather/architecture` folder there are the selected models that h
 model:
   type: 'linear'
   retrain: true  ## overwrite the model with the same parameters
+  restart: false ## restart from last checkpoint
 
   
 ts:
@@ -197,13 +185,15 @@ ts:
   enrich: ['hour'] 
   use_covariates: false          # if true all the columns of the dataset will be used as past features
   use_future_covariates: false   # if true all the columns of the dataset will be used as future known features
+  silly: false #add the target as future covariate, convenient for debugging new architectures
 
+## for more information about the models please look at the documentation.
 
-## for more information about the models please look at the documentation [here] (https://dsip.pages.fbk.eu/dsip_dl research/timeseries/)
 model_configs:
-  cat_emb_dim: 32             # dimension of categorical variables
+  use_classical_positional_encoder: true  #use sin/cos for positional encoder
+  reduction_mode: mean        # the contribution of the categorical variables will be averaged 
+  emb_dim: 32                 # dimension of categorical variables
   kernel_size: 5              # kernel size 
-  sum_emb: true               # if true each embdedding will be summed otherwise stacked
   hidden_size: 256            # hidden size of the fully connected block
   kind: 'linear'              # model type
   dropout_rate: 0.2           # dropout
@@ -228,12 +218,12 @@ train_config:
 Hydra allows us to train a specific model using if you are in a gpu environment
 
 ```
-python train.py  architecture=linear --config-dir=config_weather --config-name=config_gpu
+python train.py  architecture=linear --config-dir=config_test--config-name=config
 ```
 or, if you are in a slurm cluster
 
 ```
-python train.py  architecture=linear --config-dir=config_weather --config-name=config_slurm -m
+python train.py  architecture=linear --config-dir=config_test --config-name=config_slurm -m
 ```
 
 The `-m` option is important because generally we would't lauch the script in the frontend. This shortcut allows hydra to use the multirun scheduler and lauch the process(es) in the required nodes. In the case of a single gpu machine it will lauch parallel process (careful to the used VRAM).
@@ -241,13 +231,13 @@ The `-m` option is important because generally we would't lauch the script in th
 For example we can train two models on the same data using:
 
 ```
-python train.py  -m architecture=linear, dlinear --config-dir=config_weather --config-name=config_slurm
+python train.py  -m architecture=linear,dlinear --config-dir=config_test --config-name=config_slurm
 ```
 
 or all the implemented models:
 
 ```
-python train.py  -m  --config-dir=config_weather --config-name=config_slurm
+python train.py  -m  --config-dir=config_test --config-name=config_slurm
 ```
 this because there is the option 
 ```
@@ -276,12 +266,12 @@ Last but not least: you can lauch as many process as you want but only few will 
 Once the models are trained, the relative full configurations are saved in `config_used` and can be used for inference or comparison:
 
 ```
-python compare.py --config-dir=config_weather --config-name=compare
+python compare.py --config-dir=config_test --config-name=compare
 
 ```
 where the compare file is:
 ```
-models: 'config_weather'               ## path to the main config folder or list of configuration files 
+models: 'config_test'               ## path to the main config folder or list of configuration files 
 dirpath: "/home/agobbi/Projects/ExpTS" ## where are store the models and where to put the results
 set: 'test'                            ## set to test 
 name: 'prova'
@@ -291,7 +281,7 @@ batch_size: 32                         ## batch size for the dataloader
 
 or if you are in a slurm cluster remembrer to add the `-m` parameters also for the comparison step (otherwise the inference will be execute in the frontend)
 ```
- python compare.py --config-dir=config_weather --config-name=compare_slurm -m
+ python compare.py --config-dir=config_test --config-name=compare_slurm -m
 ```
 
 if you are in a SLURM cluster where che `compare_slurm.yaml` file must contain also something like:
@@ -335,12 +325,12 @@ python train.py -m --config-dir=config_test --config-name=config
 # Same model differtent parameters
 It is possible also to perform a fine tuning procedure on a specific model, in this case:
 ```
-python train.py --config-dir=config_weather --config-name=config_slurm -m architecture=linear model_configs.hidden_RNN=32,64,128
+python train.py --config-dir=config_test --config-name=config_slurm -m architecture=linear model_configs.hidden_RNN=32,64,128
 ```
 will spawn 3 paralle process trainin the same model with three different values of `hidden_RNN`. In case of multiple parameters to test hydra will generate all the couples of possibilities. This approach can explode very quickly, for this reason it is possible to use `optuna` for exploring the space of the configurations (THIS FEATURE IS NOT MATURE):
 
 ```
-python train.py --config-dir=config_weather --config-name=config_slurm_optuna -m
+python train.py --config-dir=config_test --config-name=config_slurm_optuna -m
 ```
 In this case the configuration file should include the following part:
 
@@ -456,17 +446,36 @@ df.groupby('trial_id').apply(unroll).reset_index()
 
 ## Stack generalization
 
+
+ONLY FOR PUBLIC DATASET FOR NOW
+
+Suppose you have two models trained on the same dataset:
+```bash
+
+python train.py  --config-dir=config_test --config-name=config architecture=dlinear,timexer dataset.path=/home/agobbi/Projects/ExpTS/data model_configs.past_steps=96 split_params.skip_step=17 model_configs.quantiles='[0.05,0.5,0.95]' model.restart=false train_config.max_epochs=2 -m
+```
+
+
+
 Once you have trained a bunch of good models you may try to train a stack generalization model: a (usually simpler) model that combines the output of the trained model and estimate the target. 
 You can use the routine `train_stack.py` similarly to `train.py` but with some differences:
 - the config file for the stacked model is in the folder `stack`
 - you need to add `stacked=True` when creating the timeseries object
 - you need to add a section called `stack` similar to the snipped below to the configuration file
 - if you want to a special launcher (joblib or slurm) you need a little workaround
-```
+```yaml
+
+ts:
+  version: 1
+  name: stacked
+  type: stacked
+  enrich: ['hour']
+  use_covariates: false 
+
 stack:
-  #models: config_test  ## if you want to use all the models
-  models: ['config_incube/config_used/tft2_test_1_loss_type=std_normpersistence_weight=1.yaml','config_incube/config_used/crossformer_test_1_loss_type=std_penpersistence_weight=10.yaml','config_incube/config_used/linear_test_1.yaml','config_incube/config_used/gru_gru_1.yaml']  #if you want to use only some models
-  dirpath: "/home/agobbi/Projects/ExpTS/incube"
+  models: 'config_test'  ## if you want to use all the models
+  #models: ['/config_test/config_used/XX', '/config_test/config_used/YY']  #if you want to use only some models
+  dirpath: "test"
   set: 'validation' ## the dataset of the trained model to use as a training set
   name: 'prova'
   rescaling: true
@@ -475,17 +484,16 @@ stack:
 the splitting section of the stacked model is referred to the subset defined in the `stack` section. If you use the `validation` set from the original model and set a training percentage of 0.8 the stacked model is trained on the 80% of the validation set. 
 
 Finally you can train your model using:
+```bash
+python train_stack.py  --config-dir=config_test --config-name=config dataset.path=/home/agobbi/Projects/ExpTS/data stack=linear architecture=stack split_params.skip_step=7
 ```
-python train_stack.py  --config-dir=config_test --config-name=config stack=linear architecture=stack hydra.launcher.n_jobs=1 -m
-```
-here you can see the workaround `architecture=stack` (you need to create an empty file in the `architecture` folder) and set `hydra.launcher.n_jobs=1` otherwise the multiprocess function raises some errors.
-If you can run the code without sweeper you can simple run:
 
-```
-python train_stack.py  --config-dir=config_test --config-name=config stack=linear
-```
 
 When you lauch `compare.py` magically it will run also the stacked model and add it to the model's pool (very cool, isn't it?).
+
+```bash
+python compare.py  --config-dir=config_test --config-name=compare +inference.output_path=tmp
+```
 
 
 ## Groups

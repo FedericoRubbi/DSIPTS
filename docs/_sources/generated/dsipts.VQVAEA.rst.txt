@@ -1,0 +1,188 @@
+﻿dsipts.VQVAEA
+=============
+
+.. currentmodule:: dsipts
+
+.. autoclass:: VQVAEA
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~VQVAEA.__init__
+      ~VQVAEA.add_module
+      ~VQVAEA.all_gather
+      ~VQVAEA.apply
+      ~VQVAEA.backward
+      ~VQVAEA.bfloat16
+      ~VQVAEA.buffers
+      ~VQVAEA.children
+      ~VQVAEA.clip_gradients
+      ~VQVAEA.compile
+      ~VQVAEA.compute_loss
+      ~VQVAEA.configure_callbacks
+      ~VQVAEA.configure_gradient_clipping
+      ~VQVAEA.configure_model
+      ~VQVAEA.configure_optimizers
+      ~VQVAEA.configure_sharded_model
+      ~VQVAEA.cpu
+      ~VQVAEA.cuda
+      ~VQVAEA.double
+      ~VQVAEA.eval
+      ~VQVAEA.extra_repr
+      ~VQVAEA.float
+      ~VQVAEA.forward
+      ~VQVAEA.freeze
+      ~VQVAEA.generate
+      ~VQVAEA.get_buffer
+      ~VQVAEA.get_extra_state
+      ~VQVAEA.get_parameter
+      ~VQVAEA.get_submodule
+      ~VQVAEA.gpt
+      ~VQVAEA.half
+      ~VQVAEA.inference
+      ~VQVAEA.ipu
+      ~VQVAEA.load_from_checkpoint
+      ~VQVAEA.load_state_dict
+      ~VQVAEA.log
+      ~VQVAEA.log_dict
+      ~VQVAEA.lr_scheduler_step
+      ~VQVAEA.lr_schedulers
+      ~VQVAEA.manual_backward
+      ~VQVAEA.modules
+      ~VQVAEA.mtia
+      ~VQVAEA.named_buffers
+      ~VQVAEA.named_children
+      ~VQVAEA.named_modules
+      ~VQVAEA.named_parameters
+      ~VQVAEA.on_after_backward
+      ~VQVAEA.on_after_batch_transfer
+      ~VQVAEA.on_before_backward
+      ~VQVAEA.on_before_batch_transfer
+      ~VQVAEA.on_before_optimizer_step
+      ~VQVAEA.on_before_zero_grad
+      ~VQVAEA.on_fit_end
+      ~VQVAEA.on_fit_start
+      ~VQVAEA.on_load_checkpoint
+      ~VQVAEA.on_predict_batch_end
+      ~VQVAEA.on_predict_batch_start
+      ~VQVAEA.on_predict_end
+      ~VQVAEA.on_predict_epoch_end
+      ~VQVAEA.on_predict_epoch_start
+      ~VQVAEA.on_predict_model_eval
+      ~VQVAEA.on_predict_start
+      ~VQVAEA.on_save_checkpoint
+      ~VQVAEA.on_test_batch_end
+      ~VQVAEA.on_test_batch_start
+      ~VQVAEA.on_test_end
+      ~VQVAEA.on_test_epoch_end
+      ~VQVAEA.on_test_epoch_start
+      ~VQVAEA.on_test_model_eval
+      ~VQVAEA.on_test_model_train
+      ~VQVAEA.on_test_start
+      ~VQVAEA.on_train_batch_end
+      ~VQVAEA.on_train_batch_start
+      ~VQVAEA.on_train_end
+      ~VQVAEA.on_train_epoch_end
+      ~VQVAEA.on_train_epoch_start
+      ~VQVAEA.on_train_start
+      ~VQVAEA.on_validation_batch_end
+      ~VQVAEA.on_validation_batch_start
+      ~VQVAEA.on_validation_end
+      ~VQVAEA.on_validation_epoch_end
+      ~VQVAEA.on_validation_epoch_start
+      ~VQVAEA.on_validation_model_eval
+      ~VQVAEA.on_validation_model_train
+      ~VQVAEA.on_validation_model_zero_grad
+      ~VQVAEA.on_validation_start
+      ~VQVAEA.optimizer_step
+      ~VQVAEA.optimizer_zero_grad
+      ~VQVAEA.optimizers
+      ~VQVAEA.parameters
+      ~VQVAEA.predict_dataloader
+      ~VQVAEA.predict_step
+      ~VQVAEA.prepare_data
+      ~VQVAEA.print
+      ~VQVAEA.register_backward_hook
+      ~VQVAEA.register_buffer
+      ~VQVAEA.register_forward_hook
+      ~VQVAEA.register_forward_pre_hook
+      ~VQVAEA.register_full_backward_hook
+      ~VQVAEA.register_full_backward_pre_hook
+      ~VQVAEA.register_load_state_dict_post_hook
+      ~VQVAEA.register_load_state_dict_pre_hook
+      ~VQVAEA.register_module
+      ~VQVAEA.register_parameter
+      ~VQVAEA.register_state_dict_post_hook
+      ~VQVAEA.register_state_dict_pre_hook
+      ~VQVAEA.requires_grad_
+      ~VQVAEA.save_hyperparameters
+      ~VQVAEA.set_extra_state
+      ~VQVAEA.set_submodule
+      ~VQVAEA.setup
+      ~VQVAEA.share_memory
+      ~VQVAEA.state_dict
+      ~VQVAEA.teardown
+      ~VQVAEA.test_dataloader
+      ~VQVAEA.test_step
+      ~VQVAEA.to
+      ~VQVAEA.to_empty
+      ~VQVAEA.to_onnx
+      ~VQVAEA.to_torchscript
+      ~VQVAEA.toggle_optimizer
+      ~VQVAEA.toggled_optimizer
+      ~VQVAEA.train
+      ~VQVAEA.train_dataloader
+      ~VQVAEA.training_step
+      ~VQVAEA.transfer_batch_to_device
+      ~VQVAEA.type
+      ~VQVAEA.unfreeze
+      ~VQVAEA.untoggle_optimizer
+      ~VQVAEA.val_dataloader
+      ~VQVAEA.validation_step
+      ~VQVAEA.xpu
+      ~VQVAEA.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~VQVAEA.CHECKPOINT_HYPER_PARAMS_KEY
+      ~VQVAEA.CHECKPOINT_HYPER_PARAMS_NAME
+      ~VQVAEA.CHECKPOINT_HYPER_PARAMS_TYPE
+      ~VQVAEA.T_destination
+      ~VQVAEA.automatic_optimization
+      ~VQVAEA.call_super_init
+      ~VQVAEA.current_epoch
+      ~VQVAEA.description
+      ~VQVAEA.device
+      ~VQVAEA.device_mesh
+      ~VQVAEA.dtype
+      ~VQVAEA.dump_patches
+      ~VQVAEA.example_input_array
+      ~VQVAEA.fabric
+      ~VQVAEA.global_rank
+      ~VQVAEA.global_step
+      ~VQVAEA.handle_categorical_variables
+      ~VQVAEA.handle_future_covariates
+      ~VQVAEA.handle_multivariate
+      ~VQVAEA.handle_quantile_loss
+      ~VQVAEA.hparams
+      ~VQVAEA.hparams_initial
+      ~VQVAEA.local_rank
+      ~VQVAEA.logger
+      ~VQVAEA.loggers
+      ~VQVAEA.on_gpu
+      ~VQVAEA.strict_loading
+      ~VQVAEA.trainer
+      ~VQVAEA.training
+   
+   

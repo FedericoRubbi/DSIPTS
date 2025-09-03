@@ -1,0 +1,186 @@
+﻿dsipts.DilatedConv
+==================
+
+.. currentmodule:: dsipts
+
+.. autoclass:: DilatedConv
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DilatedConv.__init__
+      ~DilatedConv.add_module
+      ~DilatedConv.all_gather
+      ~DilatedConv.apply
+      ~DilatedConv.backward
+      ~DilatedConv.bfloat16
+      ~DilatedConv.buffers
+      ~DilatedConv.children
+      ~DilatedConv.clip_gradients
+      ~DilatedConv.compile
+      ~DilatedConv.compute_loss
+      ~DilatedConv.configure_callbacks
+      ~DilatedConv.configure_gradient_clipping
+      ~DilatedConv.configure_model
+      ~DilatedConv.configure_optimizers
+      ~DilatedConv.configure_sharded_model
+      ~DilatedConv.cpu
+      ~DilatedConv.cuda
+      ~DilatedConv.double
+      ~DilatedConv.eval
+      ~DilatedConv.extra_repr
+      ~DilatedConv.float
+      ~DilatedConv.forward
+      ~DilatedConv.freeze
+      ~DilatedConv.get_buffer
+      ~DilatedConv.get_extra_state
+      ~DilatedConv.get_parameter
+      ~DilatedConv.get_submodule
+      ~DilatedConv.half
+      ~DilatedConv.inference
+      ~DilatedConv.ipu
+      ~DilatedConv.load_from_checkpoint
+      ~DilatedConv.load_state_dict
+      ~DilatedConv.log
+      ~DilatedConv.log_dict
+      ~DilatedConv.lr_scheduler_step
+      ~DilatedConv.lr_schedulers
+      ~DilatedConv.manual_backward
+      ~DilatedConv.modules
+      ~DilatedConv.mtia
+      ~DilatedConv.named_buffers
+      ~DilatedConv.named_children
+      ~DilatedConv.named_modules
+      ~DilatedConv.named_parameters
+      ~DilatedConv.on_after_backward
+      ~DilatedConv.on_after_batch_transfer
+      ~DilatedConv.on_before_backward
+      ~DilatedConv.on_before_batch_transfer
+      ~DilatedConv.on_before_optimizer_step
+      ~DilatedConv.on_before_zero_grad
+      ~DilatedConv.on_fit_end
+      ~DilatedConv.on_fit_start
+      ~DilatedConv.on_load_checkpoint
+      ~DilatedConv.on_predict_batch_end
+      ~DilatedConv.on_predict_batch_start
+      ~DilatedConv.on_predict_end
+      ~DilatedConv.on_predict_epoch_end
+      ~DilatedConv.on_predict_epoch_start
+      ~DilatedConv.on_predict_model_eval
+      ~DilatedConv.on_predict_start
+      ~DilatedConv.on_save_checkpoint
+      ~DilatedConv.on_test_batch_end
+      ~DilatedConv.on_test_batch_start
+      ~DilatedConv.on_test_end
+      ~DilatedConv.on_test_epoch_end
+      ~DilatedConv.on_test_epoch_start
+      ~DilatedConv.on_test_model_eval
+      ~DilatedConv.on_test_model_train
+      ~DilatedConv.on_test_start
+      ~DilatedConv.on_train_batch_end
+      ~DilatedConv.on_train_batch_start
+      ~DilatedConv.on_train_end
+      ~DilatedConv.on_train_epoch_end
+      ~DilatedConv.on_train_epoch_start
+      ~DilatedConv.on_train_start
+      ~DilatedConv.on_validation_batch_end
+      ~DilatedConv.on_validation_batch_start
+      ~DilatedConv.on_validation_end
+      ~DilatedConv.on_validation_epoch_end
+      ~DilatedConv.on_validation_epoch_start
+      ~DilatedConv.on_validation_model_eval
+      ~DilatedConv.on_validation_model_train
+      ~DilatedConv.on_validation_model_zero_grad
+      ~DilatedConv.on_validation_start
+      ~DilatedConv.optimizer_step
+      ~DilatedConv.optimizer_zero_grad
+      ~DilatedConv.optimizers
+      ~DilatedConv.parameters
+      ~DilatedConv.predict_dataloader
+      ~DilatedConv.predict_step
+      ~DilatedConv.prepare_data
+      ~DilatedConv.print
+      ~DilatedConv.register_backward_hook
+      ~DilatedConv.register_buffer
+      ~DilatedConv.register_forward_hook
+      ~DilatedConv.register_forward_pre_hook
+      ~DilatedConv.register_full_backward_hook
+      ~DilatedConv.register_full_backward_pre_hook
+      ~DilatedConv.register_load_state_dict_post_hook
+      ~DilatedConv.register_load_state_dict_pre_hook
+      ~DilatedConv.register_module
+      ~DilatedConv.register_parameter
+      ~DilatedConv.register_state_dict_post_hook
+      ~DilatedConv.register_state_dict_pre_hook
+      ~DilatedConv.requires_grad_
+      ~DilatedConv.save_hyperparameters
+      ~DilatedConv.set_extra_state
+      ~DilatedConv.set_submodule
+      ~DilatedConv.setup
+      ~DilatedConv.share_memory
+      ~DilatedConv.state_dict
+      ~DilatedConv.teardown
+      ~DilatedConv.test_dataloader
+      ~DilatedConv.test_step
+      ~DilatedConv.to
+      ~DilatedConv.to_empty
+      ~DilatedConv.to_onnx
+      ~DilatedConv.to_torchscript
+      ~DilatedConv.toggle_optimizer
+      ~DilatedConv.toggled_optimizer
+      ~DilatedConv.train
+      ~DilatedConv.train_dataloader
+      ~DilatedConv.training_step
+      ~DilatedConv.transfer_batch_to_device
+      ~DilatedConv.type
+      ~DilatedConv.unfreeze
+      ~DilatedConv.untoggle_optimizer
+      ~DilatedConv.val_dataloader
+      ~DilatedConv.validation_step
+      ~DilatedConv.xpu
+      ~DilatedConv.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DilatedConv.CHECKPOINT_HYPER_PARAMS_KEY
+      ~DilatedConv.CHECKPOINT_HYPER_PARAMS_NAME
+      ~DilatedConv.CHECKPOINT_HYPER_PARAMS_TYPE
+      ~DilatedConv.T_destination
+      ~DilatedConv.automatic_optimization
+      ~DilatedConv.call_super_init
+      ~DilatedConv.current_epoch
+      ~DilatedConv.description
+      ~DilatedConv.device
+      ~DilatedConv.device_mesh
+      ~DilatedConv.dtype
+      ~DilatedConv.dump_patches
+      ~DilatedConv.example_input_array
+      ~DilatedConv.fabric
+      ~DilatedConv.global_rank
+      ~DilatedConv.global_step
+      ~DilatedConv.handle_categorical_variables
+      ~DilatedConv.handle_future_covariates
+      ~DilatedConv.handle_multivariate
+      ~DilatedConv.handle_quantile_loss
+      ~DilatedConv.hparams
+      ~DilatedConv.hparams_initial
+      ~DilatedConv.local_rank
+      ~DilatedConv.logger
+      ~DilatedConv.loggers
+      ~DilatedConv.on_gpu
+      ~DilatedConv.strict_loading
+      ~DilatedConv.trainer
+      ~DilatedConv.training
+   
+   

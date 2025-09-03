@@ -2,7 +2,7 @@
 import argparse
 import pandas as pd
 from omegaconf import DictConfig, OmegaConf
-from dsipts import TimeSeries, beauty_string, extend_time_df
+from dsipts import TimeSeries, beauty_string, extend_time_df,read_public_dataset
 import os
 from typing import List
 from datetime import timedelta 
@@ -11,12 +11,16 @@ VERBOSE = True
 
 def inference_stacked(conf:DictConfig,ts:TimeSeries)->List[pd.DataFrame]:
     predictions = None
+
+    original_data = None
     for i,f in enumerate(ts.models_used):
         f.inference.set = conf.inference.set
         f.inference.rescaling= conf.stack.rescaling
         f.inference.batch_size= conf.inference.batch_size
-        _,prediction, _ = inference(f)
-        
+        f.split_params.skip_step = 1
+        _,prediction, _ = inference(f,f.split_params)
+        if original_data is None:
+            original_data, columns = read_public_dataset(**f.dataset)
         ##this can be more informative but the names are too long
         #prediction['model'] = f'{conf_tmp.model.type}_{conf_tmp.ts.name}_{conf_tmp.ts.version}'
         model_features = [c for c in prediction.columns if ('pred' in c or 'median' in c)]
@@ -42,6 +46,7 @@ def inference_stacked(conf:DictConfig,ts:TimeSeries)->List[pd.DataFrame]:
     predictions['prediction_time'] = predictions.apply(lambda x: x.time-timedelta(seconds= x.lag*freq.seconds), axis=1)
 
     predictions['lag_m'] = predictions.lag.values
+    predictions = predictions.merge(original_data.drop(columns='y'),how='left')
 
     predictions.sort_values(by=['prediction_time','lag'],inplace=True)
 
@@ -55,7 +60,7 @@ def inference_stacked(conf:DictConfig,ts:TimeSeries)->List[pd.DataFrame]:
     return res
 
 
-def inference(conf:DictConfig)->List[pd.DataFrame]:
+def inference(conf:DictConfig,split_params=None)->List[pd.DataFrame]:
     """Make inference on a selected set starting from a configuration file
 
     Args:
@@ -69,20 +74,21 @@ def inference(conf:DictConfig)->List[pd.DataFrame]:
     """
 
 
-    if conf.dataset.dataset == 'incube': 
-        from load_data.load_data_incube import load_data
-    elif conf.dataset.dataset == 'pollen': 
-        from load_data.load_data_pollen import load_data
-    elif conf.dataset.dataset == 'temps': 
-        from load_data.load_data_temps import load_data
+    if conf.dataset.dataset == 'custom': 
+        beauty_string('PLEASE WRITE CUSTOM PROCESSING FUNCTION','block',VERBOSE)
+        from load_data.load_data_public import load_data
     else:
         from load_data.load_data_public import load_data
     ts = load_data(conf)
+
+    
     ts.set_verbose(VERBOSE)
     beauty_string(conf.model.type,'block',VERBOSE)
     beauty_string(f'Model and weights will be placed and read from {conf.train_config.dirpath}','info',VERBOSE)
 
     loaded = load_model(ts,conf)
+    if split_params is not None:
+        ts.split_params = split_params
     if loaded:
         beauty_string('Model successfully loaded','block',VERBOSE)
     else:
