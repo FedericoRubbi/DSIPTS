@@ -1,0 +1,83 @@
+dataset:
+  dataset: 'weather'  
+  path: null
+  
+ts:
+  name: 'test'
+  version: 1
+  enrich: ['hour']
+  use_covariates: true
+  use_future_covariates: true
+
+scheduler_config:
+  gamma: 1.0
+  step_size: 100
+
+optim_config:
+  lr: 0.0005
+  weight_decay: 0.01
+
+model_configs:
+  past_steps: 16
+  future_steps: 16
+  quantiles: []
+  past_channels : null #dataset dependent
+  future_channels : null #dataset dependent
+  embs_past: null #dataset dependent
+  embs_fut: null #dataset dependent
+
+  out_channels: null #dataset dependent
+
+stack:
+  dirpath: null
+
+split_params:
+  perc_train: 0.7
+  perc_valid: 0.1
+  range_train: null
+  range_validation: null 
+  range_test: null
+  shift: 0
+  starting_point: null
+  skip_step: 1
+  past_steps: model_configs@past_steps 
+  future_steps: model_configs@future_steps
+  scaler: 'StandardScaler()' ## or sklearn.preprocessing.StandardScaler()
+train_config:
+  dirpath: tmp
+  num_workers: 0
+  auto_lr_find: true
+  devices: [0]                   
+  seed: 42    
+inference:
+  output_path: tmp
+  load_last: true
+  batch_size: 200 
+  num_workers: 4
+  set: "validation"
+  rescaling: true
+
+defaults:
+  - _self_
+  - architecture: null 
+  - override hydra/launcher: submitit_slurm #joblib 
+
+hydra:
+  launcher:
+    submitit_folder: ${hydra.sweep.dir}/.submitit/%j
+    timeout_min: 9000
+    partition: gpu-V100 #A40 #gpu-V100
+    mem_gb: 6
+    nodes: 1
+    gres: gpu:1
+    array_parallelism: 10 ##
+    name: ${hydra.job.name}
+    _target_: hydra_plugins.hydra_submitit_launcher.submitit_launcher.SlurmLauncher
+    setup:
+      - source dsipts/.venv/bin/activate  
+
+
+  output_subdir: null 
+  sweeper:
+    params:
+      architecture: glob(*) #architecture
