@@ -28,3 +28,11 @@ dependencies = [
     "sphinx-pdj-theme>=0.7.3",
     "transformers>=4.56.0",
 ]
+
+authors = [
+  { name="Andrea Gobbi", email="agobbi@fbk.eu" }
+]
+
+[project.urls]
+Homepage = "https://github.com/DSIP-FBK/DSIPTS"
+Docs = "https://dsip-fbk.github.io/DSIPTS/"
