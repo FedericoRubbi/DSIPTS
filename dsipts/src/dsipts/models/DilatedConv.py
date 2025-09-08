@@ -231,27 +231,10 @@ class DilatedConv(Base):
                                             activation(),
                                             nn.Linear(hidden_RNN//4,1)))
         
+        self.return_additional_loss = True
         
 
         
-
-    def training_step(self, batch, batch_idx):
-        """
-        pythotrch lightening stuff
-        
-        :meta private:
-        """
-        y_hat,score = self(batch)
-        return self.compute_loss(batch,y_hat)#+torch.abs(score-self.glu_percentage)*loss/5.0 ##TODO investigating
-    
-    def validation_step(self, batch, batch_idx):
-        """
-        pythotrch lightening stuff
-        
-        :meta private:
-        """
-        y_hat,score = self(batch)
-        return self.compute_loss(batch,y_hat)#+torch.abs(score-self.glu_percentage)*loss/5.0 ##TODO investigating
 
     def forward(self, batch):
         """It is mandatory to implement this method
@@ -332,11 +315,11 @@ class DilatedConv(Base):
         res = res.reshape(B,self.future_steps,-1,self.mul)
         if self.remove_last:
             res+=x_start.unsqueeze(1)
-        
+
       
         return res, score
 
     def inference(self, batch:dict)->torch.tensor:
-        
+
         res, score = self(batch)
         return res

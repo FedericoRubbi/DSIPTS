@@ -1,3 +1,5 @@
+## 1.1.7 (2025-09-08)
+- bug fixing `DilatedConv`
 ## 1.1.5 (2025-08-29)
 - rewriting most of the modules for handling different future and past categorical variables
 - extension of categorical and future covariates in almost all the models

@@ -154,7 +154,7 @@ class Base(pl.LightningModule):
             assert self.out_channels==1, "Classification require only one channel"
 
         self.future_steps = future_steps
-        
+        self.return_additional_loss = False
         beauty_string(self.description,'info',True)
     @abstractmethod
     def forward(self, batch:dict)-> torch.tensor:
@@ -247,14 +247,22 @@ class Base(pl.LightningModule):
             opt = self.optimizers()
             def closure():
                 opt.zero_grad()
-                y_hat = self(batch)
-                loss = self.compute_loss(batch,y_hat)
+                if self.return_additional_loss:
+                    y_hat,score = self(batch)
+                    loss = self.compute_loss(batch,y_hat) + score
+                else:
+                    y_hat = self(batch)
+                    loss = self.compute_loss(batch,y_hat)
                 self.manual_backward(loss)
                 return loss
 
             opt.step(closure)
-            y_hat = self(batch)
-            loss = self.compute_loss(batch,y_hat)
+            if self.return_additional_loss:
+                y_hat,score = self(batch)
+                loss = self.compute_loss(batch,y_hat)+score
+            else:
+                y_hat = self(batch)
+                loss = self.compute_loss(batch,y_hat)
             
             #opt.first_step(zero_grad=True)
 
@@ -269,8 +277,14 @@ class Base(pl.LightningModule):
    
             #self.trainer.fit_loop.epoch_loop.manual_optimization.optim_step_progress.increment("optimizer")
         else:
-            y_hat = self(batch)
-            loss = self.compute_loss(batch,y_hat)
+            if self.return_additional_loss:
+                y_hat,score = self(batch)
+                loss = self.compute_loss(batch,y_hat)+score
+            else:
+                y_hat = self(batch)
+                loss = self.compute_loss(batch,y_hat)
+            
+        self.train_epoch_metrics.append(loss.item())
         return loss
 
     
@@ -280,7 +294,11 @@ class Base(pl.LightningModule):
         
         :meta private:
         """
-        y_hat = self(batch)
+        if self.return_additional_loss:
+            y_hat,score = self(batch)
+        else:
+            y_hat = self(batch)
+            score = 0
         if batch_idx==0:
             if self.use_quantiles:
                 idx = 1
@@ -301,7 +319,7 @@ class Base(pl.LightningModule):
                     self.logger.experiment.track(Image(fig), name='cm_training_end')
                     #self.log(f"example_{i}", np.stack([real, pred]).T,sync_dist=True)
 
-        return self.compute_loss(batch,y_hat)
+        return self.compute_loss(batch,y_hat)+score
 
 
     def validation_epoch_end(self, outs):
@@ -310,8 +328,12 @@ class Base(pl.LightningModule):
         
         :meta private:
         """
-    
-        loss = torch.stack(outs).mean()
+        if len(outs)==0:
+            loss = 10000
+            beauty_string(f'THIS IS A BUG, It should be polulated','info',self.verbose)
+        else:
+            loss = torch.stack(outs).mean()
+        
         self.log("val_loss", loss.item(),sync_dist=True)
         beauty_string(f'Epoch: {self.count_epoch} train error: {self.train_loss_epoch:.4f} validation loss: {loss.item():.4f}','info',self.verbose)
 

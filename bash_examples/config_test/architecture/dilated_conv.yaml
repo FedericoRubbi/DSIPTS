@@ -31,6 +31,6 @@ model_configs:
 
 train_config:
   batch_size: 128
-  max_epochs: 2
+  max_epochs: 20
   gradient_clip_val: null
   gradient_clip_algorithm: 'norm'

@@ -96,10 +96,14 @@ or attention based models:
 ## Install
 Clone the repo (gitlab or github)
 The library is structured to work with [uv](https://github.com/astral-sh/uv). After installing `uv` just run  
-```
+```bash
 uv pip install .
 ```
-The pip package wi
+You can install also the package from pip (be sure that the python version is less than 3.12, still sperimental):
+```bash
+uv venv --python 3.11
+uv pip install dsipts
+```
 
 
 ## For developers
