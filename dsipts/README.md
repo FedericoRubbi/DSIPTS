@@ -326,6 +326,8 @@ Most of the time you want to train the models in a cluster with a GPU and comman
 
 ## Losses
 
+- `dilated`: `persistence_weight` between 0 and 1
+
 
 # Modifiers
 

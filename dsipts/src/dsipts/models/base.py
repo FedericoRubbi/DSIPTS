@@ -428,12 +428,7 @@ class Base(pl.LightningModule):
             
         elif self.loss_type=='dilated':
             #BxLxCxMUL
-            if self.persistence_weight==0.1:
-                alpha = 0.25
-            if self.persistence_weight==1:
-                alpha = 0.5
-            else:
-                alpha  =0.75
+ 
             alpha = self.persistence_weight 
             gamma = 0.01
             loss = 0
@@ -444,8 +439,8 @@ class Base(pl.LightningModule):
                 loss+= dilate_loss( batch['y'][:,:,i:i+1],x[:,:,i:i+1], alpha, gamma, y_hat.device)
             
         elif self.loss_type=='huber':
-            loss = torch.nn.HuberLoss(reduction='mean', delta=self.persistence_weight/10)   
-            #loss = torch.nn.HuberLoss(reduction='mean', delta=self.persistence_weight)   
+            loss = torch.nn.HuberLoss(reduction='mean', delta=self.persistence_weight)   
+
             if self.use_quantiles is False:
                 x = y_hat[:,:,:,0]
             else:
