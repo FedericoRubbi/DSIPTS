@@ -324,6 +324,7 @@ loss, quantile loss, MDA and a couple of experimental losses for minimizing the 
 # Bash experiment
 Most of the time you want to train the models in a cluster with a GPU and command line training procedure can help speedup the process. DSIPTS leverages on OmegaConf-Hydra to to this and in the folder `bash_examples` you can find an examples. Please read the documentation [here](/bash_examples/README.md)
 
+## Losses
 
 
 # Modifiers
