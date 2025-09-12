@@ -1,0 +1,21 @@
+dsipts.models.autoformer package
+================================
+
+Submodules
+----------
+
+dsipts.models.autoformer.layers module
+--------------------------------------
+
+.. automodule:: dsipts.models.autoformer.layers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.autoformer
+   :members:
+   :show-inheritance:
+   :undoc-members:

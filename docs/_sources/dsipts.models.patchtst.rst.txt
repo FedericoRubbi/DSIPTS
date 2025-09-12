@@ -1,0 +1,21 @@
+dsipts.models.patchtst package
+==============================
+
+Submodules
+----------
+
+dsipts.models.patchtst.layers module
+------------------------------------
+
+.. automodule:: dsipts.models.patchtst.layers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.patchtst
+   :members:
+   :show-inheritance:
+   :undoc-members:

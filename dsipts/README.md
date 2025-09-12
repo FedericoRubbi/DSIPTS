@@ -337,13 +337,7 @@ The VVA model is composed by two steps: the first is a clusterting procedure tha
 - **inverse_transform**: the output of the model are reverted to the original shape. In the VVA model the centroids are used for reconstruct the predicted timeseries.
 
 
-## Documentation
-You can find the documentation [here](https://dsip.pages.fbk.eu/dsip_dlresearch/timeseries/):
-or  in the folder `docs/_build/html/index.html`
-If yon need to generate the documentation after some modification just run:
-```
-./make_doc.sh    
-```
+
 
 For user only: be sure that the the CI file has pages enabled, see [public pages](https://roneo.org/en/gitlab-public-pages-private-repo/)
 

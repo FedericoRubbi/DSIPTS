@@ -1,0 +1,21 @@
+dsipts.models.xlstm package
+===========================
+
+Submodules
+----------
+
+dsipts.models.xlstm.xLSTM module
+--------------------------------
+
+.. automodule:: dsipts.models.xlstm.xLSTM
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.xlstm
+   :members:
+   :show-inheritance:
+   :undoc-members:

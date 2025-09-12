@@ -1,3 +1,6 @@
+## 1.1.8 (2025-09-12)
+- Added `Simple` model (just two linear layers)
+
 ## 1.1.7 (2025-09-08)
 - bug fixing `DilatedConv`
 ## 1.1.5 (2025-08-29)

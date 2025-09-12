@@ -1,0 +1,37 @@
+dsipts.models.itransformer package
+==================================
+
+Submodules
+----------
+
+dsipts.models.itransformer.Embed module
+---------------------------------------
+
+.. automodule:: dsipts.models.itransformer.Embed
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.itransformer.SelfAttention\_Family module
+-------------------------------------------------------
+
+.. automodule:: dsipts.models.itransformer.SelfAttention_Family
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.itransformer.Transformer\_EncDec module
+-----------------------------------------------------
+
+.. automodule:: dsipts.models.itransformer.Transformer_EncDec
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.itransformer
+   :members:
+   :show-inheritance:
+   :undoc-members:

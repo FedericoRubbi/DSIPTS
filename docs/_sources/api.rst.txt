@@ -130,3 +130,8 @@ Models
    :undoc-members:
    :show-inheritance: False
    :noindex:
+   
+.. autoclass:: dsipts.Simple
+   :undoc-members:
+   :show-inheritance: False
+   :noindex:

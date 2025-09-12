@@ -1,0 +1,225 @@
+dsipts.models package
+=====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   dsipts.models.autoformer
+   dsipts.models.crossformer
+   dsipts.models.d3vae
+   dsipts.models.duet
+   dsipts.models.informer
+   dsipts.models.itransformer
+   dsipts.models.patchtst
+   dsipts.models.samformer
+   dsipts.models.tft
+   dsipts.models.timexer
+   dsipts.models.ttm
+   dsipts.models.vva
+   dsipts.models.xlstm
+
+Submodules
+----------
+
+dsipts.models.Autoformer module
+-------------------------------
+
+.. automodule:: dsipts.models.Autoformer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.CrossFormer module
+--------------------------------
+
+.. automodule:: dsipts.models.CrossFormer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.D3VAE module
+--------------------------
+
+.. automodule:: dsipts.models.D3VAE
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.Diffusion module
+------------------------------
+
+.. automodule:: dsipts.models.Diffusion
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.DilatedConv module
+--------------------------------
+
+.. automodule:: dsipts.models.DilatedConv
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.DilatedConvED module
+----------------------------------
+
+.. automodule:: dsipts.models.DilatedConvED
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.Duet module
+-------------------------
+
+.. automodule:: dsipts.models.Duet
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.ITransformer module
+---------------------------------
+
+.. automodule:: dsipts.models.ITransformer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.Informer module
+-----------------------------
+
+.. automodule:: dsipts.models.Informer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.LinearTS module
+-----------------------------
+
+.. automodule:: dsipts.models.LinearTS
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.PatchTST module
+-----------------------------
+
+.. automodule:: dsipts.models.PatchTST
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.Persistent module
+-------------------------------
+
+.. automodule:: dsipts.models.Persistent
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.RNN module
+------------------------
+
+.. automodule:: dsipts.models.RNN
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.Samformer module
+------------------------------
+
+.. automodule:: dsipts.models.Samformer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.Simple module
+---------------------------
+
+.. automodule:: dsipts.models.Simple
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.TFT module
+------------------------
+
+.. automodule:: dsipts.models.TFT
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.TIDE module
+-------------------------
+
+.. automodule:: dsipts.models.TIDE
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.TTM module
+------------------------
+
+.. automodule:: dsipts.models.TTM
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.TimeXER module
+----------------------------
+
+.. automodule:: dsipts.models.TimeXER
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.VQVAEA module
+---------------------------
+
+.. automodule:: dsipts.models.VQVAEA
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.VVA module
+------------------------
+
+.. automodule:: dsipts.models.VVA
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.base module
+-------------------------
+
+.. automodule:: dsipts.models.base
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.base\_v2 module
+-----------------------------
+
+.. automodule:: dsipts.models.base_v2
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.utils module
+--------------------------
+
+.. automodule:: dsipts.models.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models
+   :members:
+   :show-inheritance:
+   :undoc-members:

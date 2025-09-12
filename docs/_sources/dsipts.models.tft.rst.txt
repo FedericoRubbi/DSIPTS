@@ -1,0 +1,21 @@
+dsipts.models.tft package
+=========================
+
+Submodules
+----------
+
+dsipts.models.tft.sub\_nn module
+--------------------------------
+
+.. automodule:: dsipts.models.tft.sub_nn
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.tft
+   :members:
+   :show-inheritance:
+   :undoc-members:

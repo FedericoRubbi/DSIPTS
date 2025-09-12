@@ -1,0 +1,29 @@
+dsipts.data\_management package
+===============================
+
+Submodules
+----------
+
+dsipts.data\_management.monash module
+-------------------------------------
+
+.. automodule:: dsipts.data_management.monash
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.data\_management.public\_datasets module
+-----------------------------------------------
+
+.. automodule:: dsipts.data_management.public_datasets
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.data_management
+   :members:
+   :show-inheritance:
+   :undoc-members:

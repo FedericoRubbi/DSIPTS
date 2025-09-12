@@ -1,0 +1,29 @@
+dsipts.models.duet package
+==========================
+
+Submodules
+----------
+
+dsipts.models.duet.layers module
+--------------------------------
+
+.. automodule:: dsipts.models.duet.layers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.duet.masked module
+--------------------------------
+
+.. automodule:: dsipts.models.duet.masked
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.duet
+   :members:
+   :show-inheritance:
+   :undoc-members:

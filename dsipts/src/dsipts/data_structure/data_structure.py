@@ -800,7 +800,7 @@ class TimeSeries():
                                 callbacks=[checkpoint_callback,mc],
                                 auto_lr_find=auto_lr_find, 
                                 accelerator=accelerator,
-                                log_every_n_steps=5,
+                                log_every_n_steps=1,
                                 devices=devices,
                                 strategy=strategy,
                                 enable_progress_bar=False,

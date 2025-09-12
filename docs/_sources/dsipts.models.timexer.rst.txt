@@ -1,0 +1,21 @@
+dsipts.models.timexer package
+=============================
+
+Submodules
+----------
+
+dsipts.models.timexer.Layers module
+-----------------------------------
+
+.. automodule:: dsipts.models.timexer.Layers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.timexer
+   :members:
+   :show-inheritance:
+   :undoc-members:

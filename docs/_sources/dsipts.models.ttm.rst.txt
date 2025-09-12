@@ -1,0 +1,45 @@
+dsipts.models.ttm package
+=========================
+
+Submodules
+----------
+
+dsipts.models.ttm.configuration\_tinytimemixer module
+-----------------------------------------------------
+
+.. automodule:: dsipts.models.ttm.configuration_tinytimemixer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.ttm.consts module
+-------------------------------
+
+.. automodule:: dsipts.models.ttm.consts
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.ttm.modeling\_tinytimemixer module
+------------------------------------------------
+
+.. automodule:: dsipts.models.ttm.modeling_tinytimemixer
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.ttm.utils module
+------------------------------
+
+.. automodule:: dsipts.models.ttm.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.ttm
+   :members:
+   :show-inheritance:
+   :undoc-members:

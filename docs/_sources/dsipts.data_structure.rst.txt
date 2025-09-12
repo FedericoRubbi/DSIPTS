@@ -1,0 +1,37 @@
+dsipts.data\_structure package
+==============================
+
+Submodules
+----------
+
+dsipts.data\_structure.data\_structure module
+---------------------------------------------
+
+.. automodule:: dsipts.data_structure.data_structure
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.data\_structure.modifiers module
+---------------------------------------
+
+.. automodule:: dsipts.data_structure.modifiers
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.data\_structure.utils module
+-----------------------------------
+
+.. automodule:: dsipts.data_structure.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.data_structure
+   :members:
+   :show-inheritance:
+   :undoc-members:

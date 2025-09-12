@@ -1,0 +1,21 @@
+dsipts.models.samformer package
+===============================
+
+Submodules
+----------
+
+dsipts.models.samformer.utils module
+------------------------------------
+
+.. automodule:: dsipts.models.samformer.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.samformer
+   :members:
+   :show-inheritance:
+   :undoc-members:

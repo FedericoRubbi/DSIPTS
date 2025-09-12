@@ -21,6 +21,7 @@ The library can now be found also on pip [here](https://pypi.org/project/dsipts/
 
 The pip package (experimental) is available [here](https://pypi.org/project/dsipts).
 
+The documentation is [here](https://dsip-fbk.github.io/DSIPTS/)
 ## Suite for training models
 
 [Here](bash_examples/README.md) you can find useful code for training and comparing different architectures using Hydra and Omegaconf (mulitprocess, slurm cluster and optuna sweepers).

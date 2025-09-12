@@ -1,0 +1,69 @@
+dsipts.models.d3vae package
+===========================
+
+Submodules
+----------
+
+dsipts.models.d3vae.diffusion\_process module
+---------------------------------------------
+
+.. automodule:: dsipts.models.d3vae.diffusion_process
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.d3vae.embedding module
+------------------------------------
+
+.. automodule:: dsipts.models.d3vae.embedding
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.d3vae.encoder module
+----------------------------------
+
+.. automodule:: dsipts.models.d3vae.encoder
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.d3vae.model module
+--------------------------------
+
+.. automodule:: dsipts.models.d3vae.model
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.d3vae.neural\_operations module
+---------------------------------------------
+
+.. automodule:: dsipts.models.d3vae.neural_operations
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.d3vae.resnet module
+---------------------------------
+
+.. automodule:: dsipts.models.d3vae.resnet
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.d3vae.utils module
+--------------------------------
+
+.. automodule:: dsipts.models.d3vae.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.d3vae
+   :members:
+   :show-inheritance:
+   :undoc-members:

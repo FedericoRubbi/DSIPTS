@@ -1,0 +1,29 @@
+dsipts.models.vva package
+=========================
+
+Submodules
+----------
+
+dsipts.models.vva.minigpt module
+--------------------------------
+
+.. automodule:: dsipts.models.vva.minigpt
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+dsipts.models.vva.vqvae module
+------------------------------
+
+.. automodule:: dsipts.models.vva.vqvae
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: dsipts.models.vva
+   :members:
+   :show-inheritance:
+   :undoc-members:
