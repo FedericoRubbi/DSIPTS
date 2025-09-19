@@ -197,7 +197,7 @@ class Base(pl.LightningModule):
         
         if self.loss_type=='cprs':
             tmp = self(batch)
-            return tmp.mean(axis=-1)
+            return tmp.mean(axis=-1).unsqueeze(-1)
         
         return self(batch)
         

@@ -1,5 +1,7 @@
+## 1.1.10 (2025-09-XX)
+- Bux Fixing `cprs` inference
 ## 1.1.9 (2025-09-19)
-- Added `CPRS` https://arxiv.org/abs/2506.10868 loss function. In this case use the quantile parameter to ask for the ensembles: `quantiles = [1,2,3,4,5,6,7,8,9,10]` will create 10 ensembles. For now the inference part will return just the mean, TODO: estimate a confidence interval with the ensembles 
+- Added `cprs` https://arxiv.org/abs/2506.10868 loss function. In this case use the quantile parameter to ask for the ensembles: `quantiles = [1,2,3,4,5,6,7,8,9,10]` will create 10 ensembles. For now the inference part will return just the mean, TODO: estimate a confidence interval with the ensembles 
 - Added `long_lag` the L1 error will be modulated with a linear weight depending on the lag in the future: the penalization goes from `1` to `persistence_weight`
 
 ## 1.1.8 (2025-09-12)
