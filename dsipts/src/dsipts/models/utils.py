@@ -622,3 +622,75 @@ class Embedding_cat_variables(nn.Module):
 
         cat_n_embd = torch.cat(emb,dim=2)
         return cat_n_embd
+    
+    
+    
+class CPRS(nn.Module):
+    """
+    Efficient vectorized implementation of Almost Fair CRPS.
+    
+    This version avoids explicit loops and uses broadcasting for better performance
+    with large ensembles.
+    """
+    
+    def __init__(self, alpha=0.95, reduction='mean'):
+        super().__init__()
+        self.alpha = alpha
+        self.reduction = reduction
+        
+    def forward(self, y_hat, target, weights=None):
+        """
+        Compute the almost fair CRPS loss (efficient version).
+        
+        Args:
+            ensemble: Tensor of shape (batch_size, n_members, ...)
+            target: Tensor of shape (batch_size, ...)
+            weights: Optional per-variable or per-location weights
+        
+        Returns:
+            Loss tensor
+        """
+        ## initial shape BS,width,n_variables,n_members need to go into batch_size, n_members, width, n_variables
+        ensemble = y_hat.permute(0,3,1,2)
+ 
+        
+        batch_size, n_members = ensemble.shape[:2]
+        epsilon = (1 - self.alpha) / n_members
+        
+        # Expand target to match ensemble shape
+        target_expanded = target.unsqueeze(1).expand_as(ensemble)
+        
+        # Compute first term: mean absolute error to target
+        mae_term = torch.abs(ensemble - target_expanded).mean(dim=1)
+        
+        # Compute second term: pairwise differences between ensemble members
+        # Use broadcasting to compute all pairwise differences efficiently
+        ensemble_i = ensemble.unsqueeze(2)  # (batch, n_members, 1, ...)
+        ensemble_j = ensemble.unsqueeze(1)  # (batch, 1, n_members, ...)
+        
+        pairwise_diffs = torch.abs(ensemble_i - ensemble_j)
+        
+        # Sum over all pairs (excluding diagonal)
+        # Create mask to exclude diagonal (i=j)
+        mask = ~torch.eye(n_members, dtype=torch.bool, device=ensemble.device)
+        mask = mask.view(1, n_members, n_members, *[1]*(len(ensemble.shape)-2))
+        
+        # Apply mask and compute mean
+        pairwise_term = (pairwise_diffs * mask).sum(dim=(1, 2)) / (n_members * (n_members - 1))
+        
+        # Combine terms according to afCRPS formula
+        loss = mae_term - (1 - epsilon) * pairwise_term
+        
+        # Apply weights if provided
+        if weights is not None:
+            loss = loss * weights
+            
+        # Apply reduction
+        if self.reduction == 'none':
+            return loss
+        elif self.reduction == 'sum':
+            return loss.sum()
+        elif self.reduction == 'mean':
+            return loss.mean()
+        else:
+            raise ValueError(f"Invalid reduction: {self.reduction}")

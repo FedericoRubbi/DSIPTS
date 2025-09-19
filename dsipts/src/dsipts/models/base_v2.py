@@ -12,7 +12,7 @@ import numpy as np
 from aim import Image
 import matplotlib.pyplot as plt
 from typing import List, Union
-from .utils import QuantileLossMO
+from .utils import QuantileLossMO, CPRS
 import torch.nn as nn
 
 
@@ -137,10 +137,15 @@ class Base(pl.LightningModule):
         if n_classes==0:
             self.is_classification = False
             if len(self.quantiles)>0:
-                assert len(self.quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
-                self.use_quantiles = True
-                self.mul = len(self.quantiles)
-                self.loss = QuantileLossMO(quantiles)
+                if self.loss_type=='cprs':
+                    self.use_quantiles = False
+                    self.mul = len(self.quantiles)
+                    self.loss = CPRS()
+                else:
+                    assert len(self.quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
+                    self.use_quantiles = True
+                    self.mul = len(self.quantiles)
+                    self.loss = QuantileLossMO(quantiles)
             else:
                 self.use_quantiles = False
                 self.mul = 1
@@ -189,6 +194,11 @@ class Base(pl.LightningModule):
         Returns:
             torch.tensor: result
         """
+        
+        if self.loss_type=='cprs':
+            tmp = self(batch)
+            return tmp.mean(axis=-1)
+        
         return self(batch)
         
     def configure_optimizers(self):
@@ -365,6 +375,16 @@ class Base(pl.LightningModule):
         
         :meta private:
         """
+        if self.loss_type=='cprs':
+            return self.loss(y_hat,batch['y'])
+
+        if self.loss_type=='long_lag':
+
+            batch_size,width,n_variables = batch['y'].shape
+            tmp = torch.abs(y_hat[:,:,:,0]-batch['y'])*torch.linspace(1,self.persistence_weight,width).view(1,width,1).repeat(batch_size,1,n_variables)
+            return tmp.mean()
+
+
 
         if self.use_quantiles is False:
             initial_loss = self.loss(y_hat[:,:,:,0], batch['y'])

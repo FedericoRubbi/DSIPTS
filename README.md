@@ -3,6 +3,8 @@
 # DSIPTS: unified library for timeseries modelling
 > [!CAUTION]
 THE DOCUMENTATION, README and notebook are somehow outdated, some architectures are under review, please be patient and wait for the version 2.0.0 if you want a stable package
+> [!CAUTION]
+Check frequently the [CHANGELOG.md](CHANGELOG.md) file for the updates!
 
 This library allows to:
 
