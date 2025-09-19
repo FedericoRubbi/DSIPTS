@@ -633,7 +633,7 @@ class CPRS(nn.Module):
     with large ensembles.
     """
     
-    def __init__(self, alpha=0.95, reduction='mean'):
+    def __init__(self, alpha=0.5, reduction='mean'):
         super().__init__()
         self.alpha = alpha
         self.reduction = reduction
@@ -684,7 +684,9 @@ class CPRS(nn.Module):
         # Apply weights if provided
         if weights is not None:
             loss = loss * weights
-            
+        #if loss.mean()<-2:
+        #    import pdb
+        #    pdb.set_trace()
         # Apply reduction
         if self.reduction == 'none':
             return loss
