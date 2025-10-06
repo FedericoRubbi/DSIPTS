@@ -674,12 +674,12 @@ class CPRS(nn.Module):
         # Create mask to exclude diagonal (i=j)
         mask = ~torch.eye(n_members, dtype=torch.bool, device=ensemble.device)
         mask = mask.view(1, n_members, n_members, *[1]*(len(ensemble.shape)-2))
-        
+
         # Apply mask and compute mean
-        pairwise_term = (pairwise_diffs * mask).sum(dim=(1, 2)) / (n_members * (n_members - 1))
+        pairwise_term = (pairwise_diffs * mask).sum(dim=(1, 2)) ##formula 3 second term 
         
         # Combine terms according to afCRPS formula
-        loss = mae_term - (1 - epsilon) * pairwise_term
+        loss = mae_term - (1 - epsilon) * pairwise_term/ (2*n_members * (n_members - 1))
         
         # Apply weights if provided
         if weights is not None:

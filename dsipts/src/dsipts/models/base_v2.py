@@ -138,9 +138,9 @@ class Base(pl.LightningModule):
             self.is_classification = False
             if len(self.quantiles)>0:
                 if self.loss_type=='cprs':
-                    self.use_quantiles = False
+                    self.use_quantiles = True
                     self.mul = len(self.quantiles)
-                    self.loss = CPRS()
+                    self.loss = CPRS(alpha=self.persistence_weight)
                 else:
                     assert len(self.quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
                     self.use_quantiles = True
@@ -197,7 +197,9 @@ class Base(pl.LightningModule):
         
         if self.loss_type=='cprs':
             tmp = self(batch)
-            return tmp.mean(axis=-1).unsqueeze(-1)
+            tmp = torch.quantile(tmp, torch.tensor([0.05, 0.5, 0.95]), dim=-1).permute(1,2,3,0)
+            return tmp
+            #return tmp.mean(axis=-1).unsqueeze(-1)
         
         return self(batch)
         
