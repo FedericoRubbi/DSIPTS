@@ -8,6 +8,8 @@ import numpy as np
 from .itransformer.Transformer_EncDec import Encoder, EncoderLayer
 from .itransformer.SelfAttention_Family import FullAttention, AttentionLayer
 from .itransformer.Embed import DataEmbedding_inverted
+from ..data_structure.utils import beauty_string
+from .utils import  get_scope,get_activation,Embedding_cat_variables
 
 try:
     import lightning.pytorch as pl
@@ -17,12 +19,6 @@ except:
     import pytorch_lightning as pl
     OLD_PL = True
     from .base import Base
-from .utils import QuantileLossMO,Permute, get_activation
-
-from typing import List, Union
-from ..data_structure.utils import beauty_string
-from .utils import  get_scope
-from .utils import Embedding_cat_variables
 
 
 

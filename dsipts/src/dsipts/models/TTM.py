@@ -12,25 +12,16 @@ except:
     from .base import Base
 
 
-
-from typing import List,Union
-
-from .utils import  QuantileLossMO
-from ..data_structure.utils import beauty_string
-from .ttm.utils import get_model, get_frequency_token, count_parameters, RMSELoss
+from .ttm.utils import get_model, get_frequency_token, count_parameters
 
 
 class TTM(Base):
     def __init__(self, 
                 model_path:str,
-                past_steps:int,
-                future_steps:int,
                 freq_prefix_tuning:bool,
                 freq:str,
                 prefer_l1_loss:bool,  # exog: set true to use l1 loss
                 prefer_longer_context:bool,
-                loss_type:str,
-                num_input_channels,
                 prediction_channel_indices,
                 exogenous_channel_indices,
                 decoder_mode,
@@ -39,58 +30,16 @@ class TTM(Base):
                 fcm_mix_layers,
                 fcm_prepend_past,
                 enable_forecast_channel_mixing,
-                out_channels:int,
-                embs:List[int],
                 remove_last = False,
-                optim:Union[str,None]=None,
-                optim_config:dict=None,
-                scheduler_config:dict=None,
-                verbose = False,
-                use_quantiles=False,
-                persistence_weight:float=0.0,
-                quantiles:List[int]=[],
                 **kwargs)->None:
         """TODO and FIX for future and past categorical variables
         
         Args:
-            model_path (str): _description_
-            past_steps (int): _description_
-            future_steps (int): _description_
-            freq_prefix_tuning (bool): _description_
-            freq (str): _description_
-            prefer_l1_loss (bool): _description_
-            loss_type (str): _description_
-            num_input_channels (_type_): _description_
-            prediction_channel_indices (_type_): _description_
-            exogenous_channel_indices (_type_): _description_
-            decoder_mode (_type_): _description_
-            fcm_context_length (_type_): _description_
-            fcm_use_mixer (_type_): _description_
-            fcm_mix_layers (_type_): _description_
-            fcm_prepend_past (_type_): _description_
-            enable_forecast_channel_mixing (_type_): _description_
-            out_channels (int): _description_
-            embs (List[int]): _description_
-            remove_last (bool, optional): _description_. Defaults to False.
-            optim (Union[str,None], optional): _description_. Defaults to None.
-            optim_config (dict, optional): _description_. Defaults to None.
-            scheduler_config (dict, optional): _description_. Defaults to None.
-            verbose (bool, optional): _description_. Defaults to False.
-            use_quantiles (bool, optional): _description_. Defaults to False.
-            persistence_weight (float, optional): _description_. Defaults to 0.0.
-            quantiles (List[int], optional): _description_. Defaults to [].
+        
         """
-        super(TTM, self).__init__(verbose)
+        super(TTM, self).__init__()
         self.save_hyperparameters(logger=False)
-        self.future_steps = future_steps
-        self.use_quantiles = use_quantiles
-        self.optim = optim
-        self.optim_config = optim_config
-        self.scheduler_config = scheduler_config
-        self.persistence_weight = persistence_weight 
-        self.loss_type = loss_type
         self.remove_last = remove_last
-        self.embs = embs
         self.freq = freq
         self.extend_variables = False
 
@@ -98,42 +47,30 @@ class TTM(Base):
         prediction_channel_indices = list(prediction_channel_indices)
         exogenous_channel_indices = list(exogenous_channel_indices)
 
-        if len(quantiles)>0:
-            assert len(quantiles)==3, beauty_string('ONLY 3 quantiles premitted','info',True)
-            self.use_quantiles = True
-            self.mul = len(quantiles)
-            self.loss = QuantileLossMO(quantiles)
+        if self.use_quantiles:
             self.extend_variables = True
-            if out_channels * 3 != len(prediction_channel_indices):
+            if self.out_channels * 3 != len(prediction_channel_indices):
                 prediction_channel_indices, exogenous_channel_indices, num_input_channels = self.__add_quantile_features(prediction_channel_indices, 
                                                                                                                          exogenous_channel_indices, 
-                                                                                                                         out_channels)
-        else:
-            self.mul = 1
-            if self.loss_type == 'mse':
-                self.loss = nn.MSELoss(reduction="mean")
-            elif self.loss_type == 'rmse':
-                self.loss = RMSELoss()
-            else:
-                self.loss = nn.L1Loss()
+                                                                                                                         self.out_channels)
+                self.past_channels = num_input_channels
         
         self.model = get_model(
             model_path=model_path,
-            context_length=past_steps,
-            prediction_length=future_steps,
+            context_length=self.past_steps,
+            prediction_length=self.future_steps,
             freq_prefix_tuning=freq_prefix_tuning,
             freq=freq,
             prefer_l1_loss=prefer_l1_loss,
             prefer_longer_context=prefer_longer_context,
-            num_input_channels=num_input_channels,
+            num_input_channels=self.past_channels,
             decoder_mode=decoder_mode,
-            prediction_channel_indices=list(prediction_channel_indices),
-            exogenous_channel_indices=list(exogenous_channel_indices),
+            prediction_channel_indices=prediction_channel_indices,
+            exogenous_channel_indices=exogenous_channel_indices,
             fcm_context_length=fcm_context_length,
             fcm_use_mixer=fcm_use_mixer,
             fcm_mix_layers=fcm_mix_layers,
             fcm_prepend_past=fcm_prepend_past,
-            #loss='mse',
             enable_forecast_channel_mixing=enable_forecast_channel_mixing,
         )
         self.__freeze_backbone()
