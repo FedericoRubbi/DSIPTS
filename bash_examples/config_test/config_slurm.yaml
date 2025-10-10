@@ -2,6 +2,10 @@ dataset:
   dataset: 'weather'  
   path: null
   
+model:
+  restart: false
+  retrain: true
+  
 ts:
   name: 'test'
   version: 1
