@@ -8,7 +8,7 @@ ts:
   name: 'test'
   version: 1
   enrich: ['hour']
-  use_covariates: false
+  use_covariates: true
   silly: false
   use_future_covariates: true
 
@@ -25,9 +25,7 @@ model_configs:
   fcm_mix_layers: 2
   enable_forecast_channel_mixing: true
   fcm_prepend_past: true
-  optim: torch.optim.AdamW
   remove_last: false
-  num_input_channels: null #dataset dependent
   prediction_channel_indices: null #dataset dependent
   exogenous_channel_indices: null #dataset dependent
 

@@ -30,8 +30,6 @@ class ITransformer(Base):
     description = get_scope(handle_multivariate,handle_future_covariates,handle_categorical_variables,handle_quantile_loss)
     
     def __init__(self, 
-                
-
                  # specific params
                  hidden_size:int,
                  d_model: int,

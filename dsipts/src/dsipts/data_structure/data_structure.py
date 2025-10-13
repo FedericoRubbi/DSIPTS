@@ -210,20 +210,23 @@ class TimeSeries():
         self.future_variables = []
         self.target_variables = ['signal']
         self.num_var = list(set(self.past_variables).union(set(self.future_variables)).union(set(self.target_variables)))
-        
+        self.num_var = list(np.sort(self.num_var))
         
     def enrich(self,dataset,columns):
-        if columns =='hour':
-            dataset[columns] = dataset.time.dt.hour
-        elif columns=='dow':
-            dataset[columns] = dataset.time.dt.weekday
-        elif columns=='month':
-            dataset[columns] = dataset.time.dt.month
-        elif columns=='minute':
-            dataset[columns] = dataset.time.dt.minute
-        else:
-            if columns  not in dataset.columns:
-                beauty_string(f'I can not automatically enrich column {columns}. Please contact the developers or add it manually to your dataset.','section',True)
+        try:
+            if columns =='hour':
+                dataset[columns] = dataset.time.dt.hour
+            elif columns=='dow':
+                dataset[columns] = dataset.time.dt.weekday
+            elif columns=='month':
+                dataset[columns] = dataset.time.dt.month
+            elif columns=='minute':
+                dataset[columns] = dataset.time.dt.minute
+            else:
+                if columns  not in dataset.columns:
+                    beauty_string(f'I can not automatically enrich column {columns}. Please contact the developers or add it manually to your dataset.','section',True)
+        except:
+            beauty_string(f'I can not automatically enrich column {columns}. Probably not a temporal index.','section',True)
 
     def load_signal(self,data:pd.DataFrame,
                     enrich_cat:List[str] = [],
@@ -300,7 +303,7 @@ class TimeSeries():
             if check_past:
                 beauty_string('I will update past column adding all target columns, if you want to avoid this beahviour please use check_pass as false','info',self.verbose)
                 past_variables = list(set(past_variables).union(set(target_variables)))
-
+                past_variables = list(np.sort(past_variables))
         self.cat_past_var = cat_past_var
         self.cat_fut_var = cat_fut_var
 
@@ -321,14 +324,18 @@ class TimeSeries():
                 beauty_string('Categorical {c} already present, it will be added to categorical variable but not call the enriching function','info',self.verbose) 
             else:
                 self.enrich(dataset,c)
+        self.cat_past_var = list(np.sort(self.cat_past_var))
+        self.cat_fut_var = list(np.sort(self.cat_fut_var))
+        
         self.cat_var = list(set(self.cat_past_var+self.cat_fut_var)) ## all categorical data
-
+        self.cat_var = list(np.sort(self.cat_var))
         self.dataset = dataset
         self.past_variables = past_variables
         self.future_variables = future_variables
         self.target_variables = target_variables
         self.out_vars = len(target_variables)
         self.num_var = list(set(self.past_variables).union(set(self.future_variables)).union(set(self.target_variables)))
+        self.num_var = list(np.sort(self.num_var))
         if silly_model:
             beauty_string('YOU ARE TRAINING A SILLY MODEL WITH THE TARGETS IN THE INPUTS','section',self.verbose) 
             self.future_variables+=self.target_variables
