@@ -17,8 +17,8 @@ scheduler_config:
   step_size: 100
 
 optim_config:
-  lr: 0.0005
-  weight_decay: 0.01
+  lr: 0.00001
+  weight_decay: 0.001
 
 model_configs:
   past_steps: 16
@@ -49,7 +49,7 @@ split_params:
 train_config:
   dirpath: tmp
   num_workers: 0
-  auto_lr_find: true
+  auto_lr_find: false
   devices: [0]                   
   seed: 42   
   max_epochs: 5 
