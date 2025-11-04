@@ -996,7 +996,7 @@ class TimeSeries():
             
             if self.group is not None:
                 time[self.group] = groups
-                time = time.melt(id_vars=['region'])
+                time = time.melt(id_vars=[self.group])
             else:
                 time = time.melt()
             time.rename(columns={'value':'time','variable':'lag'},inplace=True)
