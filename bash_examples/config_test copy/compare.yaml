@@ -1,0 +1,7 @@
+models: config_test
+#models: ['config_used/linear.yaml']
+dirpath: /home/agobbi/Projects/TS/bash_examples/test
+
+set: 'test'
+name: 'prova'
+rescaling: false

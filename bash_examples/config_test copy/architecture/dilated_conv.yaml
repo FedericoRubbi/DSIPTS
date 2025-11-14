@@ -1,0 +1,36 @@
+# @package _global_
+
+model:
+  type: 'dilated_conv'
+  retrain: true
+  restart: false
+ts:
+  name: 'dilated_conv'
+  version: 1
+  enrich: []
+  use_covariates: true
+  use_future_covariates: true
+  silly: false
+model_configs:
+  hidden_RNN: 16
+  num_layers_RNN: 1
+  kernel_size: 3
+  kind: 'gru'
+  sum_layers: true
+  use_classical_positional_encoder: true
+  emb_dim: 16 
+  reduction_mode: mean
+  persistence_weight: 1.0
+  use_bn: false
+  use_glu: true
+  glu_percentage: 0.2
+  quantiles: [0.1,0.5,0.9]
+  optim: torch.optim.SGD
+  activation: torch.nn.SELU
+  loss_type: 'linear_penalization'
+
+train_config:
+  batch_size: 128
+  max_epochs: 20
+  gradient_clip_val: null
+  gradient_clip_algorithm: 'norm'

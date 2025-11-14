@@ -1,0 +1,34 @@
+# @package _global_
+
+model:
+  type: 'ttm'
+  retrain: true
+  restart: false
+ts:
+  name: 'test'
+  version: 1
+  enrich: ['hour']
+  use_covariates: true
+  silly: false
+  use_future_covariates: true
+
+model_configs:
+  model_path: "ibm-granite/granite-timeseries-ttm-r2"
+  freq_prefix_tuning: false
+  freq: 1h
+  prefer_l1_loss: true
+  prefer_longer_context: true
+  loss_type: 'mse'
+  decoder_mode: 'mix_channel'
+  fcm_context_length: 1
+  fcm_use_mixer: true
+  fcm_mix_layers: 2
+  enable_forecast_channel_mixing: true
+  fcm_prepend_past: false
+  remove_last: false
+  prediction_channel_indices: null #dataset dependent
+  exogenous_channel_indices: null #dataset dependent
+
+train_config:
+  batch_size: 64
+  max_epochs: 2

@@ -1,0 +1,28 @@
+# @package _global_
+
+model:
+  type: 'rnn'
+  retrain: true
+  restart: false
+ts:
+  name: 'test_gru'
+  version: 1
+  enrich: ['hour']
+  use_covariates: false
+  use_future_covariates: true
+  silly: false
+  
+model_configs:
+  use_classical_positional_encoder: true 
+  emb_dim: 16 
+  reduction_mode: mean 
+  hidden_RNN: 12
+  num_layers_RNN: 3
+  kernel_size: 5
+  kind: 'gru'
+  quantiles: []
+
+train_config:
+  batch_size: 256
+  max_epochs: 3
+            

@@ -1032,6 +1032,7 @@ class TimeSeries():
 
         res['prediction_time'] = res.apply(lambda x: x.time-self.freq*x.lag, axis=1)
         return res
+    
     def inference(self,batch_size:int=100,
                   num_workers:int=4,
                   split_params:Union[None,dict]=None,

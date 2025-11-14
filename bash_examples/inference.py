@@ -79,6 +79,8 @@ def inference(conf:DictConfig,split_params=None)->List[pd.DataFrame]:
         from load_data.load_data_public import load_data
     elif conf.dataset.dataset == 'synthetic': 
         from load_data.load_data_generated import load_data
+    elif conf.dataset.dataset == 'air_quality':
+        from load_data.load_data_air_quality import load_data
     else:
         from load_data.load_data_public import load_data
     ts = load_data(conf)

@@ -1,0 +1,80 @@
+dataset:
+  dataset: 'air_quality'  
+  path: '/home/nicol/Projects/dsipts-air-pollution/data/merged_appa_eea_by_proximity_v2.csv'
+  
+model:
+  restart: false
+  retrain: true
+ts:
+  name: 'test'
+  version: 1
+  enrich: ['dayofweek']
+  use_covariates: false
+  use_future_covariates: false
+
+scheduler_config:
+  gamma: 1.0
+  step_size: 100
+
+optim_config:
+  lr: 0.00001
+  weight_decay: 0.001
+
+model_configs:
+  past_steps: 16
+  future_steps: 16
+  quantiles: []
+  past_channels : null #dataset dependent
+  future_channels : null #dataset dependent
+  embs_past: null #dataset dependent
+  embs_fut: null #dataset dependent
+
+  out_channels: null #dataset dependent
+
+stack:
+  dirpath: null ##leave it null
+
+split_params:
+  perc_train: 0.7
+  perc_valid: 0.1
+  range_train: null
+  range_validation: null 
+  range_test: null
+  shift: 0
+  starting_point: null
+  skip_step: 1
+  past_steps: model_configs@past_steps 
+  future_steps: model_configs@future_steps
+  scaler: 'StandardScaler()' ## or sklearn.preprocessing.StandardScaler()
+train_config:
+  dirpath: tmp
+  num_workers: 0
+  auto_lr_find: false
+  devices: [0]                   
+  seed: 42   
+  max_epochs: 5 
+inference:
+  output_path: tmp
+  load_last: true
+  batch_size: 200 
+  num_workers: 4
+  set: "validation"
+  rescaling: true
+
+defaults:
+  - _self_
+  - architecture: 'gru' #architecture
+  - stack: null        #stack generalization
+  - override hydra/launcher: joblib
+
+hydra:
+  launcher:
+    n_jobs:  2
+    verbose: 1
+    pre_dispatch: 2
+    batch_size: 2
+
+  output_subdir: null 
+  sweeper:
+    params:
+      architecture: glob(*) #architecture

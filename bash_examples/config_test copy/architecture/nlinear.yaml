@@ -1,0 +1,23 @@
+# @package _global_
+
+model:
+  type: 'linear'
+  retrain: true
+  restart: false
+ts:
+  name: 'weather_n'
+  version: 1
+  enrich: ['hour']
+  use_covariates: false
+  use_future_covariates: true
+  silly: false
+model_configs:
+  cat_emb_dim: 16
+  kernel_size: 5
+  sum_emb: true
+  hidden_size: 24
+  kind: 'nlinear'
+  quantiles: [0.1,0.5,0.9]
+train_config:
+  batch_size: 256
+  max_epochs: 3
