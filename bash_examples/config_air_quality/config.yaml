@@ -1,6 +1,6 @@
 dataset:
   dataset: 'air_quality'  
-  path: '/home/nicol/Projects/dsipts-air-pollution/data/merged_appa_eea_by_proximity_v2.csv'
+  path: '/Users/federicorubbi/Documents/unitn/public-ai-challenge/appa-chinquinaria/data/merged_all_datasets.csv'
   
 model:
   restart: false
@@ -9,8 +9,8 @@ ts:
   name: 'test'
   version: 1
   enrich: ['dayofweek']
-  use_covariates: false
-  use_future_covariates: false
+  use_covariates: true
+  use_future_covariates: true
 
 scheduler_config:
   gamma: 1.0
@@ -21,8 +21,8 @@ optim_config:
   weight_decay: 0.001
 
 model_configs:
-  past_steps: 16
-  future_steps: 16
+  past_steps: 72
+  future_steps: 24
   quantiles: []
   past_channels : null #dataset dependent
   future_channels : null #dataset dependent

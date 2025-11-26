@@ -8,7 +8,7 @@ ts:
   name: 'test_gru'
   version: 1
   enrich: ['hour']
-  use_covariates: false
+  use_covariates: true
   use_future_covariates: true
   silly: false
   
