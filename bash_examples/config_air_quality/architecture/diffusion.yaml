@@ -32,4 +32,4 @@ model_configs:
   quantiles: [0.1,0.5,0.9]
 train_config:
   batch_size: 64 
-  max_epochs: 5
+  max_epochs: 100

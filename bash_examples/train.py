@@ -127,6 +127,7 @@ def train(conf: DictConfig) -> None:
     except Exception as _:
         beauty_string(traceback.format_exc(),'', True)
         ok = False
+        valid_loss = float('inf')
         
     if ok:
         ts.save(os.path.join(conf.train_config.dirpath,'model'))

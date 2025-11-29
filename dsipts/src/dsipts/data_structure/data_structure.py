@@ -456,9 +456,9 @@ class TimeSeries():
             tmp = data[data['_GROUP_']==group]
             groups = tmp['_GROUP_'].values  
             t = tmp.time.values 
-            x_num_past = tmp[self.past_variables].values
+            x_num_past = tmp[self.past_variables].values.astype(np.float32)
             if len(self.future_variables)>0:
-                x_num_future = tmp[self.future_variables].values
+                x_num_future = tmp[self.future_variables].values.astype(np.float32)
             if len(self.cat_past_var)>0:
                 x_past_cat = tmp[self.cat_past_var].values
             if len(self.cat_fut_var)>0:
@@ -472,6 +472,7 @@ class TimeSeries():
                 check = [True]*len(y_target)
             
             for i in range(past_steps,tmp.shape[0]-future_steps-skip_stacked,skip_step):
+
                 if check[i]:
 
                     if len(self.future_variables)>0:
@@ -507,10 +508,11 @@ class TimeSeries():
     
         
         if len(self.future_variables)>0:
-            try:
-                x_num_future_samples = np.stack(x_num_future_samples)
-            except Exception as e:
-                beauty_string('WARNING x_num_future_samples is empty and it should not','info',True)
+            pass 
+            # try:
+            #     x_num_future_samples = np.stack(x_num_future_samples)
+            # except Exception as e:
+            #     beauty_string('WARNING x_num_future_samples is empty and it should not','info',True)
         
         y_samples = np.stack(y_samples)
         t_samples = np.stack(t_samples)   
@@ -520,20 +522,25 @@ class TimeSeries():
             x_cat_past_samples = np.stack(x_cat_past_samples).astype(np.int32)
         if len(self.cat_fut_var)>0:
             x_cat_future_samples = np.stack(x_cat_future_samples).astype(np.int32)
-        x_num_past_samples = np.stack(x_num_past_samples)
+        # x_num_past_samples = np.stack(x_num_past_samples)
         if self.stacked:
             mod = 0
         else:
             mod = 1.0
+            
+        if mod != 1.0:
+             x_num_past_samples = [x * mod for x in x_num_past_samples]
+             
         dd = {'y':y_samples.astype(np.float32),
 
-              'x_num_past':(x_num_past_samples*mod).astype(np.float32)}
+              'x_num_past':x_num_past_samples}
         if len(self.cat_past_var)>0:
             dd['x_cat_past'] = x_cat_past_samples
         if len(self.cat_fut_var)>0:
             dd['x_cat_future'] = x_cat_future_samples
         if len(self.future_variables)>0:
-            dd['x_num_future'] = x_num_future_samples.astype(np.float32)
+            dd['x_num_future'] = x_num_future_samples # .astype(np.float32) already float32 views
+
         
         return MyDataset(dd,t_samples,g_samples,idx_target,idx_target_future)
     
@@ -782,7 +789,7 @@ class TimeSeries():
         #aim_logger.experiment.track(self.config,name=None)
         tmp = self.config.copy()
         tmp['model_name'] = self.model.name
-        aim_logger._run['hyperparameters'] = tmp
+        aim_logger.experiment['hyperparameters'] = tmp
 
         mc = MetricsCallback(dirpath)
         ## TODO se ci sono 2 o piu gpu MetricsCallback non funziona (secondo me fa una istanza per ogni dataparallel che lancia e poi non riesce a recuperare info)
@@ -960,10 +967,12 @@ class TimeSeries():
         real = []
         self.model.to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
         beauty_string(f'Device used: {self.model.device}','info',self.verbose)
-
-        for batch in dl:
-            res.append(self.model.inference(batch).cpu().detach().numpy())
-            real.append(batch['y'].cpu().detach().numpy())
+        
+        # Disable gradient tracking during inference to significantly reduce memory usage
+        with torch.no_grad():
+            for batch in dl:
+                res.append(self.model.inference(batch).cpu().detach().numpy())
+                real.append(batch['y'].cpu().detach().numpy())
        
         res = np.vstack(res)
  
@@ -1030,7 +1039,11 @@ class TimeSeries():
                 tot.append(pd.DataFrame(res[:,:,i,0],columns=[i+1 for i in range(res.shape[1])]).melt().rename(columns={'value':c+'_pred'}).drop(columns=['variable']))
             res = pd.concat(tot,axis=1)
 
-        res['prediction_time'] = res.apply(lambda x: x.time-self.freq*x.lag, axis=1)
+        # Compute prediction_time in a vectorised and type-safe way
+        if isinstance(self.freq, (pd.Timedelta, np.timedelta64)):
+            res['prediction_time'] = pd.to_datetime(res['time']) - self.freq * res['lag'].astype(int)
+        else:
+            res['prediction_time'] = res['time'] - self.freq * res['lag']
         return res
     
     def inference(self,batch_size:int=100,

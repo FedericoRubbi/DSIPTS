@@ -48,13 +48,24 @@ def process_data(df):
     return df
 
 
+def set_default_split_params(conf):
+    split_params = {
+        'perc_train': 0.7,
+        'perc_valid': 0.1,
+        'range_train': None,
+        'range_validation': None,
+        'range_test': None,
+    }
+    return split_params
+
+
 def load_to_ts(df, conf):
     ts = TimeSeries(conf.ts.name)
 
-    df["hour"] = df["time"].dt.hour.astype(float)
-    df["month"] = df["time"].dt.month.astype(float)
-    df["day"] = df["time"].dt.day.astype(float)
-    df["weekday"] = df["time"].dt.weekday.astype(float)
+    # df["hour"] = df["time"].dt.hour.astype(float)
+    # df["month"] = df["time"].dt.month.astype(float)
+    # df["day"] = df["time"].dt.day.astype(float)
+    # df["weekday"] = df["time"].dt.weekday.astype(float)
 
     # Extract past variables
     past_variables = df.columns.drop(['time']) if conf.ts.get('use_covariates',False) else []  # all columns except time
@@ -64,7 +75,7 @@ def load_to_ts(df, conf):
     print("numbers of nan in date column:", df['time'].isna().sum())
 
     # Extract all target variables
-    target_variables = [c for c in df.columns if c.startswith('pm10')]
+    target_variables = [c for c in df.columns if c.startswith('pm10') and "Trentino" in c]  # only Trentino stations
     print("Target variables used:", target_variables)
     print(type(target_variables))
     print("numbers of nan in target variables:", df[target_variables].isna().sum())
@@ -73,7 +84,7 @@ def load_to_ts(df, conf):
     use_future_covariates = conf.ts.get('use_future_covariates',False)
     if use_future_covariates:
         future_variables = df.columns.drop(['time'])
-        future_variables = future_variables.drop(target_variables)
+        future_variables = df.columns.drop([c for c in df.columns if c.startswith('pm10')])  # Remove all pm10 columns
         print("Future variables used:", future_variables)
         print(type(future_variables))
         print("numbers of nan in date column:", df['time'].isna().sum())

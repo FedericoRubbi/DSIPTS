@@ -85,7 +85,18 @@ def inference(conf:DictConfig,split_params=None)->List[pd.DataFrame]:
         from load_data.load_data_public import load_data
     ts = load_data(conf)
 
-    
+    # FIX: make sure ts.split_params exists (needed by inference_on_set)
+    if not hasattr(ts, "split_params"):
+        if "split_params" in conf:
+            # Use the same object that was saved in the used_config YAML
+            ts.split_params = conf.split_params
+        else:
+            beauty_string(
+                "WARNING: no split_params found in config; using default may fail",
+                "section",
+                True,
+            )
+
     ts.set_verbose(VERBOSE)
     beauty_string(conf.model.type,'block',VERBOSE)
     beauty_string(f'Model and weights will be placed and read from {conf.train_config.dirpath}','info',VERBOSE)
@@ -125,6 +136,28 @@ def inference(conf:DictConfig,split_params=None)->List[pd.DataFrame]:
     filename = os.path.join(conf.inference.output_path,'csv',f'{conf.model.type}_{ts.name}_{conf.ts.version}_{conf.inference.set}.csv')
 
     errors.to_csv(filename,index=False)
+
+
+    pred_dir = os.path.join(conf.inference.output_path,'predictions')
+    os.makedirs(pred_dir, exist_ok=True)
+
+    for c in ts.target_variables:
+        gt_col = c
+        pred_col = f"{c}{feat}"
+
+        # here: use all lags, one row per (time, lag)
+        df_out = res[["time", "lag", gt_col, pred_col]].copy()
+        df_out.rename(columns={
+            gt_col: "y",
+            pred_col: "y_pred"
+        }, inplace=True)
+
+        pred_filename = os.path.join(
+            pred_dir,
+            f"{conf.model.type}_{ts.name}_{conf.ts.version}_{c}_{conf.inference.set}.csv"
+        )
+        df_out.to_csv(pred_filename, index=False)
+
     return errors,res, ts.losses
 
 

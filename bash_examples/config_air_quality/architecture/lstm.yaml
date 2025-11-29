@@ -5,7 +5,7 @@ model:
   retrain: true
   restart: false
 ts:
-  name: 'test_lstm'
+  name: 'test_lstm_reprise_v2'
   version: 1
   enrich: ['hour']
   use_covariates: false
@@ -24,5 +24,5 @@ model_configs:
   quantiles: [0.1,0.5,0.9]
 train_config:
   batch_size: 256
-  max_epochs: 3
+  max_epochs: 250
               

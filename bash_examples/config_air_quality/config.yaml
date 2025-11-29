@@ -1,6 +1,6 @@
 dataset:
   dataset: 'air_quality'  
-  path: '/Users/federicorubbi/Documents/unitn/public-ai-challenge/appa-chinquinaria/data/merged_all_datasets.csv'
+  path: '/home/netlite/Downloads/dsipts/dsipts-air-pollution/merged_all_datasets.csv'
   
 model:
   restart: false
@@ -48,9 +48,9 @@ split_params:
   scaler: 'StandardScaler()' ## or sklearn.preprocessing.StandardScaler()
 train_config:
   dirpath: tmp
-  num_workers: 0
+  num_workers: 7
   auto_lr_find: false
-  devices: [0]                   
+  devices: [0]                 
   seed: 42   
   max_epochs: 5 
 inference:
@@ -63,7 +63,7 @@ inference:
 
 defaults:
   - _self_
-  - architecture: 'gru' #architecture
+  - architecture: 'timexer' #architecture
   - stack: null        #stack generalization
   - override hydra/launcher: joblib
 
