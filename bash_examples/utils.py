@@ -2,6 +2,28 @@ from dsipts import RNN, LinearTS, Persistent, D3VAE, DilatedConv, TFT, Informer,
 import numpy as np
 from sklearn.metrics import mean_squared_error
 import os
+from numba import jit
+
+@jit(nopython=True)
+def dtw_numba(x, y):
+    n = len(x)
+    m = len(y)
+    dtw_matrix = np.zeros((n+1, m+1))
+    dtw_matrix.fill(np.inf)
+    dtw_matrix[0, 0] = 0
+    
+    for i in range(1, n+1):
+        for j in range(1, m+1):
+            cost = abs(x[i-1] - y[j-1])
+            # take min
+            last_min = dtw_matrix[i-1, j]
+            if dtw_matrix[i, j-1] < last_min:
+                last_min = dtw_matrix[i, j-1]
+            if dtw_matrix[i-1, j-1] < last_min:
+                last_min = dtw_matrix[i-1, j-1]
+            dtw_matrix[i, j] = cost + last_min
+    return dtw_matrix[n, m]
+
 def rmse(x:np.array,y:np.array)->float:
     """custom RMSE avoinding nan
 
@@ -48,6 +70,48 @@ def mape(x:np.array,y:np.array)->float:
     res = 100*np.abs((x[idx]-y[idx])/y[idx])
     res = res[np.isfinite(res)]
     return np.nanmean(res)
+
+def mae(x:np.array,y:np.array)->float:
+    """custom MAE avoinding nan
+
+    Args:
+        x (np.array): predicted
+        y (np.array): real
+
+    Returns:
+        float: MAE
+    """
+    x = x.astype(float)
+    y = y.astype(float)
+    idx = list(np.where(~np.isnan(x*y))[0])
+    return np.mean(np.abs(x[idx]-y[idx]))
+
+def dtw(x:np.array,y:np.array)->float:
+    """Simple DTW implementation avoiding nan using numba
+
+    Args:
+        x (np.array): predicted
+        y (np.array): real
+
+    Returns:
+        float: DTW distance
+    """
+    x = x.astype(float)
+    y = y.astype(float)
+    idx = np.where(~np.isnan(x*y))[0]
+    x = x[idx]
+    y = y[idx]
+    
+    # Subsample if too long to avoid slow computation
+    if len(x) > 1000:
+        x = x[:1000]
+        y = y[:1000]
+        
+    n, m = len(x), len(y)
+    if n == 0 or m == 0:
+        return np.nan
+    
+    return dtw_numba(x, y)
 
 
 def select_model(conf, model_conf,ts):

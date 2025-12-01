@@ -6,7 +6,7 @@ from dsipts import TimeSeries, beauty_string, extend_time_df,read_public_dataset
 import os
 from typing import List
 from datetime import timedelta 
-from utils import mse, mape, load_model
+from utils import mse, mape, rmse, mae, dtw, load_model
 VERBOSE = True
 
 def inference_stacked(conf:DictConfig,ts:TimeSeries)->List[pd.DataFrame]:
@@ -122,12 +122,18 @@ def inference(conf:DictConfig,split_params=None)->List[pd.DataFrame]:
     feat = '_median' if ts.model.use_quantiles else '_pred'
     for c in ts.target_variables:
         
-        tmp = res.groupby('lag').apply(lambda x: mse(x[f'{c}{feat}'].values,x[c].values)).reset_index().rename(columns={0:'MSE'})
+        def calc_metrics(x):
+            return pd.Series({
+                'MSE': mse(x[f'{c}{feat}'].values, x[c].values),
+                'MAPE': mape(x[f'{c}{feat}'].values, x[c].values),
+                'RMSE': rmse(x[f'{c}{feat}'].values, x[c].values),
+                'MAE': mae(x[f'{c}{feat}'].values, x[c].values),
+                'DTW': dtw(x[f'{c}{feat}'].values, x[c].values)
+            })
+
+        tmp = res.groupby('lag').apply(calc_metrics).reset_index()
         tmp['variable'] = c
-        
-        tmp2 = res.groupby('lag').apply(lambda x: mape(x[f'{c}{feat}'].values,x[c].values)).reset_index().rename(columns={0:'MAPE'})
-        tmp2['variable'] = c
-        errors.append(pd.merge(tmp,tmp2))
+        errors.append(tmp)
     errors = pd.concat(errors,ignore_index=True)
     beauty_string(errors,'',VERBOSE)
 
