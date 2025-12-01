@@ -42,6 +42,8 @@ def train(conf: DictConfig) -> None:
         from load_data.load_data_pollen import load_data
     elif conf.dataset.dataset == 'synthetic': 
         from load_data.load_data_generated import load_data
+    elif conf.dataset.dataset == 'air_quality':
+        from load_data.load_data_air_quality import load_data
     else:
         from load_data.load_data_public import load_data
     try:
@@ -125,6 +127,7 @@ def train(conf: DictConfig) -> None:
     except Exception as _:
         beauty_string(traceback.format_exc(),'', True)
         ok = False
+        valid_loss = float('inf')
         
     if ok:
         ts.save(os.path.join(conf.train_config.dirpath,'model'))

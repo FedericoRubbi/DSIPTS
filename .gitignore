@@ -12,3 +12,4 @@ tmp
 dist*
 build
 dsipts.egg-info
+.aim

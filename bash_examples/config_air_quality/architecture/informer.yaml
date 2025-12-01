@@ -1,0 +1,38 @@
+# @package _global_
+
+model:
+  type: 'informer'
+  retrain: true
+  restart: false
+ts:
+  name: 'test'
+  version: 1
+  enrich: ['hour']
+  use_covariates: true
+  use_future_covariates: true
+  silly: false
+model_configs:
+  use_classical_positional_encoder: true 
+  emb_dim: 16  
+  reduction_mode: mean 
+  d_model: 4
+  hidden_size: 4
+  n_layer_encoder: 2
+  n_layer_decoder: 2
+  n_head: 2
+  dropout_rate: 0.5
+  optim: torch.optim.Adam
+  activation: torch.nn.PReLU
+  persistence_weight: 0.010
+  loss_type: 'l1'
+  remove_last: true
+  quantiles: [0.1,0.5,0.9]
+train_config:
+  batch_size: 128
+  max_epochs: 64
+            
+split_params:
+  shift:  ${model_configs.future_steps}
+  keep_entire_seq_while_shifting: true
+
+  #informer, crossformer, diffusion, gru

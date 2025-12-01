@@ -6,7 +6,7 @@ from dsipts import TimeSeries, beauty_string, extend_time_df,read_public_dataset
 import os
 from typing import List
 from datetime import timedelta 
-from utils import mse, mape, load_model
+from utils import mse, mape, rmse, mae, dtw, load_model
 VERBOSE = True
 
 def inference_stacked(conf:DictConfig,ts:TimeSeries)->List[pd.DataFrame]:
@@ -79,11 +79,24 @@ def inference(conf:DictConfig,split_params=None)->List[pd.DataFrame]:
         from load_data.load_data_public import load_data
     elif conf.dataset.dataset == 'synthetic': 
         from load_data.load_data_generated import load_data
+    elif conf.dataset.dataset == 'air_quality':
+        from load_data.load_data_air_quality import load_data
     else:
         from load_data.load_data_public import load_data
     ts = load_data(conf)
 
-    
+    # FIX: make sure ts.split_params exists (needed by inference_on_set)
+    if not hasattr(ts, "split_params"):
+        if "split_params" in conf:
+            # Use the same object that was saved in the used_config YAML
+            ts.split_params = conf.split_params
+        else:
+            beauty_string(
+                "WARNING: no split_params found in config; using default may fail",
+                "section",
+                True,
+            )
+
     ts.set_verbose(VERBOSE)
     beauty_string(conf.model.type,'block',VERBOSE)
     beauty_string(f'Model and weights will be placed and read from {conf.train_config.dirpath}','info',VERBOSE)
@@ -109,12 +122,18 @@ def inference(conf:DictConfig,split_params=None)->List[pd.DataFrame]:
     feat = '_median' if ts.model.use_quantiles else '_pred'
     for c in ts.target_variables:
         
-        tmp = res.groupby('lag').apply(lambda x: mse(x[f'{c}{feat}'].values,x[c].values)).reset_index().rename(columns={0:'MSE'})
+        def calc_metrics(x):
+            return pd.Series({
+                'MSE': mse(x[f'{c}{feat}'].values, x[c].values),
+                'MAPE': mape(x[f'{c}{feat}'].values, x[c].values),
+                'RMSE': rmse(x[f'{c}{feat}'].values, x[c].values),
+                'MAE': mae(x[f'{c}{feat}'].values, x[c].values),
+                'DTW': dtw(x[f'{c}{feat}'].values, x[c].values)
+            })
+
+        tmp = res.groupby('lag').apply(calc_metrics).reset_index()
         tmp['variable'] = c
-        
-        tmp2 = res.groupby('lag').apply(lambda x: mape(x[f'{c}{feat}'].values,x[c].values)).reset_index().rename(columns={0:'MAPE'})
-        tmp2['variable'] = c
-        errors.append(pd.merge(tmp,tmp2))
+        errors.append(tmp)
     errors = pd.concat(errors,ignore_index=True)
     beauty_string(errors,'',VERBOSE)
 
@@ -123,6 +142,28 @@ def inference(conf:DictConfig,split_params=None)->List[pd.DataFrame]:
     filename = os.path.join(conf.inference.output_path,'csv',f'{conf.model.type}_{ts.name}_{conf.ts.version}_{conf.inference.set}.csv')
 
     errors.to_csv(filename,index=False)
+
+
+    pred_dir = os.path.join(conf.inference.output_path,'predictions')
+    os.makedirs(pred_dir, exist_ok=True)
+
+    for c in ts.target_variables:
+        gt_col = c
+        pred_col = f"{c}{feat}"
+
+        # here: use all lags, one row per (time, lag)
+        df_out = res[["time", "lag", gt_col, pred_col]].copy()
+        df_out.rename(columns={
+            gt_col: "y",
+            pred_col: "y_pred"
+        }, inplace=True)
+
+        pred_filename = os.path.join(
+            pred_dir,
+            f"{conf.model.type}_{ts.name}_{conf.ts.version}_{c}_{conf.inference.set}.csv"
+        )
+        df_out.to_csv(pred_filename, index=False)
+
     return errors,res, ts.losses
 
 

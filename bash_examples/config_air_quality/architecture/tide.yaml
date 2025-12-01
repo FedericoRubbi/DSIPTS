@@ -1,0 +1,31 @@
+# @package _global_
+
+model:
+  type: 'tide'
+  retrain: true
+  restart: false
+ts:
+  name: 'test'
+  version: 1
+  enrich: ['minute']
+  use_covariates: true
+  use_future_covariates: true
+
+model_configs:
+  use_classical_positional_encoder: true 
+  emb_dim: 16 
+  reduction_mode: mean 
+  hidden_size: 5
+  d_model: 4
+  n_add_enc: 4
+  n_add_dec: 4
+  activation: torch.nn.PReLU
+  optim: torch.optim.Adam
+  dropout_rate: 0.1
+  persistence_weight: 0.010
+  loss_type: 'l1'
+  quantiles: [0.1,0.5,0.9]
+train_config:
+  batch_size: 128
+  max_epochs: 3
+            
